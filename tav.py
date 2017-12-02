@@ -26,9 +26,7 @@ def update():
   with open(str(width_path), 'w') as file:
     file.write(str(snapshot.width))
 
-
-def choose(clear=True):
-
+def choose(once):
   t_width, t_height = shutil.get_terminal_size()
   with open(width_path) as file:
     width = int(file.read())
@@ -47,10 +45,6 @@ def choose(clear=True):
     --tiebreak=index
 
     # disable all quit bindings
-    --bind=esc:unix-line-discard
-    --bind=ctrl-c:unix-line-discard
-    --bind=ctrl-g:unix-line-discard
-    --bind=ctrl-q:unix-line-discard
 
     --ansi
     --height=100%
@@ -62,8 +56,10 @@ def choose(clear=True):
     --color=bg:-1,bg+:-1
   ''', comments=True)
 
-  if not clear:
-      cmd.append('--no-clear')
+  if not once:
+    cmd.append('--no-clear')
+    for key in ('esc', 'ctrl-c', 'ctrl-g', 'ctrl-q'):
+      cmd.append(f'--bind={key}:execute(tmux switch-client -p)')
 
   with open(str(feed_path)) as file:
     process = subprocess.run(cmd, stdin=file, stdout=subprocess.PIPE)
@@ -118,13 +114,15 @@ def main():
   if options.action == 'update':
     update()
   elif options.action == 'once':
-    choose()
+    choose(once=True)
+  elif options.action == 'hook':
+    hook_update()
   elif options.action == 'interface':
     while True:
-      choose(False)
+      choose(once=False)
   elif options.action == 'update and choose once':
     update()
-    choose()
+    choose(once=True)
   else:
     cliParser.print_help()
 
