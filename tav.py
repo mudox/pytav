@@ -26,7 +26,7 @@ def update():
     file.write(str(snapshot.width))
 
 
-def choose(clear=False):
+def choose(clear=True):
 
   t_width, t_height = shutil.get_terminal_size()
   with open(width_path) as file:
@@ -96,10 +96,10 @@ def main():
     choose()
   elif options.action == 'interface':
     while True:
-      choose()
+      choose(False)
   elif options.action == 'update and choose once':
     update()
-    choose(True)
+    choose()
   else:
     cliParser.print_help()
 
