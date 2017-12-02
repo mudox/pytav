@@ -14,6 +14,7 @@ out_dir = Path('~/.local/share/tmux-choose-tree').expanduser()
 out_dir.mkdir(parents=True, exist_ok=True)
 feed_path = out_dir / 'fzf-feed'
 width_path = out_dir / 'width'
+update_path = out_dir / 'update'
 
 
 def update():
@@ -75,6 +76,30 @@ def choose(clear=True):
 
     target_id = result[0]
     subprocess.run(['tmux', 'switch-client', '-t', target_id])
+
+
+def hook_update():
+  if not is_hook_update_enabled():
+    return
+  else:
+    update()
+    subprocess.run(['tmux', 'respawn-window', '-k', '-t', 'Tmux:Navigator'])
+
+
+def is_hook_update_enabled():
+  if not update_path.exists():
+    return True
+
+  with open(str(update_path)) as file:
+    if file.read() == 'no':
+      return False
+    else:
+      return True
+
+
+def set_hook_update(enable):
+  with open(str(update_path), 'w') as file:
+    file.write(enable and 'yes' or 'no')
 
 
 def main():
