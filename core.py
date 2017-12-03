@@ -69,7 +69,7 @@ def choose_tree(oneshot):
 
     # prevent keys to abort fzf
     for key in ('esc', 'ctrl-c', 'ctrl-g', 'ctrl-q'):
-      cmd.append(f'--bind={key}:execute(tmux switch-client -p)')
+      cmd.append(f'--bind={key}:execute(tmux switch-client -l)')
 
     # prevent ctrl-z suspend fzf
     cmd.append('--bind=ctrl-z:unix-line-discard')
