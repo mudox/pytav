@@ -35,10 +35,10 @@ class Snapshot:
     s_width = 0  # max session name width
 
     p = subprocess.run(list_sessions_cmd, stdout=subprocess.PIPE)
-    s_lines = p.stdout.decode().splitlines()
+    slines = p.stdout.decode().splitlines()
 
-    for s_line in s_lines:
-      sid, sname = s_line.split(':')
+    for sline in slines:
+      sid, sname = sline.split(':')
       session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
       result[sid] = session
 
@@ -50,10 +50,19 @@ class Snapshot:
 
       for wline in wlines:
         wid, wname = wline.split(':')
+
+        # filter out all Tav window
+        if sname == 'Tmux' and wname == 'Navigator':
+          continue
+
         window = tmux.Window(id=wid, name=wname)
         session.windows.append(window)
 
         w_width = max(w_width, len(wname))
+
+      if len(session.windows) == 0:
+        assert session.name == 'Tmux'
+        del result[session.id]
 
     # widths
     t_width, t_height = shutil.get_terminal_size()
