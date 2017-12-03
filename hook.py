@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
+from time import time
 
 import core
 import settings
@@ -32,11 +33,14 @@ def is_enabled() -> bool:
     seconds = now - disabled_time
     result = seconds > settings.reenable_hook_interval
 
+  if settings.verbose:
+    print('hook: ' + (result and '✔' or '✘'))
+
+  return result
 
 
 def run():
   if not is_enabled():
-    print('disabled')
     return
   else:
     core.update()
