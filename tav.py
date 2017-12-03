@@ -51,7 +51,11 @@ def hook_update():
 
 def create_navigator_window_if_neede():
 
-  process = subprocess.run(['tmux', 'list-panes', '-t', 'Tmux:Navigator'])
+  process = subprocess.run(
+      ['tmux', 'list-panes', '-t', 'Tmux:Navigator'],
+      stdout=subprocess.DEVNULL
+  )
+
   if process.returncode != 0:
     # get client tty size
     p = subprocess.run(shlex.split('''

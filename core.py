@@ -6,7 +6,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from snapshot import TmuxSnapshot
+import tmux
+from formatter import FZFFormatter
 
 out_dir = Path('~/.local/share/tav').expanduser()
 out_dir.mkdir(parents=True, exist_ok=True)
@@ -20,13 +21,13 @@ def update():
   take a new snapshot and write to data files.
   '''
 
-  snapshot = TmuxSnapshot()
+  formatter = FZFFormatter(tmux.Snapshot())
 
   with open(str(fzf_feed_path), 'w') as file:
-    file.write(snapshot.fzf_lines())
+    file.write(formatter.fzf_lines())
 
   with open(str(width_path), 'w') as file:
-    file.write(str(snapshot.width))
+    file.write(str(formatter.fzf_ui_width))
 
 
 def choose_tree(oneshot):

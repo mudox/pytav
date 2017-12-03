@@ -19,7 +19,7 @@ list_windows_cmd = shlex.split('''
   tmux
   list-windows
   -F
-  '#{windowid}:#{windowname}'
+  '#{window_id}:#{window_name}'
   -t
 ''', comments=True)
 
@@ -58,6 +58,6 @@ class Snapshot:
     # widths
     t_width, t_height = shutil.get_terminal_size()
 
-    self.window_wname_max_width = w_width
-    self.session_name_max_width = s_width
+    self.w_width = w_width
+    self.s_width = s_width
     self.session_map = result

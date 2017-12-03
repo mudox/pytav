@@ -13,4 +13,4 @@ class Session(NamedTuple):
   name: str
   loaded: bool
   id: str = None
-  windows: [Window] = None
+  windows: list = None
