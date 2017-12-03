@@ -4,9 +4,9 @@
 import shlex
 import shutil
 import subprocess
+from pathlib import Path
 
 from snapshot import TmuxSnapshot
-from pathlib import Path
 
 out_dir = Path('~/.local/share/tav').expanduser()
 out_dir.mkdir(parents=True, exist_ok=True)
@@ -64,9 +64,15 @@ def choose_tree(oneshot):
   ''', comments=True)
 
   if not oneshot:
+    # avoid screen flickering
     cmd.append('--no-clear')
+
+    # prevent keys to abort fzf
     for key in ('esc', 'ctrl-c', 'ctrl-g', 'ctrl-q'):
       cmd.append(f'--bind={key}:execute(tmux switch-client -p)')
+
+    # prevent ctrl-z suspend fzf
+    cmd.append('--bind=ctrl-z:unix-line-discard')
 
   with open(str(fzf_feed_path)) as file:
     process = subprocess.run(cmd, stdin=file, stdout=subprocess.PIPE)
