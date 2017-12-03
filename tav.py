@@ -3,6 +3,8 @@
 
 
 import argparse
+import os
+import shlex
 import subprocess
 from pathlib import Path
 
@@ -30,6 +32,8 @@ def serve(args):
 
 
 def hook(args):
+  create_navigator_window_if_neede()
+
   if args.hook_enabled is None:
     hook_update()
   else:
@@ -43,6 +47,33 @@ def hook_update():
   else:
     update()
     subprocess.run(['tmux', 'respawn-window', '-k', '-t', 'Tmux:Navigator'])
+
+
+def create_navigator_window_if_neede():
+
+  process = subprocess.run(['tmux', 'list-panes', '-t', 'Tmux:Navigator'])
+  if process.returncode != 0:
+    # get client tty size
+    p = subprocess.run(shlex.split('''
+      tmux list-clients -F '#{client_width}:#{client_height}'
+    ''', stdout=subprocess.PIPE))
+
+    if p.returncode != 0:
+      raise RuntimeError('`tmux list-clients` failed')
+
+    width, height = map(int, p.stdout.decode().split(':'))
+
+    # get script path
+    script_path = os.path.dirname(os.path.abspath(__file__))
+    cmd = f'{script_path}/tav.py serve'
+
+    p = subprocess.run(shlex.split(f'''
+      tmux new-session
+      -s Tmux -n Navigator
+      -x {width} -y {height}
+      -d
+      {cmd}
+    '''))
 
 
 def is_hook_update_enabled():
