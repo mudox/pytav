@@ -2,21 +2,36 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
-from pathlib import Path
 
 import core
 import settings
 
+
 def enable(flag):
-  settings.paths.update.write_text(flag and 'yes' or 'no')
+  if flag:
+    text = '-1'
+  else:
+    text = str(time())
+
+  settings.paths.update.write_text(text)
 
 
 def is_enabled() -> bool:
   if not settings.paths.update.exists():
-    return True
+    result = True
 
   text = settings.paths.update.read_text()
-  return (text == 'yes') and True or False
+  disabled_time = float(text)
+
+  if disabled_time == -1:
+    # enabled explicitly
+    result = True
+  else:
+    # re-enable after a given time interval
+    now = time()
+    seconds = now - disabled_time
+    result = seconds > settings.reenable_hook_interval
+
 
 
 def run():
