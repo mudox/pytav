@@ -5,7 +5,7 @@ import shlex
 import shutil
 import subprocess
 
-from model import Session, Window
+import tmux
 
 
 list_sessions_cmd = shlex.split('''
@@ -19,7 +19,7 @@ list_windows_cmd = shlex.split('''
   tmux
   list-windows
   -F
-  '#{window_id}:#{window_name}'
+  '#{windowid}:#{windowname}'
   -t
 ''', comments=True)
 
@@ -30,7 +30,7 @@ class Snapshot:
     '''
       take a snapshot
     '''
-    snapshot = {}
+    result = {}
     w_width = 0  # max window name width
     s_width = 0  # max session name width
 
@@ -38,31 +38,26 @@ class Snapshot:
     s_lines = p.stdout.decode().splitlines()
 
     for s_line in s_lines:
-      s_id, s_name = s_line.split(':')
-      session = Session(id=s_id, name=s_name, loaded=True, windows=[])
-      snapshot[s_id] = session
+      sid, sname = s_line.split(':')
+      session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
+      result[sid] = session
 
-      s_width = max(s_width, len(s_name))
+      s_width = max(s_width, len(sname))
 
-      cmd = list_windows_cmd + [s_id]
+      cmd = list_windows_cmd + [sid]
       p = subprocess.run(cmd, stdout=subprocess.PIPE)
-      w_lines = p.stdout.decode().splitlines()
+      wlines = p.stdout.decode().splitlines()
 
-      for w_line in w_lines:
-        w_id, w_name = w_line.split(':')
-        window = Window(id=w_id, name=w_name)
+      for wline in wlines:
+        wid, wname = wline.split(':')
+        window = tmux.Window(id=wid, name=wname)
         session.windows.append(window)
 
-        w_width = max(w_width, len(w_name))
+        w_width = max(w_width, len(wname))
 
     # widths
     t_width, t_height = shutil.get_terminal_size()
 
-    self.s_width = s_width
-    self.w_width = w_width
-
-    prefix_width = 4
-    self.gap = 10
-
-    self.width = prefix_width + w_width + s_width + self.gap
-    self.snapshot = snapshot
+    self.window_wname_max_width = w_width
+    self.session_name_max_width = s_width
+    self.session_map = result
