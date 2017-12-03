@@ -5,15 +5,15 @@ set -x
 
 source ~/Git/dot-files/bash/lib/jack
 
-# get tty size
+# tty size
 set +u
-  if [[ -n "$TMUX" ]]; then
-    tty_width="$(tmux list-clients -F '#{client_width}') | head -n1"
-    tty_height="$(tmux list-clients -F '#{client_height}') | head -n1"
-  else
-    tty_width=$(tput lines)
-    tty_height=$(tput cols)
-  fi
+if [[ -n "$TMUX" ]]; then
+  tty_width="$(tmux list-clients -t '.' -F '#{client_width}')"
+  tty_height="$(tmux list-clients -t '.' -F '#{client_height}')"
+else
+  tty_width=$(tput lines)
+  tty_height=$(tput cols)
+fi
 set -u
 
 # kill session if exists
