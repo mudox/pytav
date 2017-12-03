@@ -8,6 +8,7 @@ import shlex
 import subprocess
 from pathlib import Path
 
+import hook
 from core import choose_tree, update
 
 out_dir = Path('~/.local/share/tav').expanduser()
@@ -31,22 +32,13 @@ def serve(args):
     choose_tree(oneshot=False)
 
 
-def hook(args):
+def hook_command(args):
   create_navigator_window_if_neede()
 
   if args.hook_enabled is None:
-    hook_update()
+    hook.run()
   else:
-    enable_hook_update(args.hook_enabled)
-
-
-def hook_update():
-  if not is_hook_update_enabled():
-    print('disabled')
-    return
-  else:
-    update()
-    subprocess.run(['tmux', 'respawn-window', '-k', '-t', 'Tmux:Navigator'])
+    hook.enable(args.hook_enabled)
 
 
 def create_navigator_window_if_neede():
@@ -78,22 +70,6 @@ def create_navigator_window_if_neede():
       -d
       {cmd}
     '''))
-
-
-def is_hook_update_enabled():
-  if not update_path.exists():
-    return True
-
-  with open(str(update_path)) as file:
-    if file.read() == 'no':
-      return False
-    else:
-      return True
-
-
-def enable_hook_update(flag):
-  with open(str(update_path), 'w') as file:
-    file.write(flag and 'yes' or 'no')
 
 
 def parse_args():
@@ -132,7 +108,7 @@ def parse_args():
       action='store_true',
       help='enable background updating'
   )
-  act_hook.set_defaults(func=hook, hook_enabled=None)
+  act_hook.set_defaults(func=hook_command, hook_enabled=None)
 
   # command `oneshot`
   act_oneshot = subparsers.add_parser(
