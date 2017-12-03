@@ -5,28 +5,18 @@ import subprocess
 from pathlib import Path
 
 import core
-
-out_dir = Path('~/.local/share/tav').expanduser()
-out_dir.mkdir(parents=True, exist_ok=True)
-fzf_feed_path = out_dir / 'fzf-feed'
-width_path = out_dir / 'width'
-update_path = out_dir / 'update'
-
+import settings
 
 def enable(flag):
-  with open(str(update_path), 'w') as file:
-    file.write(flag and 'yes' or 'no')
+  settings.paths.update.write_text(flag and 'yes' or 'no')
 
 
 def is_enabled() -> bool:
-  if not update_path.exists():
+  if not settings.paths.update.exists():
     return True
 
-  with open(str(update_path)) as file:
-    if file.read() == 'no':
-      return False
-    else:
-      return True
+  text = settings.paths.update.read_text()
+  return (text == 'yes') and True or False
 
 
 def run():

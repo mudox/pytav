@@ -3,19 +3,12 @@
 
 
 import argparse
-import os
 import shlex
 import subprocess
-from pathlib import Path
 
 import hook
+import settings
 from core import choose_tree, update
-
-out_dir = Path('~/.local/share/tav').expanduser()
-out_dir.mkdir(parents=True, exist_ok=True)
-fzf_feed_path = out_dir / 'fzf-feed'
-width_path = out_dir / 'width'
-update_path = out_dir / 'update'
 
 
 def snapshot(args):

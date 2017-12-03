@@ -4,16 +4,10 @@
 import shlex
 import shutil
 import subprocess
-from pathlib import Path
-
-import tmux
 from formatter import FZFFormatter
 
-out_dir = Path('~/.local/share/tav').expanduser()
-out_dir.mkdir(parents=True, exist_ok=True)
-fzf_feed_path = out_dir / 'fzf-feed'
-width_path = out_dir / 'width'
-update_path = out_dir / 'update'
+import settings
+import tmux
 
 
 def update():
@@ -22,12 +16,8 @@ def update():
   '''
 
   formatter = FZFFormatter(tmux.Snapshot())
-
-  with open(str(fzf_feed_path), 'w') as file:
-    file.write(formatter.fzf_lines())
-
-  with open(str(width_path), 'w') as file:
-    file.write(str(formatter.fzf_ui_width))
+  settings.paths.fzf_feed.write_text(formatter.fzf_lines())
+  settings.paths.width.write_text(str(formatter.fzf_ui_width))
 
 
 def choose_tree(oneshot):
@@ -36,8 +26,7 @@ def choose_tree(oneshot):
   '''
 
   t_width, t_height = shutil.get_terminal_size()
-  with open(width_path) as file:
-    width = int(file.read())
+  width = int(settings.paths.width.read_text())
 
   h_margin = int((t_width - width) / 2) - 3
   t_margin = 3
@@ -75,7 +64,7 @@ def choose_tree(oneshot):
     # prevent ctrl-z suspend fzf
     cmd.append('--bind=ctrl-z:unix-line-discard')
 
-  with open(str(fzf_feed_path)) as file:
+  with settings.paths.fzf_feed.open() as file:
     process = subprocess.run(cmd, stdin=file, stdout=subprocess.PIPE)
     if process.returncode != 0:
       return
