@@ -52,9 +52,7 @@ def create_navigator_window_if_neede():
 
     width, height = map(int, p.stdout.decode().split(':'))
 
-    # get script path
-    script_path = os.path.dirname(os.path.abspath(__file__))
-    cmd = f'{script_path}/tav.py serve'
+    cmd = f'{settings.paths.scripts}/tav.py serve'
 
     p = subprocess.run(shlex.split(f'''
       tmux new-session
@@ -68,25 +66,41 @@ def create_navigator_window_if_neede():
 def parse_args():
   parser = argparse.ArgumentParser(
       prog='tav',
-      description='An tmux `choose-tree` replacement powered by fzf command.'
+      description='An tmux `choose-tree` replacement powered by fzf action.'
   )
   parser.set_defaults(func=oneshot)  # defaults to update and choose once
+
+  parser.add_argument('--version', action='version', version='1.1')
+  parser.add_argument(
+      '-v, --verbose',
+      action='store_true',
+      dest='verbose',
+      help='verbose (debug) mode'
+  )
+
+  #
+  # actions
+  #
+
   subparsers = parser.add_subparsers(
       title='actions',
       description='without any action is equivalent to `oneshot`'
   )
 
-  # command `update`
+  # action `snapshot`
   act_snapshot = subparsers.add_parser(
       'snapshot', aliases=['snp'],
       help='create a new snapshot tmux session window layout.'
   )
   act_snapshot.set_defaults(func=snapshot)
 
-  # command `hook`
+  # action `hook`
   act_hook = subparsers.add_parser(
       'hook', aliases=['h', 'hk', 'ho'],
-      help='update snapshot and update the fzf interface in tmux window `Tmux:Navigator`.'
+      help='''
+      update snapshot and update the fzf interface in tmux window
+      `Tmux:Navigator`.
+      '''
   )
   group = act_hook.add_mutually_exclusive_group()
   group.add_argument(
@@ -103,22 +117,27 @@ def parse_args():
   )
   act_hook.set_defaults(func=hook_command, hook_enabled=None)
 
-  # command `oneshot`
+  # action `oneshot`
   act_oneshot = subparsers.add_parser(
       'oneshot', aliases=['o', 'os'],
-      help='make a new snapshot and show the fzf interface, close after choose and switch. this is the DEFAULT action'
+      help='''
+      make a new snapshot and show the fzf interface, close after choose and
+      switch. this is the DEFAULT action
+      '''
   )
   act_oneshot.set_defaults(func=oneshot)
 
-  # command `serve`
+  # action `serve`
   act_serve = subparsers.add_parser(
       'serve', aliases=['srv'],
       help='show the fzf inteface, remain after choose and switch.'
   )
   act_serve.set_defaults(func=serve)
 
-  # options = parser.parse_args()
+  # dispatch tasks
   args = parser.parse_args()
+
+  settings.verbose = args.verbose
   args.func(args)
 
 

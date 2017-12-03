@@ -18,6 +18,8 @@ class paths:
 
 paths.data.mkdir(parents=True, exist_ok=True)
 
+reenable_hook_interval = 4
+
 
 class colors:
   # TODO: migrate colors here
