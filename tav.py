@@ -2,30 +2,28 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import shlex
-import subprocess
 
+import core
 import settings
-from core import choose_tree, update
 import tests
 import tmux
 
 
 def snapshot(args):
   settings.action = 'snapshot'
-  update()
+  core.update()
 
 
 def oneshot(args):
   settings.action = 'oneshot'
-  update()
-  choose_tree(oneshot=True)
+  core.update()
+  core.choose_tree(oneshot=True)
 
 
 def serve(args):
   settings.action = 'serve'
   while True:
-    choose_tree(oneshot=False)
+    core.choose_tree(oneshot=False)
 
 
 def hook(args):
@@ -35,35 +33,6 @@ def hook(args):
   if args.hook_enabled is None:
     tmux.hook.run()
   else:
-
-
-def create_navigator_window_if_neede():
-
-  process = subprocess.run(
-      ['tmux', 'list-panes', '-t', settings.nav_window_target],
-      stdout=subprocess.DEVNULL
-  )
-
-  if process.returncode != 0:
-    # get client tty size
-    p = subprocess.run(shlex.split('''
-      tmux list-clients -F '#{client_width}:#{client_height}'
-    ''', stdout=subprocess.PIPE))
-
-    if p.returncode != 0:
-      raise RuntimeError('`tmux list-clients` failed')
-
-    width, height = map(int, p.stdout.decode().split(':'))
-
-    cmd = f'{settings.paths.scripts}/tav.py serve'
-
-    p = subprocess.run(shlex.split(f'''
-      tmux new-session
-      -s Tmux -n Navigator
-      -x {width} -y {height}
-      -d
-      {cmd}
-    '''))
     tmux.hook.enable(args.hook_enabled)
 
 

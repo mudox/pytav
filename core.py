@@ -10,6 +10,11 @@ import settings
 import tmux
 
 
+def create_tmux_interface(force):
+  cmd = settings.paths.scripts / 'tav.tmux-session.sh'
+  subprocess.run([str(cmd), force and 'kill' or 'nokill'])
+
+
 def update():
   '''
   take a new snapshot and write to data files.
