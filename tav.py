@@ -12,15 +12,18 @@ from core import choose_tree, update
 
 
 def snapshot(args):
+  settings.action = 'snapshot'
   update()
 
 
 def oneshot(args):
+  settings.action = 'oneshot'
   update()
   choose_tree(oneshot=True)
 
 
 def serve(args):
+  settings.action = 'serve'
   while True:
     choose_tree(oneshot=False)
 
