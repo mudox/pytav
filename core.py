@@ -69,9 +69,28 @@ def choose_tree(oneshot):
     if process.returncode != 0:
       return
 
-    result = process.stdout.decode().split()
-    if len(result) == 0:  # may select an empty line
+    id = process.stdout.decode().split('\t')[0].strip()
+    if len(id) == 0:  # may select an empty line
       return
 
-    target_id = result[0]
-    subprocess.run(['tmux', 'switch-client', '-t', target_id])
+    if id.startswith('$') or id.startswith('@'):
+      subprocess.run(['tmux', 'switch-client', '-t', id])
+    elif len(id.strip()) > 0:
+      try:
+        # interface transition
+        subprocess.run('clear')
+        x = int(t_width / 2 - 10)
+        y = int(t_height / 2)
+        subprocess.run(f'tput cup {y} {x}'.split())
+        subprocess.run(f'tput civis'.split())
+        print(f'\033[33mCreating session [{id}] ...\033[0m', end=None)
+
+        path = settings.paths.sessions / id
+        subprocess.run(
+            str(path),
+            stdout=subprocess.DEVNULL,
+            stderr=open(settings.log_tty(), 'w')
+        )
+
+      finally:
+        subprocess.run(['tput', 'cnorm'])
