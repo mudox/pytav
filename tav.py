@@ -40,7 +40,7 @@ def hook_command(args):
 def create_navigator_window_if_neede():
 
   process = subprocess.run(
-      ['tmux', 'list-panes', '-t', 'Tmux:Navigator'],
+      ['tmux', 'list-panes', '-t', settings.nav_window_target],
       stdout=subprocess.DEVNULL
   )
 
@@ -102,7 +102,6 @@ def parse_args():
       'hook', aliases=['h', 'hk', 'ho'],
       help='''
       update snapshot and update the fzf interface in tmux window
-      `Tmux:Navigator`.
       '''
   )
   group = act_hook.add_mutually_exclusive_group()

@@ -44,4 +44,5 @@ def run():
     return
   else:
     core.update()
-    subprocess.run(['tmux', 'respawn-window', '-k', '-t', 'Tmux:Navigator'])
+    subprocess.run(['tmux', 'respawn-window', '-k', '-t', settings.nav_window_target])
+
