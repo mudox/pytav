@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import settings
+
 # TODO!: make symbols and colors configurable
 
 symbols = {
@@ -45,22 +47,28 @@ class FZFFormatter:
 
     # live sessions
     for session in self.snapshot.live_sessions:
-      lines.append('\n' + self.live_session_line(session))
-
-      if not session.loaded:
+      if settings.action == 'test' \
+              and session.name == settings.nav_session_name \
+              and len(session.windows) == 1:
+        print('filter out')
         continue
 
+      lines.append('\n' + self.live_session_line(session))
+
       for window in session.windows:
+        if session.name == settings.nav_session_name \
+                and window.name == settings.nav_window_name:
+          continue
+
         lines.append(self.window_line(session.name, window.id, window.name))
 
     # put all dead sessions into one group
     color = colors['dead_session_line_title']
-    line = f'\nnop\t{dead_symbol} {color}Unloaded Sessions{cr}'
+    line = f'\n{" ":{self.snapshot.s_width}}\t{dead_symbol} {color}Unloaded Sessions{cr}'
     lines.append(line)
 
-    dead_snames = [s.name for s in self.snapshot.dead_sessions]
-    for sname in dead_snames:
-        lines.append(self.dead_session_line(sname))
+    for session in self.snapshot.dead_sessions:
+      lines.append(self.dead_session_line(session))
 
     return '\n'.join(lines)
 
@@ -72,11 +80,11 @@ class FZFFormatter:
     color2 = colors['window_line_session_name']
     part2 = f'{color2}{session_name}{cr}'
 
-    return f'{window_id}\t{ch}⋅{cr} {part1:{part1_width}}{" ":{fzf_ui_gap}}{part2}'
+    return f'{window_id:{self.snapshot.s_width}}\t{ch}⋅{cr} {part1:{part1_width}}{" ":{fzf_ui_gap}}{part2}'
 
-  def dead_session_line(self, session_name):
+  def dead_session_line(self, session):
     color1 = colors['dead_session_name']
-    part1 = f'{color1}{session_name}{cr}'
+    part1 = f'{color1}{session.name}{cr}'
 
     # INFO!!: color1 use 256 color ansi code, hence 11 long
     part1_width = 11 + self.snapshot.w_width + 4  # 5 + 4 for ansi color sequence
@@ -84,10 +92,10 @@ class FZFFormatter:
     color2 = colors['window_line_session_name']
     part2 = f'{color2}Load ?{cr}'
 
-    return f'dead\t{ch}⋅{cr} {part1:{part1_width}}{" ":{fzf_ui_gap}}{part2}'
+    return f'{session.name:{self.snapshot.s_width}}\t{ch}⋅{cr} {part1:{part1_width}}{" ":{fzf_ui_gap}}{part2}'
 
   def live_session_line(self, session):
     symbol = symbols.get(session.name, default_live_symbol)
     color = colors['session_line_live_session_name']
 
-    return f'{session.id}\t{symbol} {color}{session.name}{cr}'
+    return f'{session.id:{self.snapshot.s_width}}\t{symbol} {color}{session.name}{cr}'
