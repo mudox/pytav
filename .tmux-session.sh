@@ -15,7 +15,7 @@ fi
 set -u
 
 # kill session if exists
-session_name='Tav'
+session_name='Tav-Project'
 if tmux has-session -t ${session_name} &>/dev/null; then
   jackWarn "session [${session_name}] already exisits, kill it!"
   tmux kill-session -t "${session_name}"
