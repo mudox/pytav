@@ -28,9 +28,9 @@ def serve(args):
 
 def hook(args):
   settings.action = 'hook'
-  core.create_tmux_interface(force=False)
 
   if args.hook_enabled is None:
+    core.prepare_tmux_interface(force=False)
     tmux.hook.run()
   else:
     tmux.hook.enable(args.hook_enabled)
