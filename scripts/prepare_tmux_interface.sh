@@ -34,8 +34,8 @@ set -u
 
 
 # disable hook updating temporarily
-echo no > "${HOME}/.local/share/tav/update"
-trap 'echo yes > "${HOME}/.local/share/tav/update"' EXIT
+date '+%s' > "${HOME}/.local/share/tav/update"
+trap 'echo "-1" > "${HOME}/.local/share/tav/update"' EXIT
 
 
 #
