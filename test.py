@@ -11,7 +11,7 @@ def test(args):
   settings.action = 'test'
   test_settings()
   # test_snapshot()
-  # test_formatter()
+  test_formatter()
 
 def _title(text):
   print(f'\n\033[35m{text}\033[0m\n')

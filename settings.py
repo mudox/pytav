@@ -18,8 +18,11 @@ class paths:
   sessions = data / 'sessions'
 
 
-nav_window_target = 'Tmux:Navigator'
-log_window_target = 'Tmux:Log'
+nav_session_name = 'Tmux'
+nav_window_name = 'Navigator'
+
+nav_window_target = f'{nav_session_name}:{nav_window_name}'
+log_window_target = f'{nav_session_name}:Log'
 
 
 def log_tty():

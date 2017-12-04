@@ -29,6 +29,7 @@ def serve(args):
 
 
 def hook_command(args):
+  settings.action = 'hook'
   create_navigator_window_if_neede()
 
   if args.hook_enabled is None:
