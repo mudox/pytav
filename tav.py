@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 import argparse
 import shlex
 import subprocess
+from test import test
 
 import hook
 import settings
-import tmux
 from core import choose_tree, update
 
 
@@ -33,11 +32,6 @@ def hook_command(args):
     hook.run()
   else:
     hook.enable(args.hook_enabled)
-
-
-def test(args):
-  for s in tmux.Snapshot().all_sessions:
-    print(f'{s.name:30} {s.loaded and "live" or "dead"}')
 
 
 def create_navigator_window_if_neede():
