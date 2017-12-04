@@ -4,10 +4,10 @@
 import shlex
 import shutil
 import subprocess
-from formatter import FZFFormatter
 
 import settings
 import tmux
+from fzf_feeder import FZFFormatter
 
 
 def create_tmux_interface(force):

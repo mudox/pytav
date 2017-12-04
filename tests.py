@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from formatter import FZFFormatter
+from fzf_feeder import FZFFormatter
 import settings
 
 import tmux
