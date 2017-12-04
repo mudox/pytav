@@ -4,14 +4,19 @@
 import shlex
 import shutil
 import subprocess
+from time import sleep
 
 import settings
 import tmux
 from fzf_feeder import FZFFormatter
 
 
-def create_tmux_interface(force):
-  cmd = settings.paths.scripts / 'tav.tmux-session.sh'
+def prepare_tmux_interface(force):
+  '''
+  check states of tav tmux session and windows
+  create if not available
+  '''
+  cmd = settings.paths.scripts / 'prepare-tmux-interface.sh'
   subprocess.run([str(cmd), force and 'kill' or 'nokill'])
 
 
@@ -25,7 +30,7 @@ def update():
   settings.paths.width.write_text(str(formatter.fzf_ui_width))
 
 
-def choose_tree(oneshot):
+def start_ui(oneshot):
   '''
   compose fzf command line, show it centered in current terimnal secreen.
   '''
@@ -40,7 +45,7 @@ def choose_tree(oneshot):
     fzf
     --exact
 
-    # hide prefixing id's
+    # hide prefixing tag's
     --with-nth=2..
 
     # retain the relationship between matched sessions and windows
@@ -64,38 +69,80 @@ def choose_tree(oneshot):
 
     # prevent keys to abort fzf
     for key in ('esc', 'ctrl-c', 'ctrl-g', 'ctrl-q'):
-      cmd.append(f'--bind={key}:execute(tmux switch-client -l)')
+      cmd.append(f'--bind={key}:unix-line-discard+execute(tmux switch-client -l)')
 
     # prevent ctrl-z suspend fzf
     cmd.append('--bind=ctrl-z:unix-line-discard')
 
   with settings.paths.fzf_feed.open() as file:
-    process = subprocess.run(cmd, stdin=file, stdout=subprocess.PIPE)
+
+    #
+    # show fzf interface, get user selection
+    #
+
+    process = subprocess.run(
+        cmd,
+        stdin=file,
+        stdout=subprocess.PIPE
+    )
+
     if process.returncode != 0:
+      # TODO!: alert error, wait for a key to continue
       return
 
-    id = process.stdout.decode().split('\t')[0].strip()
-    if len(id) == 0:  # may select an empty line
+    tag = process.stdout.decode().split('\t')[0].strip()
+
+    #
+    # handle the tag
+    #
+
+    # empty separate line
+    if len(tag) == 0:
       return
 
-    if id.startswith('$') or id.startswith('@'):
-      subprocess.run(['tmux', 'switch-client', '-t', id])
-    elif len(id.strip()) > 0:
+    # live session or window line
+    elif tag.startswith('$') or tag.startswith('@'):
+      subprocess.run(['tmux', 'switch-client', '-t', tag])
+
+    # other auxiliary lines, e.g. dead sessions group line
+    elif tag == '<nop>':
+      return
+
+    # dead session line
+    else:
       try:
-        # interface transition
-        subprocess.run('clear')
+
+        #
+        # show creating message
+        #
+
+        subprocess.run('clear')                        # clear screen
+        subprocess.run(f'tput civis'.split())          # hide cursor
         x = int(t_width / 2 - 10)
         y = int(t_height / 2)
-        subprocess.run(f'tput cup {y} {x}'.split())
-        subprocess.run(f'tput civis'.split())
-        print(f'\033[33mCreating session [{id}] ...\033[0m', end=None)
+        subprocess.run(f'tput cup {y} {x}'.split())    # center message
 
-        path = settings.paths.sessions / id
+        print(f'\033[33mCreating session [{tag}] ...\033[0m', end=None)
+
+        #
+        # create session
+        #
+
+        tmux.hook.enable(False)                        # disable hook updating
+
+        path = settings.paths.sessions / tag            # create session
         subprocess.run(
             str(path),
             stdout=subprocess.DEVNULL,
             stderr=open(settings.log_tty(), 'w')
         )
 
+        update()                                       # update snapshot
+
+        sleep(1)                                       # warming
+
+        subprocess.call(['tmux', 'switch-client', '-t', tag])
+
       finally:
+        tmux.hook.enable(True)
         subprocess.run(['tput', 'cnorm'])

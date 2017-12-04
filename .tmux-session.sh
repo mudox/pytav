@@ -17,7 +17,7 @@ set -u
 # kill session if exists
 session_name='Tav-Project'
 if tmux has-session -t ${session_name} &>/dev/null; then
-  jackWarn "session [${session_name}] already exisits, kill it!"
+  jackWarn "session [${session_name}] already exists, kill it!"
   tmux kill-session -t "${session_name}"
 fi
 
@@ -37,7 +37,6 @@ tmux new-session       \
   -c "${root}"         \
   -d
 
-# log layout
 tmux select-window -t "${session_name}:1.1"
 echo "[${session_name}]"
 tmux list-window -t "${session_name}" -F ' - #W'

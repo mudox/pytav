@@ -8,6 +8,10 @@ import settings
 import tests
 import tmux
 
+#
+# actions (sub-commands)
+#
+
 
 def snapshot(args):
   settings.action = 'snapshot'
@@ -17,13 +21,13 @@ def snapshot(args):
 def oneshot(args):
   settings.action = 'oneshot'
   core.update()
-  core.choose_tree(oneshot=True)
+  core.start_ui(oneshot=True)
 
 
 def serve(args):
   settings.action = 'serve'
   while True:
-    core.choose_tree(oneshot=False)
+    core.start_ui(oneshot=False)
 
 
 def hook(args):
@@ -34,6 +38,10 @@ def hook(args):
     tmux.hook.run()
   else:
     tmux.hook.enable(args.hook_enabled)
+
+#
+# CLI interface
+#
 
 
 def parse_args():
