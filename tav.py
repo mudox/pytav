@@ -4,10 +4,10 @@
 import argparse
 import shlex
 import subprocess
-from test import test
 
 import settings
 from core import choose_tree, update
+import tests
 import tmux
 
 
@@ -134,7 +134,7 @@ def parse_args():
   act_oneshot = subparsers.add_parser(
       'test', aliases=['t', 'te'],
   )
-  act_oneshot.set_defaults(func=test)
+  act_oneshot.set_defaults(func=tests.test)
 
   # action `serve`
   act_serve = subparsers.add_parser(
