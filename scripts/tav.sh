@@ -3,8 +3,8 @@ set -euo pipefail
 
 script_dir=$(dirname $(test -L "$0" && readlink -e "$0" || echo "$0"))
 
-session_name='Tmux'
-window_name='Navigator'
+session_name='Tav'
+window_name='Finder'
 window_target="${session_name}:${window_name}"
 
 cmd="${script_dir}/tav.py serve"
