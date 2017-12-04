@@ -83,8 +83,8 @@ class Snapshot:
 
     dead_snames = [n for n in snames if n not in live_snames]
 
-    self.dead_session = [
+    self.dead_sessions = [
         tmux.Session(
             name=n,
             loaded=False) for n in dead_snames]
-    self.all_sessions += self.dead_session
+    self.all_sessions += self.dead_sessions
