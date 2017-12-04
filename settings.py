@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 class paths:
-  install = Path(__file__)
+  install = Path(__file__).parent
   scripts = install / 'scripts'
 
   data = Path('~/.local/share/tav').expanduser()
