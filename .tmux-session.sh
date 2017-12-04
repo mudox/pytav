@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-set -x
-
 source ~/Git/dot-files/bash/lib/jack
 
 # tty size
