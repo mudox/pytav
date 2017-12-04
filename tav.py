@@ -6,9 +6,9 @@ import shlex
 import subprocess
 from test import test
 
-import hook
 import settings
 from core import choose_tree, update
+import tmux
 
 
 def snapshot(args):
@@ -28,14 +28,13 @@ def serve(args):
     choose_tree(oneshot=False)
 
 
-def hook_command(args):
+def hook(args):
   settings.action = 'hook'
-  create_navigator_window_if_neede()
+  core.create_tmux_interface(force=False)
 
   if args.hook_enabled is None:
-    hook.run()
+    tmux.hook.run()
   else:
-    hook.enable(args.hook_enabled)
 
 
 def create_navigator_window_if_neede():
@@ -65,6 +64,7 @@ def create_navigator_window_if_neede():
       -d
       {cmd}
     '''))
+    tmux.hook.enable(args.hook_enabled)
 
 
 def parse_args():
@@ -118,7 +118,7 @@ def parse_args():
       action='store_true',
       help='enable background updating'
   )
-  act_hook.set_defaults(func=hook_command, hook_enabled=None)
+  act_hook.set_defaults(func=hook, hook_enabled=None)
 
   # action `oneshot`
   act_oneshot = subparsers.add_parser(
