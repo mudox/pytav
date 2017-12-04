@@ -18,11 +18,11 @@ class paths:
   sessions = data / 'sessions'
 
 
-nav_session_name = 'Tav'
-nav_window_name = 'Finder'
+tav_session_name = 'Tav'
+finder_window_name = 'Finder'
 
-nav_window_target = f'{nav_session_name}:{nav_window_name}'
-log_window_target = f'{nav_session_name}:Log'
+finder_window_target = f'{tav_session_name}:{finder_window_name}'
+log_window_target = f'{tav_session_name}:Log'
 
 
 def log_tty():

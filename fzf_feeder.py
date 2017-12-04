@@ -48,7 +48,7 @@ class FZFFormatter:
     # live sessions
     for session in self.snapshot.live_sessions:
       if settings.action == 'test' \
-              and session.name == settings.nav_session_name \
+              and session.name == settings.tav_session_name \
               and len(session.windows) == 1:
         print('filter out')
         continue
@@ -56,8 +56,8 @@ class FZFFormatter:
       lines.append('\n' + self.live_session_line(session))
 
       for window in session.windows:
-        if session.name == settings.nav_session_name \
-                and window.name == settings.nav_window_name:
+        if session.name == settings.tav_session_name \
+                and window.name == settings.finder_window_name:
           continue
 
         lines.append(self.window_line(session.name, window.id, window.name))
