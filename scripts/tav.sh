@@ -2,15 +2,5 @@
 set -euo pipefail
 
 script_dir=$(dirname $(test -L "$0" && readlink -e "$0" || echo "$0"))
-
-session_name='Tav'
-window_name='Finder'
-window_target="${session_name}:${window_name}"
-
-cmd="${script_dir}/tav.py serve"
-
-if ! tmux has-session -t "${session_name}" &>/dev/null; then
-  tmux new-session -s "${session_name}" -n "${window_name}" -d "${cmd}"
-fi
-
-tmux switch-client -t "${window_target}"
+"${script_dir}/prepare_tmux_interface.sh" nokill &>/dev/null
+tmux switch-client -t "Tav:Finder"

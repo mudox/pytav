@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source ~/Git/dot-files/bash/lib/jack
+is_tmux_interface_prepared() {
+  cmd=$(tmux list-panes -t 'Tav:Finder.1' -F '#{pane_current_command}' || return 1 )
+  [[ $cmd == 'Python' ]] || return 1
+  tmux list-panes -t 'Tav:Log.1' &>/dev/null || return 2
+}
 
 # kill session if exists
 session_name='Tav'
-if tmux has-session -t ${session_name} &>/dev/null; then
-  if [[ ${1:-kill} == 'nokill' ]]; then
-    jackInfo "session [${session_name}] already exisits, abort!"
+if is_tmux_interface_prepared; then
+  echo -n "Tav tmux interface seems healthy. "
+
+  if [[ ${1:-nokill} == 'nokill' ]]; then
+    echo "Abort!"
     exit 0
   fi
 
-  jackWarn "session [${session_name}] already exisits, kill it!"
+  echo "Kill and recreate!"
   tmux kill-session -t "${session_name}"
 fi
 
@@ -25,6 +31,11 @@ else
   tty_height=$(tput cols)
 fi
 set -u
+
+
+# disable hook updating temporarily
+echo no > "${HOME}/.local/share/tav/update"
+trap 'echo yes > "${HOME}/.local/share/tav/update"' EXIT
 
 
 #
