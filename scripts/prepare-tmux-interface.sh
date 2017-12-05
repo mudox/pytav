@@ -19,6 +19,8 @@ if is_tmux_interface_prepared; then
 
   echo "Kill and recreate!"
   tmux kill-session -t "${session_name}"
+else
+  echo 'Tav tmux interface is not found'
 fi
 
 # tty size
@@ -27,8 +29,8 @@ if [[ -n "$TMUX" ]]; then
   tty_width="$(tmux list-clients -t '.' -F '#{client_width}')"
   tty_height="$(tmux list-clients -t '.' -F '#{client_height}')"
 else
-  tty_width=$(tput lines)
-  tty_height=$(tput cols)
+  tty_height=$(tput lines)
+  tty_width=$(tput cols)
 fi
 set -u
 
@@ -51,6 +53,9 @@ tmux new-session       \
   -y "${tty_height}"   \
   -d                   \
   tav serve
+
+# set background transparent to speed up rendering
+tmux select-pane -t "${window}.1" -P 'bg=black'
 
 #
 # window: Log
