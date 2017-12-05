@@ -1,78 +1,72 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
+kill=${1:-kill}
 
 is_tmux_interface_prepared() {
-  cmd=$(tmux list-panes -t 'Tav:Finder.1' -F '#{pane_current_command}' || return 1 )
-  [[ $cmd == 'Python' ]] || return 1
-  tmux list-panes -t 'Tav:Log.1' &>/dev/null || return 2
+  tmux list-panes -t 'Tav:Finder' &>/dev/null && \
+    tmux list-panes -t 'Tav:Log' &>/dev/null
 }
 
-# kill session if exists
-session_name='Tav'
-if is_tmux_interface_prepared; then
-  echo -n "Tav tmux interface seems healthy. "
+create_session() {
+  session_name='Tav'
 
-  if [[ ${1:-nokill} == 'nokill' ]]; then
-    echo "Abort!"
-    exit 0
+  # tty size
+  if [[ -n "$TMUX" ]]; then
+    tty_width="$(tmux list-clients -t '.' -F '#{client_width}')"
+    tty_height="$(tmux list-clients -t '.' -F '#{client_height}')"
+  else
+    tty_height=$(tput lines)
+    tty_width=$(tput cols)
   fi
 
-  echo "Kill and recreate!"
-  tmux kill-session -t "${session_name}"
+  # disable hook updating temporarily
+  date '+%s' > "${HOME}/.local/share/tav/update"
+  trap 'echo "-1" > "${HOME}/.local/share/tav/update"' EXIT
+
+  #
+  # window: Finder
+  #
+
+  window_name='Finder'
+  window="${session_name}:${window_name}"
+  tmux new-session       \
+    -s "${session_name}" \
+    -n "${window_name}"  \
+    -x "${tty_width}"    \
+    -y "${tty_height}"   \
+    -d                   \
+    tav serve
+
+  # set background transparent to speed up rendering
+  tmux select-pane -t "${window}.1" -P 'bg=black'
+
+  #
+  # window: Log
+  #
+
+  window_name='Log'
+  window="${session_name}:${window_name}"
+  tmux new-window              \
+    -a                         \
+    -t "${session_name}:{end}" \
+    -n "${window_name}"        \
+    -d                         \
+    sh
+
+  tmux send-keys -t "${window}" '
+  tput civis
+  PS1=
+  clear
+  '
+  tmux select-pane -t "${window}" -d
+}
+
+if [[ ${kill} == 'kill' ]]; then
+  tmux kill-session -t "${session_name}" &>/dev/null
+  create_session
 else
-  echo 'Tav tmux interface is not found'
+  if ! is_tmux_interface_prepared; then
+    create_session
+  fi
 fi
 
-# tty size
-set +u
-if [[ -n "$TMUX" ]]; then
-  tty_width="$(tmux list-clients -t '.' -F '#{client_width}')"
-  tty_height="$(tmux list-clients -t '.' -F '#{client_height}')"
-else
-  tty_height=$(tput lines)
-  tty_width=$(tput cols)
-fi
-set -u
-
-
-# disable hook updating temporarily
-date '+%s' > "${HOME}/.local/share/tav/update"
-trap 'echo "-1" > "${HOME}/.local/share/tav/update"' EXIT
-
-
-#
-# window: Finder
-#
-
-window_name='Finder'
-window="${session_name}:${window_name}"
-tmux new-session       \
-  -s "${session_name}" \
-  -n "${window_name}"  \
-  -x "${tty_width}"    \
-  -y "${tty_height}"   \
-  -d                   \
-  tav serve
-
-# set background transparent to speed up rendering
-tmux select-pane -t "${window}.1" -P 'bg=black'
-
-#
-# window: Log
-#
-
-window_name='Log'
-window="${session_name}:${window_name}"
-tmux new-window              \
-  -a                         \
-  -t "${session_name}:{end}" \
-  -n "${window_name}"        \
-  -d                         \
-  sh
-
-tmux send-keys -t "${window}" '
-tput civis
-PS1=
-clear
-'
-tmux select-pane -t "${window}" -d

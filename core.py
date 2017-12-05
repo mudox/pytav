@@ -17,7 +17,7 @@ def prepare_tmux_interface(force):
   create if not available
   '''
   cmd = settings.paths.scripts / 'prepare-tmux-interface.sh'
-  subprocess.run([str(cmd), force and 'kill' or 'nokill'])
+  subprocess.call([str(cmd), force and 'kill' or 'nokill'])
 
 
 def update():
