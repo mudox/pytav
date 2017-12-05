@@ -15,3 +15,16 @@ def list_all_windows():
   p = sp.run(cmd, stdout=sp.PIPE)
   lines = p.stdout.decode().splitlines()
   return [line.split(':') for line in lines]
+
+
+def log_tty():
+  format = '#{pane_tty}'
+
+  cmd = split(f'''
+    tmux list-pane -t 'Tav:Log' -F {format}
+  ''')
+
+  return sp.run(cmd, stdout=sp.PIPE).stdout.decode()
+
+
+print(log_tty())
