@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import shlex
-import subprocess
+from functools import reduce
+from itertools import groupby
 
 import settings
 import tmux
@@ -24,12 +25,16 @@ list_windows_cmd = shlex.split('''
 ''', comments=True)
 
 
-
 class Snapshot:
 
   def __init__(self):
     '''
-      take a snapshot
+      take a snapshot, provides following atrributes
+      - all_sessions
+      - live_sessions
+      - dead_sessions
+      - s_width
+      - w_width
     '''
     self.all_sessions = []  # list of tmux.Session objects
 
@@ -37,37 +42,22 @@ class Snapshot:
     # scan live sessions
     #
 
-    live_sessions = []
-    w_width = 0  # max window name width
-    s_width = 0  # max session name width
+    self.live_sessions = []
 
-    p = subprocess.run(list_sessions_cmd, stdout=subprocess.PIPE)
-    slines = p.stdout.decode().splitlines()
+    tuples = tmux.list_all_windows()
+    groups = groupby(tuples, lambda x: (x[0], x[1]))
 
-    for sline in slines:
-      sid, sname = sline.split(':')
+    for (sid, sname), value in groups:
       session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
+      for _, _, wid, wname in value:
+        session.windows.append(tmux.Window(id=wid, name=wname))
 
-      live_sessions.append(session)
-      s_width = max(s_width, len(sname))
+      self.live_sessions.append(session)
 
-      cmd = list_windows_cmd + [sid]
-      p = subprocess.run(cmd, stdout=subprocess.PIPE)
-      wlines = p.stdout.decode().splitlines()
+    self.s_width = reduce(max, [len(t[3]) for t in tuples])
+    self.w_width = reduce(max, [len(t[1]) for t in tuples])
 
-      for wline in wlines:
-        wid, wname = wline.split(':')
-        window = tmux.Window(id=wid, name=wname)
-
-        session.windows.append(window)
-        w_width = max(w_width, len(wname))
-
-    # widths
-    self.w_width = w_width
-    self.s_width = s_width
-
-    self.live_sessions = live_sessions
-    self.all_sessions += live_sessions
+    self.all_sessions += self.live_sessions
 
     #
     # scan dead sessions
@@ -81,9 +71,18 @@ class Snapshot:
 
     dead_snames = [n for n in snames if n not in live_snames]
 
-    self.dead_sessions = []
-    for idx, name in enumerate(dead_snames):
-      session = tmux.Session(id=f'dead{idx}', name=name, loaded=False)
+    # update self.s_width
+    width = reduce(max, [len(n) for n in dead_snames])
+    self.s_width = max(self.s_width, width)
 
+    self.dead_sessions = []
+    for name in dead_snames:
+      session = tmux.Session(
+          id='<dead>',
+          name=name,
+          loaded=False,
+          windows=None
+      )
       self.dead_sessions.append(session)
-      self.all_sessions.append(session)
+
+    self.all_sessions += self.dead_sessions

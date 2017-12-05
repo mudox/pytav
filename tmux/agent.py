@@ -6,6 +6,10 @@ from shlex import split
 
 
 def list_all_windows():
+  '''
+  return tuple of (sid, sname, wid, wname)
+  '''
+
   format = '#{session_id}:#{session_name}:#{window_id}:#{window_name}'
 
   cmd = split(f'''

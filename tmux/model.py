@@ -12,5 +12,5 @@ class Window(NamedTuple):
 class Session(NamedTuple):
   name: str
   loaded: bool
-  id: str = None
-  windows: list = None
+  id: str
+  windows: list
