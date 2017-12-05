@@ -21,7 +21,6 @@ if tmux has-session -t ${session_name} &>/dev/null; then
   tmux kill-session -t "${session_name}"
 fi
 
-
 #
 # window: Editor
 #
@@ -36,6 +35,15 @@ tmux new-session       \
   -y "${tty_height}"   \
   -c "${root}"         \
   -d
+tmux send-keys -t "${window}.1" '
+v py **/*.{py,sh} .*
+'
+tmux split-window  \
+  -t "${window}.1" \
+  -h               \
+  -c "${root}"
+tmux select-pane -t "${window}.1"
+
 
 tmux select-window -t "${session_name}:1.1"
 echo "[${session_name}]"
