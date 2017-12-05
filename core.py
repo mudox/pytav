@@ -27,7 +27,7 @@ def update():
 
   formatter = FZFFormatter(tmux.Snapshot())
   settings.paths.fzf_feed.write_text(formatter.fzf_lines())
-  settings.paths.width.write_text(str(formatter.fzf_ui_width))
+  settings.paths.width.write_text(str(formatter.fzf_width))
 
 
 def start_ui(oneshot):
@@ -118,7 +118,7 @@ def start_ui(oneshot):
 
         subprocess.run('clear')                        # clear screen
         subprocess.run(f'tput civis'.split())          # hide cursor
-        x = int(t_width / 2 - 10)
+        x = int(t_width / 2 - 12)
         y = int(t_height / 2)
         subprocess.run(f'tput cup {y} {x}'.split())    # center message
 

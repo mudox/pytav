@@ -17,8 +17,8 @@ default_live_symbol = ''
 dead_symbol = ''
 
 colors = {
-    'session_line_live_session_name': '\033[32m',
-    'window_line_window_name': '\033[34m',
+    'session_line_live_session_name': '\033[38;5;28m',
+    'window_line_window_name': '\033[38;5;81m',
     'window_line_session_name': '\033[38;5;242m',
     'unloaded_bar': '\033[38;5;88m',
     'dead_session_name': '\033[38;5;242m',
@@ -27,8 +27,12 @@ colors = {
 cr = '\033[0m'   # reset style
 ch = '\033[30m'  # hide foreground into background
 
-fzf_ui_left_margin = 4
-fzf_ui_gap = 10
+fzf_left_margin = 2
+fzf_session_symbol_padding = 2
+fzf_window_symbol_padding = 2
+
+fzf_min_gap = 6
+fzf_min_width = 50
 
 
 class FZFFormatter:
@@ -36,14 +40,22 @@ class FZFFormatter:
   def __init__(self, snapshot):
     self.snapshot = snapshot
 
-    self.fzf_field_1_width = self.snapshot.w_width
-    self.fzf_field_2_width = max(self.snapshot.s_width, 20)
+    self.fzf_field_1_width = max(
+        self.snapshot.w_width,
+        self.snapshot.s_width
+    )
+    self.fzf_field_2_width = self.snapshot.s_width
 
-    self.fzf_ui_width =          \
-        fzf_ui_left_margin +     \
-        self.fzf_field_1_width + \
-        fzf_ui_gap +             \
-        self.fzf_field_2_width
+    without_gap =                    \
+        fzf_left_margin              \
+        + fzf_session_symbol_padding \
+        + fzf_window_symbol_padding  \
+        + self.fzf_field_1_width     \
+        + self.fzf_field_2_width
+    with_min_gap = without_gap + fzf_min_gap
+
+    self.fzf_width = max(fzf_min_width, with_min_gap)
+    self.fzf_gap = self.fzf_width - without_gap
 
   def fzf_lines(self):
     lines = []
@@ -72,8 +84,8 @@ class FZFFormatter:
 
     # unloaded bar
     color = colors['unloaded_bar']
-    body = f' UN  {dead_symbol}  LOADED '.center(self.fzf_ui_width, '─')[:-1]
-    line = f'\n{"<nop>":{self.snapshot.s_width}}\t{color}{body}{cr}\n'
+    body = f' UN  {dead_symbol}  LOADED '.center(self.fzf_width - 3, '─')
+    line = f'\n{"<nop>":{self.snapshot.s_width}}\t{ch}⋅⋅{cr}{color}{body}{cr}\n'
     lines.append(line)
 
     for session in self.snapshot.dead_sessions:
@@ -84,17 +96,19 @@ class FZFFormatter:
   def window_line(self, session, window):
     color1 = colors['window_line_window_name']
     part1 = f'{color1}{window.name}{cr}'
-    width1 = 5 + self.snapshot.w_width + 4  # 5 + 4 for ansi color sequence
+    width1 = 11 + self.fzf_field_1_width + 4  # 5 + 4 for ansi color sequence
 
     color2 = colors['window_line_session_name']
     part2 = f'{color2}{session.name}{cr}'
     width2 = 11 + self.fzf_field_2_width + 4  # 11 + 4 for 256-color ansi sequence
 
-    return f'{window.id:{self.snapshot.s_width}}' + \
-            f'\t{ch}⋅⋅{cr}' +                        \
-            f'{part1:{width1}}' +                   \
-            f'{" ":{fzf_ui_gap}}' +                 \
+    line = f'{window.id:{self.fzf_field_1_width}}' + \
+            f'\t{ch}⋅⋅{cr}· ' +                      \
+            f'{part1:{width1}}' +                    \
+            f'{" " * self.fzf_gap}' +                  \
             f'{part2:>{width2}}'
+
+    return line
 
   def dead_session_line(self, session):
     # field1
@@ -102,16 +116,9 @@ class FZFFormatter:
     part1 = f'{color1}{session.name}{cr}'
     width1 = 11 + self.fzf_field_1_width + 4  # 11 + 4 for 256-color ansi sequence
 
-    # field2
-    color2 = colors['window_line_session_name']
-    part2 = f'{color2}<Select to Load>{cr}'
-    width2 = 11 + self.fzf_field_2_width + 4  # 11 + 4 for 256-color ansi sequence
-
-    return f'{session.name:{self.snapshot.s_width}}' + \
+    return f'{session.name:{self.fzf_field_1_width}}' + \
             f'\t{ch}⋅⋅{cr}' +                           \
-            f'{part1:{width1}}' +                      \
-            f'{" ":{fzf_ui_gap}}' +                    \
-            f'{part2:>{width2}}'
+            f'{part1:{width1}}'
 
   def live_session_line(self, session):
     symbol = symbols.get(session.name, default_live_symbol)

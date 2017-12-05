@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import shlex
-import shutil
 import subprocess
 
 import settings
@@ -63,8 +62,6 @@ class Snapshot:
         w_width = max(w_width, len(wname))
 
     # widths
-    t_width, t_height = shutil.get_terminal_size()
-
     self.w_width = w_width
     self.s_width = s_width
 
