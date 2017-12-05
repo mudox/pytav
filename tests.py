@@ -9,7 +9,6 @@ import tmux
 
 def test(args):
   settings.action = 'test'
-  test_settings()
   test_snapshot()
   test_formatter()
   test_prepare_tmux_interface()
@@ -17,12 +16,6 @@ def test(args):
 
 def _title(text):
   print(f'\n\033[35m{text}\033[0m\n')
-
-
-def test_settings():
-  _title('Test [settings] ...')
-  tty = settings.log_tty()
-  print(f'log window tty: {tty}')
 
 
 def test_snapshot():

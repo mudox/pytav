@@ -24,6 +24,7 @@ list_windows_cmd = shlex.split('''
 ''', comments=True)
 
 
+
 class Snapshot:
 
   def __init__(self):

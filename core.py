@@ -130,11 +130,10 @@ def start_ui(oneshot):
 
         tmux.hook.enable(False)                        # disable hook updating
 
-        path = settings.paths.sessions / tag            # create session
+        path = settings.paths.sessions / tag           # create session
         subprocess.run(
             str(path),
-            stdout=subprocess.DEVNULL,
-            stderr=open(settings.log_tty(), 'w')
+            stdout=subprocess.DEVNULL
         )
 
         update()                                       # update snapshot

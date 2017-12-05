@@ -3,8 +3,7 @@
 kill=${1:-kill}
 
 is_tmux_interface_prepared() {
-  tmux list-panes -t 'Tav:Finder' &>/dev/null && \
-    tmux list-panes -t 'Tav:Log' &>/dev/null
+  tmux list-panes -t 'Tav:Finder' &>/dev/null
 }
 
 create_session() {
@@ -39,26 +38,6 @@ create_session() {
 
   # set background transparent to speed up rendering
   tmux select-pane -t "${window}.1" -P 'bg=black'
-
-  #
-  # window: Log
-  #
-
-  window_name='Log'
-  window="${session_name}:${window_name}"
-  tmux new-window              \
-    -a                         \
-    -t "${session_name}:{end}" \
-    -n "${window_name}"        \
-    -d                         \
-    sh
-
-  tmux send-keys -t "${window}" '
-  tput civis
-  PS1=
-  clear
-  '
-  tmux select-pane -t "${window}" -d
 }
 
 if [[ ${kill} == 'kill' ]]; then

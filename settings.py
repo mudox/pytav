@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import shlex
 import subprocess
 from pathlib import Path
 
@@ -20,20 +19,7 @@ class paths:
 
 tav_session_name = 'Tav'
 finder_window_name = 'Finder'
-
 finder_window_target = f'{tav_session_name}:{finder_window_name}'
-log_window_target = f'{tav_session_name}:Log'
-
-
-def log_tty():
-  cmd = [
-      'tmux', 'list-panes',
-      '-t', log_window_target,
-      '-F', '"#{pane_tty}"',
-  ]
-  return subprocess.getoutput(
-      f'tmux list-panes -t "{log_window_target}"' + ' -F "#{pane_tty}"')
-
 
 paths.data.mkdir(parents=True, exist_ok=True)
 
