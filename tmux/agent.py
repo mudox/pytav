@@ -4,8 +4,15 @@
 import subprocess as sp
 from shlex import split
 
+def get_server_pid() -> int:
+  cmd = split('''
+    tmux list-clients -F '#{pid}'
+  ''')
+  p = sp.run(cmd, stdout=sp.PIPE)
 
-def list_all_windows():
+  return int(p.stdout.decode().strip().splitlines()[0])
+
+def list_all_windows() -> list:
   '''
   return tuple of (sid, sname, wid, wname)
   '''
@@ -15,7 +22,6 @@ def list_all_windows():
       '#{session_name}',
       '#{window_id}',
       '#{window_name}',
-      '#{pid}',
   ]
   format = ':'.join(format)
 
