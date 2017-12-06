@@ -10,12 +10,19 @@ def list_all_windows():
   return tuple of (sid, sname, wid, wname)
   '''
 
-  format = '#{session_id}:#{session_name}:#{window_id}:#{window_name}'
+  format = [
+      '#{session_id}',
+      '#{session_name}',
+      '#{window_id}',
+      '#{window_name}',
+      '#{pid}',
+  ]
+  format = ':'.join(format)
 
   cmd = split(f'''
     tmux list-windows -a -F '{format}'
   ''', comments=True)
 
   p = sp.run(cmd, stdout=sp.PIPE)
-  lines = p.stdout.decode().splitlines()
+  lines = p.stdout.decode().strip().splitlines()
   return [line.split(':') for line in lines]

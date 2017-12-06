@@ -26,11 +26,14 @@ class Snapshot:
     # scan live sessions
     #
 
+    fields = tmux.list_all_windows()
+
+    # get tmux server id
+    pid = fields[0][4]
+    fields = [t[:-1] for t in fields]
+
     self.live_sessions = []
-
-    tuples = tmux.list_all_windows()
-    groups = groupby(tuples, lambda x: (x[0], x[1]))
-
+    groups = groupby(fields, lambda x: (x[0], x[1]))
     for (sid, sname), value in groups:
       session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
       for _, _, wid, wname in value:
@@ -38,8 +41,8 @@ class Snapshot:
 
       self.live_sessions.append(session)
 
-    self.s_width = reduce(max, [len(t[3]) for t in tuples])
-    self.w_width = reduce(max, [len(t[1]) for t in tuples])
+    self.s_width = reduce(max, [len(t[3]) for t in fields])
+    self.w_width = reduce(max, [len(t[1]) for t in fields])
 
     self.all_sessions += self.live_sessions
 
