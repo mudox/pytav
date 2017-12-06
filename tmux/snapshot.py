@@ -1,28 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import shlex
 from functools import reduce
 from itertools import groupby
 
 import settings
 import tmux
-
-
-list_sessions_cmd = shlex.split('''
-  tmux
-  list-sessions
-  -F
-  '#{session_id}:#{session_name}'
-''', comments=True)
-
-list_windows_cmd = shlex.split('''
-  tmux
-  list-windows
-  -F
-  '#{window_id}:#{window_name}'
-  -t
-''', comments=True)
 
 
 class Snapshot:
@@ -35,6 +18,7 @@ class Snapshot:
       - dead_sessions
       - s_width
       - w_width
+      - srv_pid
     '''
     self.all_sessions = []  # list of tmux.Session objects
 
