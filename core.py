@@ -59,6 +59,8 @@ def start_ui(oneshot):
     # center interface in the terminal screen
     --margin={t_margin},{h_margin}
 
+    --inline-info
+
     # fully transparent background
     --color=bg:-1,bg+:-1
   ''', comments=True)
