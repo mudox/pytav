@@ -137,11 +137,11 @@ class FZFFormatter:
     # field1
     color1 = colors['dead_session_name']
     part1 = f'{color1}{session.name}{cr}'
-    width1 = 11 + self.fzf_field_1_width + 4  # 11 + 4 for 256-color ansi sequence
+    part1 = _left(part1, self.fzf_field_1_width)
 
     return f'{session.name:{self.fzf_field_1_width}}' + \
             f'\t{ch}⋅⋅{cr}' +                           \
-            f'{part1:{width1}}'
+            f'{part1}'
 
   def live_session_line(self, session):
     symbol = symbols.get(session.name, default_live_symbol)
