@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import re
+
 import settings
 
 # TODO!: make symbols and colors configurable
@@ -24,26 +26,46 @@ colors = {
     'dead_session_name': '\033[38;5;242m',
 }
 
-cr = '\033[0m'   # reset style
+cr = '\033[0m'  # reset style
 ch = '\033[30m'  # hide foreground into background
 
 fzf_left_margin = 2
 fzf_session_symbol_padding = 2
 fzf_window_symbol_padding = 2
 
+# TODO: 2 hard corded magic numbers
 fzf_min_gap = 6
-fzf_min_width = 50
+fzf_min_width = 46
+
+ansi_pat = re.compile('\x1b\[[^m]+m')
+
+
+def _width(text):
+  chunks = ansi_pat.findall(text)
+  return sum([len(c) for c in chunks])
+
+
+def _left(text, width, fillchar='\x20'):
+  return text.ljust(width + _width(text), fillchar)
+
+
+def _center(text, width, fillchar='\x20'):
+  return text.center(width + _width(text), fillchar)
+
+
+def _right(text, width, fillchar='\x20'):
+  return text.rjust(width + _width(text), fillchar)
 
 
 class FZFFormatter:
 
   def __init__(self, snapshot):
+
     self.snapshot = snapshot
 
-    self.fzf_field_1_width = max(
-        self.snapshot.wname_max_width,
-        self.snapshot.sname_max_width
-    )
+    self.fzf_field_1_width = max(self.snapshot.wname_max_width,
+                                 self.snapshot.sname_max_width)
+
     self.fzf_field_2_width = self.snapshot.sname_max_width
 
     without_gap =                    \
@@ -84,8 +106,9 @@ class FZFFormatter:
 
     # unloaded bar
     color = colors['unloaded_bar']
-    body = f' UN  {dead_symbol}  LOADED '.center(self.fzf_width - 3, '─')
-    line = f'\n{"<nop>":{self.snapshot.sname_max_width}}\t{ch}⋅⋅{cr}{color}{body}{cr}\n'
+    body = f' UN · LOADED '.center(self.fzf_width - 2, '─')
+    # line = f'\n{"<nop>":{self.snapshot.sname_max_width}}\t{ch}⋅⋅{cr}{color}{body}{cr}\n'
+    line = f'\n{"<nop>":{self.snapshot.sname_max_width}}\t{color}{body}{cr}\n'
     lines.append(line)
 
     for session in self.snapshot.dead_sessions:
@@ -96,17 +119,17 @@ class FZFFormatter:
   def window_line(self, session, window):
     color1 = colors['window_line_window_name']
     part1 = f'{color1}{window.name}{cr}'
-    width1 = 11 + self.fzf_field_1_width + 4  # 5 + 4 for ansi color sequence
+    part1 = _left(part1, self.fzf_field_1_width)
 
     color2 = colors['window_line_session_name']
     part2 = f'{color2}{session.name}{cr}'
-    width2 = 11 + self.fzf_field_2_width + 4  # 11 + 4 for 256-color ansi sequence
+    part2 = _right(part2, self.fzf_field_2_width)
 
     line = f'{window.id:{self.fzf_field_1_width}}' + \
             f'\t{ch}⋅⋅{cr}· ' +                      \
-            f'{part1:{width1}}' +                    \
-            f'{" " * self.fzf_gap}' +                  \
-            f'{part2:>{width2}}'
+            f'{part1}' +                             \
+            f'{" " * self.fzf_gap}' +                \
+            f'{part2}'
 
     return line
 
@@ -125,4 +148,3 @@ class FZFFormatter:
     color = colors['session_line_live_session_name']
 
     return f'{session.id:{self.snapshot.sname_max_width}}\t{symbol} {color}{session.name}{cr}'
-
