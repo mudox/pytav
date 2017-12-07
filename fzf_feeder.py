@@ -79,8 +79,8 @@ class FZFFormatter:
     # dead sessions
     #
 
-    if len(self.snapshot.dead_sessions) == 0:
-      return
+    if self.snapshot.dead_session_count == 0:
+      return '\n'.join(lines)
 
     # unloaded bar
     color = colors['unloaded_bar']

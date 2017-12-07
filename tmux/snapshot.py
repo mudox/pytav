@@ -58,10 +58,17 @@ class Snapshot:
     live_snames = [s.name for s in self.live_sessions]
 
     snames = [
-        x.stem for x in settings.paths.sessions.glob('*')
-        if not x.stem.startswith('.')]
+        x.stem
+        for x in settings.paths.sessions.glob('*')
+        if not x.stem.startswith('.')
+    ]
 
     dead_snames = [n for n in snames if n not in live_snames]
+
+    if len(dead_snames) == 0:
+      self.dead_sessions = None
+      self.dead_session_count = 0
+      return
 
     # update self.sname_max_width
     width = reduce(max, [len(n) for n in dead_snames])
@@ -69,12 +76,7 @@ class Snapshot:
 
     self.dead_sessions = []
     for name in dead_snames:
-      session = tmux.Session(
-          id='<dead>',
-          name=name,
-          loaded=False,
-          windows=None
-      )
+      session = tmux.Session(id='<dead>', name=name, loaded=False, windows=None)
       self.dead_sessions.append(session)
 
     self.all_sessions += self.dead_sessions
