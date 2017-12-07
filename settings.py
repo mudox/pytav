@@ -1,32 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import subprocess
 from pathlib import Path
 
-
-class paths:
-  install = Path(__file__).parent
-  scripts = install / 'scripts'
-
-  data = Path('~/.local/share/tav').expanduser()
-  data.mkdir(parents=True, exist_ok=True)
-
-  serve_dir = data / 'servers'
-  serve_dir.mkdir(parents=True, exist_ok=True)
-
-  fzf_feed = data / 'fzf-feed'
-  width = data / 'fzf-width'
-  sessions = data / 'sessions'
-  hook_enabled = data_dir / 'update'
-
+import tmux
 
 tav_session_name = 'Tav'
 finder_window_name = 'Finder'
 finder_window_target = f'{tav_session_name}:{finder_window_name}'
 
-
 reenable_hook_interval = 4
+
+
+class paths:
+  # installation
+  install = Path(__file__).parent
+  scripts = install / 'scripts'
+
+  # data
+  data_dir = Path('~/.local/share/tav').expanduser()
+  data_dir.mkdir(parents=True, exist_ok=True)
+
+  serve_dir = data_dir / 'servers'
+  serve_dir.mkdir(parents=True, exist_ok=True)
+  serve_file = serve_dir / str(tmux.get_server_pid())
+
+  hook_enabled = data_dir / 'update'
+  sessions = data_dir / 'sessions'
 
 
 class colors:
