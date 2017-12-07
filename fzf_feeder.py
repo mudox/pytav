@@ -41,10 +41,10 @@ class FZFFormatter:
     self.snapshot = snapshot
 
     self.fzf_field_1_width = max(
-        self.snapshot.w_width,
-        self.snapshot.s_width
+        self.snapshot.wname_max_width,
+        self.snapshot.sname_max_width
     )
-    self.fzf_field_2_width = self.snapshot.s_width
+    self.fzf_field_2_width = self.snapshot.sname_max_width
 
     without_gap =                    \
         fzf_left_margin              \
@@ -85,7 +85,7 @@ class FZFFormatter:
     # unloaded bar
     color = colors['unloaded_bar']
     body = f' UN  {dead_symbol}  LOADED '.center(self.fzf_width - 3, '─')
-    line = f'\n{"<nop>":{self.snapshot.s_width}}\t{ch}⋅⋅{cr}{color}{body}{cr}\n'
+    line = f'\n{"<nop>":{self.snapshot.sname_max_width}}\t{ch}⋅⋅{cr}{color}{body}{cr}\n'
     lines.append(line)
 
     for session in self.snapshot.dead_sessions:
@@ -124,4 +124,5 @@ class FZFFormatter:
     symbol = symbols.get(session.name, default_live_symbol)
     color = colors['session_line_live_session_name']
 
-    return f'{session.id:{self.snapshot.s_width}}\t{symbol} {color}{session.name}{cr}'
+    return f'{session.id:{self.snapshot.sname_max_width}}\t{symbol} {color}{session.name}{cr}'
+
