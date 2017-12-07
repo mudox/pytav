@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import json
 import shlex
 import shutil
 import subprocess
@@ -22,12 +23,35 @@ def prepare_tmux_interface(force):
 
 def update():
   '''
-  take a new snapshot and write to data files.
+  steps:
+  - take a new snapshot
+  - tansform (format) the snapshot info into fzf feed lines
+  - wrap all info into a dict
+  - `json.dump` the dict to disk
   '''
 
-  formatter = FZFFormatter(tmux.Snapshot())
-  settings.paths.fzf_feed.write_text(formatter.fzf_lines())
-  settings.paths.width.write_text(str(formatter.fzf_width))
+  snap = tmux.Snapshot()
+
+  formatter = FZFFormatter(snap)
+  fzf_feed_lines = formatter.fzf_lines()
+  fzf_ui_width = formatter.fzf_width
+
+  info = {
+      'tmux': {
+          'server_pid': snap.server_pid,
+          'window_count': snap.window_count,
+          'live_session_count': snap.live_session_count,
+          'dead_session_count': snap.dead_session_count,
+      },
+      'fzf': {
+          'ui_width': fzf_ui_width,
+          'lines': fzf_feed_lines,
+      }
+  }
+
+  serve_feed = settings.paths.serve_dir / str(snap.server_pid)
+  with serve_feed.open('w') as file:
+    json.dump(info, file)
 
 
 def start_ui(oneshot):
