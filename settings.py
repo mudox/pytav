@@ -10,6 +10,10 @@ class paths:
   scripts = install / 'scripts'
 
   data = Path('~/.local/share/tav').expanduser()
+  data.mkdir(parents=True, exist_ok=True)
+
+  serve_dir = data / 'servers'
+  serve_dir.mkdir(parents=True, exist_ok=True)
 
   fzf_feed = data / 'fzf-feed'
   width = data / 'fzf-width'
@@ -21,7 +25,6 @@ tav_session_name = 'Tav'
 finder_window_name = 'Finder'
 finder_window_target = f'{tav_session_name}:{finder_window_name}'
 
-paths.data.mkdir(parents=True, exist_ok=True)
 
 reenable_hook_interval = 4
 

@@ -15,17 +15,20 @@ import tmux
 
 def snapshot(args):
   settings.action = 'snapshot'
+
   core.update()
 
 
 def oneshot(args):
   settings.action = 'oneshot'
+
   core.update()
   core.start_ui(oneshot=True)
 
 
 def serve(args):
   settings.action = 'serve'
+
   while True:
     core.start_ui(oneshot=False)
 
