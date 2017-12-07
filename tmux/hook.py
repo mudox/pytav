@@ -19,7 +19,7 @@ def enable(flag):
 
 def is_enabled() -> bool:
   if not settings.paths.update.exists():
-    result = True
+    return True
 
   text = settings.paths.update.read_text()
   disabled_time = float(text)
