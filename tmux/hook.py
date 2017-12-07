@@ -14,14 +14,14 @@ def enable(flag):
   else:
     text = str(time())
 
-  settings.paths.update.write_text(text)
+  settings.paths.hook_enabled.write_text(text)
 
 
 def is_enabled() -> bool:
-  if not settings.paths.update.exists():
+  if not settings.paths.hook_enabled.exists():
     return True
 
-  text = settings.paths.update.read_text()
+  text = settings.paths.hook_enabled.read_text()
   disabled_time = float(text)
 
   if disabled_time == -1:

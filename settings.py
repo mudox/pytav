@@ -17,8 +17,8 @@ class paths:
 
   fzf_feed = data / 'fzf-feed'
   width = data / 'fzf-width'
-  update = data / 'update'
   sessions = data / 'sessions'
+  hook_enabled = data_dir / 'update'
 
 
 tav_session_name = 'Tav'
