@@ -38,6 +38,9 @@ create_session() {
 
   # set background transparent to speed up rendering
   tmux select-pane -t "${window}.1" -P 'bg=black'
+
+  # hide status bar, make it full screen like
+  tmux set -t "${session_name}" status off
 }
 
 if [[ ${kill} == 'kill' ]]; then
