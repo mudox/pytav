@@ -10,8 +10,8 @@ import tmux
 def test(args):
   settings.action = 'test'
   test_snapshot()
-  test_formatter()
-  test_prepare_tmux_interface()
+  # test_formatter()
+  # test_prepare_tmux_interface()
 
 
 def _title(text):
@@ -23,6 +23,11 @@ def test_snapshot():
   snap = tmux.Snapshot()
   for s in snap.all_sessions:
     print(f' {s.name:24} {s.loaded and "live" or "dead"}')
+
+  print(f'\n windows: {snap.window_count}')
+  print(f' live sessions: {snap.live_session_count}')
+  print(f' dead sessions: {snap.dead_session_count}')
+  print(f' server pid: {snap.server_pid}')
 
 
 def test_formatter():
