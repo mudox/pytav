@@ -16,24 +16,26 @@ class Snapshot:
       - all_sessions
       - live_sessions
       - dead_sessions
-      - s_width
-      - w_width
-      - srv_pid
+      - sname_max_width
+      - wname_max_width
+      - server_pid
+      - window_count
+      - live_session_count
+      - dead_session_count
     '''
     self.all_sessions = []  # list of tmux.Session objects
+    self.server_pid = tmux.get_server_pid()
 
     #
     # scan live sessions
     #
 
-    fields = tmux.list_all_windows()
+    window_info_tuples = tmux.list_all_windows()
 
     # get tmux server id
-    pid = fields[0][4]
-    fields = [t[:-1] for t in fields]
 
     self.live_sessions = []
-    groups = groupby(fields, lambda x: (x[0], x[1]))
+    groups = groupby(window_info_tuples, lambda x: (x[0], x[1]))
     for (sid, sname), value in groups:
       session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
       for _, _, wid, wname in value:
@@ -41,9 +43,12 @@ class Snapshot:
 
       self.live_sessions.append(session)
 
-    self.s_width = reduce(max, [len(t[3]) for t in fields])
-    self.w_width = reduce(max, [len(t[1]) for t in fields])
+    self.sname_max_width = reduce(max, [len(t[3]) for t in window_info_tuples])
+    self.wname_max_width = reduce(max, [len(t[1]) for t in window_info_tuples])
 
+    self.live_session_count = len(self.live_sessions)
+    window_counts = [len(s.windows) for s in self.live_sessions]
+    self.window_count = sum(window_counts)
     self.all_sessions += self.live_sessions
 
     #
@@ -58,9 +63,9 @@ class Snapshot:
 
     dead_snames = [n for n in snames if n not in live_snames]
 
-    # update self.s_width
+    # update self.sname_max_width
     width = reduce(max, [len(n) for n in dead_snames])
-    self.s_width = max(self.s_width, width)
+    self.sname_max_width = max(self.sname_max_width, width)
 
     self.dead_sessions = []
     for name in dead_snames:
@@ -73,3 +78,4 @@ class Snapshot:
       self.dead_sessions.append(session)
 
     self.all_sessions += self.dead_sessions
+    self.dead_session_count = len(self.dead_sessions)
