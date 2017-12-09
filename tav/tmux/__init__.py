@@ -1,4 +1,4 @@
-from tmux.snapshot import Snapshot
-from tmux.model import Session, Window
-from tmux.hook import *
-from tmux.agent import *
+from .snapshot import Snapshot
+from .model import Session, Window
+from .hook import *
+from .agent import *

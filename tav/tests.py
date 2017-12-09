@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import fzf
-import settings
-import tmux
+from . import fzf
+from . import settings
+from . import tmux
+
 
 def test(args):
   settings.action = 'test'

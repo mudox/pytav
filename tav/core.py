@@ -7,9 +7,9 @@ import shutil
 import subprocess
 from time import sleep
 
-import settings
-import tmux
-from fzf import FZFFormatter
+from . import settings
+from . import tmux
+from .fzf import FZFFormatter
 
 
 def update():

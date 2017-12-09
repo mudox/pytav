@@ -3,7 +3,7 @@
 
 from pathlib import Path
 
-import tmux
+from . import tmux
 
 tavSessionName = 'Tav'
 

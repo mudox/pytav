@@ -3,7 +3,7 @@
 
 import re
 
-import settings
+from . import settings
 
 # TODO!: make symbols and colors configurable
 

@@ -3,7 +3,8 @@
 
 import subprocess as sp
 from shlex import split
-import settings
+
+from . import settings
 
 
 def prepareTmuxInterface(force):

@@ -4,8 +4,8 @@
 from functools import reduce
 from itertools import groupby
 
-import settings
-import tmux
+from .. import settings
+from .. import tmux
 
 
 class Snapshot:

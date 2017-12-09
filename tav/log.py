@@ -5,7 +5,7 @@ import datetime
 import logging
 import textwrap
 
-import settings
+from . import settings
 
 _symbols = {
     logging.ERROR: ' ',

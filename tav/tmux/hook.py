@@ -4,8 +4,8 @@
 import subprocess
 from time import time
 
-import core
-import settings
+from .. import core
+from .. import settings
 
 
 def enable(flag):
