@@ -24,7 +24,7 @@ class Snapshot:
       - dead_session_count
     '''
     self.all_sessions = []  # list of tmux.Session objects
-    self.server_pid = tmux.get_server_pid()
+    self.server_pid = settings.serverPID
 
     #
     # scan live sessions

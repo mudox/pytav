@@ -11,6 +11,7 @@ finder_window_target = f'{tav_session_name}:{finder_window_name}'
 
 reenable_hook_interval = 4
 
+serverPID = str(tmux.getServerPID())
 
 class paths:
   # installation
