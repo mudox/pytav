@@ -3,7 +3,7 @@
 
 import datetime
 import logging
-import subprocess
+import textwrap
 
 import settings
 
@@ -20,8 +20,8 @@ _colors = {
     logging.WARNING: ((255, 87, 191), (255, 255, 255)),
     logging.INFO: ((255, 224, 102), (255, 255, 255)),
     logging.DEBUG: ((64, 255, 64), (255, 255, 255)),
-    'verbose': ((155, 155, 155), (130, 130, 130)),
-    'time_sep': ((130, 130, 130), (70, 70, 70)),
+    'fileFuncName': ((155, 155, 155), (130, 130, 130)),
+    # 'time_sep': ((130, 130, 130), (70, 70, 70)),
 }
 
 
@@ -54,12 +54,10 @@ def configureLogging():
     rootLogger.addHandler(logToTTY)
 
     with open(settings.paths.logTTY, 'w') as file:
-      subprocess.call('tput clear', shell=True, stdout=file)
       file.write(lines)
 
   else:
     rootLogger.error('Log window not found, TTY logger can not be created')
-
 
   rootLogger.info('Logging initialized')
 
@@ -71,15 +69,18 @@ class ConsoleLogFormatter(logging.Formatter):
     # head line
     symbol = _symbols[record.levelno]
     color = _colors[record.levelno]
-    head = _colorize(f'{symbol} {record.name}', color[0])
+    subsystem = (record.name == '__main__') and 'main' or record.name
+    head = _colorize(f'{symbol} {subsystem}', color[0])
 
-    fileFuncName = f'[{record.filename}] {record.funcName}'
+    color = _colors['fileFuncName']
+    fileFuncName = _colorize(f'[{record.filename}] {record.funcName}', color[1])
 
     # body
     message = super().format(record)
+    message = textwrap.indent(message, '\x20' * 3)
 
     # combine
     lines = f'\n{head} {fileFuncName}\n{message}'
-    lines = lines.replace('\n', '\n\x20')  # indent 1 space for aethetics
+    lines = textwrap.indent(lines, '\x20')  # indent 1 space for aethetics
 
     return lines
