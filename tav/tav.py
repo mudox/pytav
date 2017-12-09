@@ -4,11 +4,11 @@
 import argparse
 import logging
 
-import core
-import log
-import settings
-import tests
-import tmux
+from . import core
+from . import log
+from . import settings
+from . import tests
+from . import tmux
 
 log.configureLogging()
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 #
 
 
-class CLI:
+class Command:
 
   def snapshot(self, args):
     settings.action = 'snapshot'
@@ -164,6 +164,6 @@ class CLI:
     args.func(args)
 
 
-if __name__ == "__main__":
-  cli = CLI()
-  cli.parse_args()
+def main():
+  cmd = Command()
+  cmd.parse_args()

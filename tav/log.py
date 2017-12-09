@@ -70,14 +70,14 @@ class ConsoleLogFormatter(logging.Formatter):
     symbol = _symbols[record.levelno]
     color = _colors[record.levelno]
     subsystem = (record.name == '__main__') and 'main' or record.name
-    head = _colorize(f'{symbol} {subsystem}', color[0])
+    head = _colorize(f'{symbol}{subsystem}', color[0])
 
     color = _colors['fileFuncName']
     fileFuncName = _colorize(f'[{record.filename}] {record.funcName}', color[1])
 
     # body
     message = super().format(record)
-    message = textwrap.indent(message, '\x20' * 3)
+    message = textwrap.indent(message, '\x20' * 2)
 
     # combine
     lines = f'\n{head} {fileFuncName}\n{message}'

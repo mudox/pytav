@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import core
 import fzf_feeder
 import settings
 import tmux
 
-
 def test(args):
   settings.action = 'test'
+
   test_snapshot()
-  # test_formatter()
+  test_formatter()
   # test_prepare_tmux_interface()
 
 
@@ -39,5 +38,5 @@ def test_formatter():
 
 def test_prepare_tmux_interface():
   _title('\nTest [prepare tmux interface] ...')
-  core.prepare_tmux_interface(force=False)
-  core.prepare_tmux_interface(force=True)
+  tmux.prepareTmuxInterface(force=False)
+  tmux.prepareTmuxInterface(force=True)

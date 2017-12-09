@@ -14,11 +14,38 @@ logWindowTarget = f'{tavSessionName}:Log'
 
 reenableHookInterval = 4
 
+# yapf: disable
+defaultConfig = {
+    'version': 1,
+    'color': {
+        'live_session_name': '',
+        'dead_session_name': '',
+        'window_name': '',
+        'dead_line': '',
+        'background': '',
+        'symbol': '',
+    },
+    'symbol': {
+        'default': '+',
+    }
+}
+# yapf: enable
 
 serverPID = str(tmux.getServerPID())
 
+
 class paths:
-  # installation
+
+  # configuration
+  configDir = Path('~/.config/tav').expanduser()
+  configDir.mkdir(parents=True, exist_ok=True)
+
+  config = configDir / 'settings.json'
+  if not config.exists():
+    # TODO!!: populate default json content to setting.json
+    pass
+
+  # install
   install = Path(__file__).parent
   scripts = install / 'scripts'
 
@@ -31,7 +58,8 @@ class paths:
   logDir.mkdir(parents=True, exist_ok=True)
   logFile = logDir / serverPID
 
-  logTTY = Path(tmux.getLogTTY())
+  tty = tmux.getLogTTY()
+  logTTY = tty is not None and Path(tty) or None
 
   # serve file
   serveDir = dataDir / 'servers'
