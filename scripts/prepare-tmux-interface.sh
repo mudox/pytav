@@ -6,8 +6,9 @@ is_tmux_interface_prepared() {
   tmux list-panes -t 'Tav:Finder' &>/dev/null
 }
 
+session_name='Tav'
+
 create_session() {
-  session_name='Tav'
 
   # tty size
   if [[ -n "$TMUX" ]]; then
@@ -41,6 +42,22 @@ create_session() {
 
   # hide status bar, make it full screen like
   tmux set -t "${session_name}" status off
+
+  #
+  # window: Log
+  #
+
+  window_name='Log'
+  window="${session_name}:${window_name}"
+  tmux new-window              \
+    -a                         \
+    -t "${session_name}:{end}" \
+    -n "${window_name}"        \
+    -d                         \
+    sh
+
+  # disable the window
+  tmux select-pane -t "${window}.1" -d
 }
 
 if [[ ${kill} == 'kill' ]]; then
