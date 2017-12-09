@@ -12,15 +12,6 @@ import tmux
 from fzf_feeder import FZFFormatter
 
 
-def prepare_tmux_interface(force):
-  '''
-  check states of tav tmux session and windows
-  create if not available
-  '''
-  cmd = settings.paths.scripts / 'prepare-tmux-interface.sh'
-  subprocess.call([str(cmd), force and 'kill' or 'nokill'])
-
-
 def update():
   '''
   steps:

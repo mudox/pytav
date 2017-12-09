@@ -3,8 +3,16 @@
 
 import subprocess as sp
 from shlex import split
+import settings
 
-def get_server_pid() -> int:
+
+def prepareTmuxInterface(recreate):
+  '''
+  check states of tav tmux session and windows
+  create if not
+  '''
+  cmd = settings.paths.scripts / 'prepare-tmux-interface.sh'
+  subprocess.call([str(cmd), recreate and 'kill' or 'nokill'])
   cmd = split('''
     tmux list-clients -F '#{pid}'
   ''')
