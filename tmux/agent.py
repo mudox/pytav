@@ -13,6 +13,15 @@ def get_server_pid() -> int:
   return int(p.stdout.decode().strip().splitlines()[0])
 
 def list_all_windows() -> list:
+def getLogTTY():
+  cmd = split(f'''
+    tmux list-panes -t {settings.logWindowTarget} -F '#{{pane_tty}}'
+  ''')
+
+  p = sp.run(cmd, stdout=sp.PIPE)
+  return p.stdout.decode().strip()
+
+
   '''
   return tuple of (sid, sname, wid, wname)
   '''
