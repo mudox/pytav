@@ -18,139 +18,152 @@ logger = logging.getLogger(__name__)
 #
 
 
-def snapshot(args):
-  settings.action = 'snapshot'
-  logger.debug('invoked to perform action: [snapshot]')
+class CLI:
 
-  core.update()
+  def snapshot(self, args):
+    settings.action = 'snapshot'
+    logger.debug('invoked to perform action: [snapshot]')
 
+    core.update()
 
-def oneshot(args):
-  settings.action = 'oneshot'
-  logger.debug('invoked to perform action: [oneshot]')
+  def oneshot(self, args):
+    settings.action = 'oneshot'
+    logger.debug('invoked to perform action: [oneshot]')
 
-  core.update()
-  core.start_ui(oneshot=True)
+    core.update()
+    core.start_ui(oneshot=True)
 
+  def serve(self, args):
+    logger.debug('invoked to perform action: [serve]')
+    settings.action = 'serve'
 
-def serve(args):
-  logger.debug('invoked to perform action: [serve]')
-  settings.action = 'serve'
+    while True:
+      core.start_ui(oneshot=False)
 
-  while True:
-    core.start_ui(oneshot=False)
+  def hook(self, args):
+    settings.action = 'hook'
+    if args.hookEnabled is None:
+      if args.event is None:
+        msg = 'must specify either the trigger event type or [-d|-e] option\n\n'
+        msg += self.parser.format_usage()
+        logger.warn(msg)
+        return
 
+      settings.hookEvent = args.event
 
-def hook(args):
-  settings.action = 'hook'
-  logger.debug('invoked to perform action: [hook]')
+      msg = f'invoked to perform action: [hook]'
+      msg += f'\ntriggered by: [{args.event}]'
+      logger.debug(msg)
 
-  if args.hookEnabled is None:
-    assert(args.event is not None)
-    settings.hookEvent = args.event
-    logger.debug(f'trigger event: {args.event}')
+      tmux.prepareTmuxInterface(force=False)
+      tmux.hook.run()
 
-    tmux.prepareTmuxInterface(force=False)
-    tmux.hook.run()
+    else:
+      msg = f'invoked to perform action: [hook]'
+      msg += f'\n{args.hookEnabled and "enable" or "disable"} hook update'
+      logger.debug(msg)
 
-  else:
-    tmux.hook.enable(args.hookEnabled)
-
-#
-# CLI interface
-#
-
-
-def parse_args():
-  parser = argparse.ArgumentParser(
-      prog='tav',
-      description='An tmux `choose-tree` replacement powered by fzf action.'
-  )
-  parser.set_defaults(func=oneshot)  # defaults to update and choose once
-
-  parser.add_argument('--version', action='version', version='1.1')
-  parser.add_argument(
-      '-v, --verbose',
-      action='store_true',
-      dest='verbose',
-      help='verbose (debug) mode'
-  )
+      tmux.hook.enable(args.hookEnabled)
 
   #
-  # actions
+  # CLI interface
   #
 
-  subparsers = parser.add_subparsers(
-      title='actions',
-      description='without any action is equivalent to `oneshot`'
-  )
+  def __init__(self):
 
-  # action `snapshot`
-  act_snapshot = subparsers.add_parser(
-      'snapshot', aliases=['snp'],
-      help='create a new snapshot tmux session window layout.'
-  )
-  act_snapshot.set_defaults(func=snapshot)
+    self.parser = argparse.ArgumentParser(
+        prog='tav',
+        description='An tmux `choose-tree` replacement powered by fzf action.'
+    )
+    # defaults to update and choose once
+    self.parser.set_defaults(func=self.oneshot)
 
-  # action `hook`
-  act_hook = subparsers.add_parser(
-      'hook', aliases=['h', 'hk', 'ho'],
-      help='''
-      update snapshot and update the fzf interface in tmux window
-      '''
-  )
+    self.parser.add_argument('--version', action='version', version='1.1')
+    self.parser.add_argument(
+        '-v, --verbose',
+        action='store_true',
+        dest='verbose',
+        help='verbose (debug) mode'
+    )
 
-  # hook {-d | -e}
-  group = act_hook.add_mutually_exclusive_group()
-  group.add_argument(
-      '-d, --disable',
-      dest='hookEnabled',
-      action='store_false',
-      help='disable background updating triggered by tmux hooks'
-  )
-  group.add_argument(
-      '-e, --enable',
-      dest='hookEnabled',
-      action='store_true',
-      help='enable background updating'
-  )
-  group.add_argument(
-      'event',
-      nargs='?',
-      choices=['window-linked', 'window-renamed', 'window-unlinked'],
-      help='event type that triggers the hook'
-  )
-  act_hook.set_defaults(func=hook, hookEnabled=None)
+    #
+    # actions
+    #
 
-  # action `oneshot`
-  act_oneshot = subparsers.add_parser(
-      'oneshot', aliases=['o', 'os'],
-      help='''
-      make a new snapshot and show the fzf interface, close after choose and
-      switch. this is the DEFAULT action
-      '''
-  )
-  act_oneshot.set_defaults(func=oneshot)
+    subparsers = self.parser.add_subparsers(
+        title='actions',
+        description='without any action is equivalent to `oneshot`'
+    )
 
-  # action: `test`
-  act_oneshot = subparsers.add_parser(
-      'test', aliases=['t', 'te'],
-  )
-  act_oneshot.set_defaults(func=tests.test)
+    # action `snapshot`
+    act_snapshot = subparsers.add_parser(
+        'snapshot', aliases=['snp'],
+        help='create a new snapshot tmux session window layout.'
+    )
+    act_snapshot.set_defaults(func=self.snapshot)
 
-  # action `serve`
-  act_serve = subparsers.add_parser(
-      'serve', aliases=['srv'],
-      help='show the fzf inteface, remain after choose and switch.'
-  )
-  act_serve.set_defaults(func=serve)
+    # action `hook`
+    act_hook = subparsers.add_parser(
+        'hook', aliases=['h', 'hk', 'ho'],
+        help='''
+        update snapshot and update the fzf interface in tmux window
+        '''
+    )
 
-  # dispatch tasks
-  args = parser.parse_args()
+    # hook {-d | -e}
+    group = act_hook.add_mutually_exclusive_group()
+    group.add_argument(
+        '-d, --disable',
+        dest='hookEnabled',
+        action='store_false',
+        help='disable background updating triggered by tmux hooks'
+    )
+    group.add_argument(
+        '-e, --enable',
+        dest='hookEnabled',
+        action='store_true',
+        help='enable background updating'
+    )
+    group.add_argument(
+        'event',
+        nargs='?',
+        choices=['window-linked', 'window-renamed', 'window-unlinked'],
+        help='event type that triggers the hook'
+    )
+    act_hook.set_defaults(func=self.hook, hookEnabled=None)
 
-  settings.verbose = args.verbose
-  args.func(args)
+    # action `oneshot`
+    act_oneshot = subparsers.add_parser(
+        'oneshot', aliases=['o', 'os'],
+        help='''
+        make a new snapshot and show the fzf interface, close after choose and
+        switch. this is the DEFAULT action
+        '''
+    )
+    act_oneshot.set_defaults(func=self.oneshot)
+
+    # action: `test`
+    act_oneshot = subparsers.add_parser(
+        'test', aliases=['t', 'te'],
+    )
+    act_oneshot.set_defaults(func=tests.test)
+
+    # action `serve`
+    act_serve = subparsers.add_parser(
+        'serve', aliases=['srv'],
+        help='show the fzf inteface, remain after choose and switch.'
+    )
+    act_serve.set_defaults(func=self.serve)
+
+  def parse_args(self):
+
+    # dispatch tasks
+    args = self.parser.parse_args()
+
+    settings.verbose = args.verbose
+    args.func(args)
 
 
 if __name__ == "__main__":
-  parse_args()
+  cli = CLI()
+  cli.parse_args()
