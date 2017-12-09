@@ -5,11 +5,15 @@ from pathlib import Path
 
 import tmux
 
-tav_session_name = 'Tav'
-finder_window_name = 'Finder'
-finder_window_target = f'{tav_session_name}:{finder_window_name}'
+tavSessionName = 'Tav'
 
-reenable_hook_interval = 4
+finderWindowName = 'Finder'
+finderWindowTarget = f'{tavSessionName}:{finderWindowName}'
+
+logWindowTarget = f'{tavSessionName}:Log'
+
+reenableHookInterval = 4
+
 
 serverPID = str(tmux.getServerPID())
 
@@ -19,8 +23,9 @@ class paths:
   scripts = install / 'scripts'
 
   # data
-  data_dir = Path('~/.local/share/tav').expanduser()
-  data_dir.mkdir(parents=True, exist_ok=True)
+  dataDir = Path('~/.local/share/tav').expanduser()
+  dataDir.mkdir(parents=True, exist_ok=True)
+
   # log
   logDir = dataDir / 'log'
   logDir.mkdir(parents=True, exist_ok=True)
@@ -28,12 +33,14 @@ class paths:
 
   logTTY = Path(tmux.getLogTTY())
 
-  serve_dir = data_dir / 'servers'
-  serve_dir.mkdir(parents=True, exist_ok=True)
-  serve_file = serve_dir / str(tmux.get_server_pid())
+  # serve file
+  serveDir = dataDir / 'servers'
+  serveDir.mkdir(parents=True, exist_ok=True)
+  serveFile = serveDir / serverPID
 
-  hook_enabled = data_dir / 'update'
-  sessions = data_dir / 'sessions'
+  hookEnabled = dataDir / 'update'
+
+  sessions = dataDir / 'sessions'
 
 
 class colors:

@@ -41,11 +41,11 @@ def serve(args):
 def hook(args):
   settings.action = 'hook'
 
-  if args.hook_enabled is None:
-    core.prepare_tmux_interface(force=False)
+  if args.hookEnabled is None:
+    tmux.prepareTmuxInterface(force=False)
     tmux.hook.run()
   else:
-    tmux.hook.enable(args.hook_enabled)
+    tmux.hook.enable(args.hookEnabled)
 
 #
 # CLI interface
@@ -93,17 +93,17 @@ def parse_args():
   group = act_hook.add_mutually_exclusive_group()
   group.add_argument(
       '-d, --disable',
-      dest='hook_enabled',
+      dest='hookEnabled',
       action='store_false',
       help='disable background updating triggered by tmux hooks'
   )
   group.add_argument(
       '-e, --enable',
-      dest='hook_enabled',
+      dest='hookEnabled',
       action='store_true',
       help='enable background updating'
   )
-  act_hook.set_defaults(func=hook, hook_enabled=None)
+  act_hook.set_defaults(func=hook, hookEnabled=None)
 
   # action `oneshot`
   act_oneshot = subparsers.add_parser(

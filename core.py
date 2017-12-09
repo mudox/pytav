@@ -40,8 +40,7 @@ def update():
       }
   }
 
-  serve_feed = settings.paths.serve_dir / str(snap.server_pid)
-  with serve_feed.open('w') as file:
+  with settings.paths.serveFile.open('w') as file:
     json.dump(info, file)
 
 
@@ -50,8 +49,7 @@ def start_ui(oneshot):
   compose fzf command line, show it centered in current terimnal secreen.
   '''
 
-  pid = tmux.get_server_pid()
-  with (settings.paths.serve_dir / str(pid)).open() as file:
+  with settings.paths.serveFile.open() as file:
     info = json.load(file)
 
   # fzf header string

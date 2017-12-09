@@ -88,7 +88,7 @@ class FZFFormatter:
 
     for session in self.snapshot.live_sessions:
       # filter out tav interface session
-      if session.name == settings.tav_session_name:
+      if session.name == settings.tavSessionName:
         continue
 
       lines.append('\n' + self.live_session_line(session))

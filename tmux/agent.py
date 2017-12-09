@@ -13,6 +13,9 @@ def prepareTmuxInterface(recreate):
   '''
   cmd = settings.paths.scripts / 'prepare-tmux-interface.sh'
   subprocess.call([str(cmd), recreate and 'kill' or 'nokill'])
+
+
+def getServerPID():
   cmd = split('''
     tmux list-clients -F '#{pid}'
   ''')
@@ -20,7 +23,7 @@ def prepareTmuxInterface(recreate):
 
   return int(p.stdout.decode().strip().splitlines()[0])
 
-def list_all_windows() -> list:
+
 def getLogTTY():
   cmd = split(f'''
     tmux list-panes -t {settings.logWindowTarget} -F '#{{pane_tty}}'
@@ -30,6 +33,7 @@ def getLogTTY():
   return p.stdout.decode().strip()
 
 
+def list_all_windows():
   '''
   return tuple of (sid, sname, wid, wname)
   '''
