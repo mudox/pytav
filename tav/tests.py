@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import fzf_feeder
+import fzf
 import settings
 import tmux
 
@@ -32,7 +32,7 @@ def test_snapshot():
 def test_formatter():
   _title('\nTest [formatter] ...')
   snap = tmux.Snapshot()
-  formatter = fzf_feeder.FZFFormatter(snap)
+  formatter = fzf.FZFFormatter(snap)
   print(formatter.fzf_lines())
 
 

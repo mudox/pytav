@@ -9,7 +9,7 @@ from time import sleep
 
 import settings
 import tmux
-from fzf_feeder import FZFFormatter
+from fzf import FZFFormatter
 
 
 def update():
