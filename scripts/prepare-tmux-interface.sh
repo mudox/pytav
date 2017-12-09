@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 kill=${1:-kill}
+session_name='Tav'
 
 is_tmux_interface_prepared() {
-  tmux list-panes -t 'Tav:Finder' &>/dev/null
+  tmux list-panes -t 'Tav:Finder' &>/dev/null && \
+  tmux list-panes -t 'Tav:Log' &>/dev/null
 }
-
-session_name='Tav'
 
 create_session() {
 
@@ -55,6 +55,12 @@ create_session() {
     -n "${window_name}"        \
     -d                         \
     sh
+
+  tmux send-keys -t "${window}" '
+  tput civis
+  stty -echo
+  PS1=
+  '
 
   # disable the window
   tmux select-pane -t "${window}.1" -d
