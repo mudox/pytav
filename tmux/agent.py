@@ -6,13 +6,13 @@ from shlex import split
 import settings
 
 
-def prepareTmuxInterface(recreate):
+def prepareTmuxInterface(force):
   '''
   check states of tav tmux session and windows
   create if not
   '''
   cmd = settings.paths.scripts / 'prepare-tmux-interface.sh'
-  subprocess.call([str(cmd), recreate and 'kill' or 'nokill'])
+  sp.call([str(cmd), force and 'kill' or 'nokill'])
 
 
 def getServerPID():
@@ -30,7 +30,10 @@ def getLogTTY():
   ''')
 
   p = sp.run(cmd, stdout=sp.PIPE)
-  return p.stdout.decode().strip()
+  if p.returncode != 0:
+    return None
+  else:
+    return p.stdout.decode().strip()
 
 
 def list_all_windows():
