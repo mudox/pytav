@@ -3,6 +3,7 @@
 
 import datetime
 import logging
+import subprocess
 
 import settings
 
@@ -30,37 +31,35 @@ def _colorize(text, rgb):
 
 
 def configureLogging():
+  lines = f'------------ {datetime.datetime.now()} ------------'
+  lines = f'\n\n\n{lines}\n\n\n'
+
   rootLogger = logging.getLogger()
   rootLogger.setLevel(logging.NOTSET)
 
-  logToFile = logging.FileHandler(str(settings.paths.logFile))
-  logToFile.setLevel(logging.NOTSET)
-  logToTTY = logging.FileHandler(settings.paths.logTTY)
-  logToConsole = logging.StreamHandler()
-
   formatter = ConsoleLogFormatter()
+
+  # log to file
+  logToFile = logging.FileHandler(str(settings.paths.logFile))
   logToFile.setFormatter(formatter)
-  logToTTY.setFormatter(formatter)
-  logToConsole.setFormatter(formatter)
-
   rootLogger.addHandler(logToFile)
-  rootLogger.addHandler(logToTTY)
-  rootLogger.addHandler(logToConsole)
 
-  lines = f'''
-
-
-  ------------ {datetime.datetime.now()} ------------
-
-
-
-  '''
-
-  with settings.paths.logFile.open('w') as file:
+  with settings.paths.logFile.open('a') as file:
     file.write(lines)
 
-  with open(settings.paths.logTTY, 'w') as file:
-    file.write(lines)
+  # log to tty
+  if settings.paths.logTTY is not None:
+    logToTTY = logging.FileHandler(settings.paths.logTTY)
+    logToTTY.setFormatter(formatter)
+    rootLogger.addHandler(logToTTY)
+
+    with open(settings.paths.logTTY, 'w') as file:
+      subprocess.call('tput clear', shell=True, stdout=file)
+      file.write(lines)
+
+  else:
+    rootLogger.error('Log window not found, TTY logger can not be created')
+
 
   rootLogger.info('Logging initialized')
 
