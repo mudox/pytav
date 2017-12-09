@@ -20,18 +20,21 @@ logger = logging.getLogger(__name__)
 
 def snapshot(args):
   settings.action = 'snapshot'
+  logger.info('invoked to perform action: [snapshot]')
 
   core.update()
 
 
 def oneshot(args):
   settings.action = 'oneshot'
+  logger.info('invoked to perform action: [oneshot]')
 
   core.update()
   core.start_ui(oneshot=True)
 
 
 def serve(args):
+  logger.info('invoked to perform action: [serve]')
   settings.action = 'serve'
 
   while True:
@@ -40,6 +43,7 @@ def serve(args):
 
 def hook(args):
   settings.action = 'hook'
+  logger.info('invoked to perform action: [hook]')
 
   if args.hookEnabled is None:
     tmux.prepareTmuxInterface(force=False)
