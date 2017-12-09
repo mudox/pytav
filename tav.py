@@ -20,21 +20,21 @@ logger = logging.getLogger(__name__)
 
 def snapshot(args):
   settings.action = 'snapshot'
-  logger.info('invoked to perform action: [snapshot]')
+  logger.debug('invoked to perform action: [snapshot]')
 
   core.update()
 
 
 def oneshot(args):
   settings.action = 'oneshot'
-  logger.info('invoked to perform action: [oneshot]')
+  logger.debug('invoked to perform action: [oneshot]')
 
   core.update()
   core.start_ui(oneshot=True)
 
 
 def serve(args):
-  logger.info('invoked to perform action: [serve]')
+  logger.debug('invoked to perform action: [serve]')
   settings.action = 'serve'
 
   while True:
@@ -43,11 +43,16 @@ def serve(args):
 
 def hook(args):
   settings.action = 'hook'
-  logger.info('invoked to perform action: [hook]')
+  logger.debug('invoked to perform action: [hook]')
 
   if args.hookEnabled is None:
+    assert(args.event is not None)
+    settings.hookEvent = args.event
+    logger.debug(f'trigger event: {args.event}')
+
     tmux.prepareTmuxInterface(force=False)
     tmux.hook.run()
+
   else:
     tmux.hook.enable(args.hookEnabled)
 
@@ -94,6 +99,8 @@ def parse_args():
       update snapshot and update the fzf interface in tmux window
       '''
   )
+
+  # hook {-d | -e}
   group = act_hook.add_mutually_exclusive_group()
   group.add_argument(
       '-d, --disable',
@@ -106,6 +113,12 @@ def parse_args():
       dest='hookEnabled',
       action='store_true',
       help='enable background updating'
+  )
+  group.add_argument(
+      'event',
+      nargs='?',
+      choices=['window-linked', 'window-renamed', 'window-unlinked'],
+      help='event type that triggers the hook'
   )
   act_hook.set_defaults(func=hook, hookEnabled=None)
 
