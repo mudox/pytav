@@ -20,6 +20,12 @@ class paths:
   # data
   data_dir = Path('~/.local/share/tav').expanduser()
   data_dir.mkdir(parents=True, exist_ok=True)
+  # log
+  logDir = dataDir / 'log'
+  logDir.mkdir(parents=True, exist_ok=True)
+  logFile = logDir / serverPID
+
+  logTTY = Path(tmux.getLogTTY())
 
   serve_dir = data_dir / 'servers'
   serve_dir.mkdir(parents=True, exist_ok=True)

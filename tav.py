@@ -2,11 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import logging
 
 import core
+import log
 import settings
 import tests
 import tmux
+
+log.configureLogging()
+logger = logging.getLogger(__name__)
 
 #
 # actions (sub-commands)
