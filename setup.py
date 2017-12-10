@@ -6,18 +6,20 @@
 
 import re
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 version = re.search(
     r"^__version__\s*=\s*'(.*)'",
-    open('tav/tav.py').read(),
+    open('src/tav/tav.py').read(),
     re.M
 ).group(1)
 
 
 setup(
     name='tav',
-    packages=['tav'],
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
+    include_package_data=True,
     entry_points={
         "console_scripts": ['tav = tav.tav:main']},
     version=version,
