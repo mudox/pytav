@@ -4,11 +4,10 @@
 import argparse
 import logging
 
-from . import core
-from . import log
-from . import settings
-from . import tests
-from . import tmux
+from . import core, log, settings, tests, tmux
+
+
+__version__ = '1.4.0'
 
 log.configureLogging()
 logger = logging.getLogger(__name__)
