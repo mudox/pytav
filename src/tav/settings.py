@@ -58,8 +58,8 @@ class paths:
   logDir.mkdir(parents=True, exist_ok=True)
   logFile = logDir / serverPID
 
-  tty = tmux.getLogTTY()
-  logTTY = tty is not None and Path(tty) or None
+  _tty = tmux.getLogTTY()
+  logTTY = _tty is not None and Path(_tty) or None
 
   # serve file
   serveDir = dataDir / 'servers'
