@@ -57,3 +57,21 @@ def list_all_windows():
   p = sp.run(cmd, stdout=sp.PIPE)
   lines = p.stdout.decode().strip().splitlines()
   return [line.split(':') for line in lines]
+def execute(cmdstr, *args):
+  cmd = split(cmdstr, comments=True)
+  logger.debug(f'cmd: {cmd}')
+
+  try:
+
+    p = sp.run(cmd, stderr=sp.PIPE, stdout=sp.PIPE, *args)
+
+    if p.returncode != 0:
+      msg = p.stderr.decode()
+      logger.error(f'error: {msg}')
+      return None
+    else:
+      return p
+
+  except Exception as e:
+    logger.error(f'exception: {e}')
+    return None

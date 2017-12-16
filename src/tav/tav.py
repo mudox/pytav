@@ -6,7 +6,6 @@ import logging
 
 from . import core, log, settings, tests, tmux
 
-
 __version__ = '1.4.0'
 
 log.configureLogging()
@@ -41,6 +40,7 @@ class Command:
 
   def hook(self, args):
     settings.action = 'hook'
+
     if args.hookEnabled is None:
       if args.event is None:
         msg = 'must specify either the trigger event type or [-d|-e] option\n\n'
