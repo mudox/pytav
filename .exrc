@@ -1,2 +1,2 @@
-let g:tit_keys= 'tav test'
+let g:tit_keys= 'pip3 install -U . && pytest -v'
 let g:tit_target = '.2'
