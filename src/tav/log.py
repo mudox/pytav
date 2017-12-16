@@ -37,7 +37,7 @@ def configureLogging():
   rootLogger = logging.getLogger()
   rootLogger.setLevel(logging.NOTSET)
 
-  formatter = ConsoleLogFormatter()
+  formatter = JackStyleFormatter()
 
   # log to file
   logToFile = logging.FileHandler(str(settings.paths.logFile))
@@ -59,10 +59,8 @@ def configureLogging():
   else:
     rootLogger.error('Log window not found, TTY logger can not be created')
 
-  rootLogger.info('Logging initialized')
 
-
-class ConsoleLogFormatter(logging.Formatter):
+class JackStyleFormatter(logging.Formatter):
 
   def __init__(self):
     super().__init__()
