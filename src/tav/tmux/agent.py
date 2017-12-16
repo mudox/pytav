@@ -3,7 +3,7 @@
 
 import logging
 import subprocess as sp
-from shlex import split
+from shlex import split as xsplit
 
 from . import settings
 from . import hook
@@ -75,20 +75,13 @@ def respawn_finder_window():
 
 
 def execute(cmdstr, *args):
-  cmd = split(cmdstr, comments=True)
+  cmd = xsplit(cmdstr, comments=True)
   logger.debug(f'cmd: {cmd}')
 
-  try:
+  p = sp.run(cmd, stderr=sp.PIPE, stdout=sp.PIPE, *args)
 
-    p = sp.run(cmd, stderr=sp.PIPE, stdout=sp.PIPE, *args)
+  if p.returncode != 0:
+    msg = p.stderr.decode()
+    logger.error(f'error: {msg}')
 
-    if p.returncode != 0:
-      msg = p.stderr.decode()
-      logger.error(f'error: {msg}')
-      return None
-    else:
-      return p
-
-  except Exception as e:
-    logger.error(f'exception: {e}')
-    return None
+  return p
