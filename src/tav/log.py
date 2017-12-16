@@ -64,23 +64,34 @@ def configureLogging():
 
 class ConsoleLogFormatter(logging.Formatter):
 
+  def __init__(self):
+    super().__init__()
+    self.lastHeadLine = ''
+
   def format(self, record):
 
     # head line
-    symbol = _symbols[record.levelno]
     color = _colors[record.levelno]
+    symbol = _symbols[record.levelno]
     subsystem = (record.name == '__main__') and 'main' or record.name
-    head = _colorize(f'{symbol}{subsystem}', color[0])
+    head1 = _colorize(f'{symbol}{subsystem}', color[0])
 
     color = _colors['fileFuncName']
-    fileFuncName = _colorize(f'[{record.filename}] {record.funcName}', color[1])
+    head2 = _colorize(f'[{record.filename}] {record.funcName}', color[1])
+
+    headLine = f'{head1} {head2}'
 
     # body
     message = super().format(record)
     message = textwrap.indent(message, '\x20' * 2)
 
     # combine
-    lines = f'\n{head} {fileFuncName}\n{message}'
-    lines = textwrap.indent(lines, '\x20')  # indent 1 space for aethetics
+    if headLine != self.lastHeadLine:
+      lines = f'\n{headLine}\n{message}'
+      self.lastHeadLine = headLine
+    else:
+      lines = f'\n{message}'
 
+    # indent 1 space for the sake of aesthetic
+    lines = textwrap.indent(lines, '\x20')
     return lines
