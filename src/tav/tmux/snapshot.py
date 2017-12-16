@@ -16,8 +16,8 @@ class Snapshot:
       - all_sessions
       - live_sessions
       - dead_sessions
-      - sname_max_width
-      - wname_max_width
+      - sessionNameMaxWidth
+      - windowNameMaxWidth
       - server_pid
       - window_count
       - live_session_count
@@ -43,8 +43,8 @@ class Snapshot:
 
       self.live_sessions.append(session)
 
-    self.sname_max_width = reduce(max, [len(t[3]) for t in window_info_tuples])
-    self.wname_max_width = reduce(max, [len(t[1]) for t in window_info_tuples])
+    self.sessionNameMaxWidth = reduce(max, [len(t[1]) for t in window_info_tuples])
+    self.windowNameMaxWidth = reduce(max, [len(t[3]) for t in window_info_tuples])
 
     self.live_session_count = len(self.live_sessions)
     window_counts = [len(s.windows) for s in self.live_sessions]
@@ -70,9 +70,9 @@ class Snapshot:
       self.dead_session_count = 0
       return
 
-    # update self.sname_max_width
+    # update self.sessionNameMaxWidth
     width = reduce(max, [len(n) for n in dead_snames])
-    self.sname_max_width = max(self.sname_max_width, width)
+    self.sessionNameMaxWidth = max(self.sessionNameMaxWidth, width)
 
     self.dead_sessions = []
     for name in dead_snames:
