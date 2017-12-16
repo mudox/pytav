@@ -25,7 +25,7 @@ _colors = {
 }
 
 
-def _colorize(text, rgb):
+def _color_rgb(text, rgb):
   r, g, b = rgb
   return f'\033[38;2;{r};{g};{b}m{text}\033[0m'
 
@@ -37,11 +37,9 @@ def configureLogging():
   rootLogger = logging.getLogger()
   rootLogger.setLevel(logging.NOTSET)
 
-  formatter = JackStyleFormatter()
-
   # log to file
   logToFile = logging.FileHandler(str(settings.paths.logFile))
-  logToFile.setFormatter(formatter)
+  logToFile.setFormatter(JackStyleFormatter())
   rootLogger.addHandler(logToFile)
 
   with settings.paths.logFile.open('a') as file:
@@ -50,7 +48,7 @@ def configureLogging():
   # log to tty
   if settings.paths.logTTY is not None:
     logToTTY = logging.FileHandler(settings.paths.logTTY)
-    logToTTY.setFormatter(formatter)
+    logToTTY.setFormatter(JackStyleFormatter())
     rootLogger.addHandler(logToTTY)
 
     with open(settings.paths.logTTY, 'w') as file:
@@ -72,10 +70,10 @@ class JackStyleFormatter(logging.Formatter):
     color = _colors[record.levelno]
     symbol = _symbols[record.levelno]
     subsystem = (record.name == '__main__') and 'main' or record.name
-    head1 = _colorize(f'{symbol}{subsystem}', color[0])
+    head1 = _color_rgb(f'{symbol}{subsystem}', color[0])
 
     color = _colors['fileFuncName']
-    head2 = _colorize(f'[{record.filename}] {record.funcName}', color[1])
+    head2 = _color_rgb(f'[{record.filename}] {record.funcName}', color[1])
 
     headLine = f'{head1} {head2}'
 
