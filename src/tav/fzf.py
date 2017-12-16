@@ -29,57 +29,71 @@ colors = {
 cr = '\033[0m'  # reset style
 ch = '\033[30m'  # hide foreground into background
 
-fzf_left_margin = 2
-fzf_session_symbol_padding = 2
-fzf_window_symbol_padding = 2
-
 # TODO: 2 hard corded magic numbers
-fzf_min_gap = 6
-fzf_min_width = 46
+minGap = 6
+minWidth = 46
 
 ansi_pat = re.compile('\x1b\[[^m]+m')
 
+def _color(text, color):
+  return f'{color}{text}\x1b[0m'
 
-def _width(text):
+
+def _hide(text):
+  return f'\x1b[30m{text}\x1b[0m'
+
+
+def _sgr_width(text):
   chunks = ansi_pat.findall(text)
   return sum([len(c) for c in chunks])
 
 
+def _screen_width(text):
+  return len(text) - _sgr_width(text)
+
+
 def _left(text, width, fillchar='\x20'):
-  return text.ljust(width + _width(text), fillchar)
+  return text.ljust(width + _sgr_width(text), fillchar)
 
 
 def _center(text, width, fillchar='\x20'):
-  return text.center(width + _width(text), fillchar)
+  return text.center(width + _sgr_width(text), fillchar)
 
 
 def _right(text, width, fillchar='\x20'):
-  return text.rjust(width + _width(text), fillchar)
+  return text.rjust(width + _sgr_width(text), fillchar)
+
+
+_fzfLeftMargin = 2
+_sessionSymbolWidth = 2
+_windowSymbolWidth = 2
 
 
 class FZFFormatter:
 
-  def __init__(self, snapshot):
+  def __init__(self, snapshot, testMode=False):
 
     self.snapshot = snapshot
+    self.testMode = testMode
 
-    self.fzf_field_1_width = max(self.snapshot.wname_max_width,
-                                 self.snapshot.sname_max_width)
+    self.part1Width = max(self.snapshot.windowNameMaxWidth,
+                          self.snapshot.sessionNameMaxWidth)
 
-    self.fzf_field_2_width = self.snapshot.sname_max_width
+    self.part2Width = self.snapshot.sessionNameMaxWidth
 
-    without_gap =                    \
-        fzf_left_margin              \
-        + fzf_session_symbol_padding \
-        + fzf_window_symbol_padding  \
-        + self.fzf_field_1_width     \
-        + self.fzf_field_2_width
-    with_min_gap = without_gap + fzf_min_gap
+    withoutGap =              \
+        _fzfLeftMargin        \
+        + _sessionSymbolWidth \
+        + _windowSymbolWidth  \
+        + self.part1Width     \
+        + self.part2Width
 
-    self.fzf_width = max(fzf_min_width, with_min_gap)
-    self.fzf_gap = self.fzf_width - without_gap
+    withMinGap = withoutGap + minGap
 
-  def fzf_lines(self):
+    self.width = max(minWidth, withMinGap)
+    self.gap = self.width - withoutGap
+
+  def fzfLines(self):
     lines = []
 
     #
@@ -91,11 +105,11 @@ class FZFFormatter:
       if session.name == settings.tavSessionName:
         continue
 
-      lines.append('\n' + self.live_session_line(session))
+      lines.append('\n' + self._live_session_line(session))
 
       for window in session.windows:
 
-        lines.append(self.window_line(session, window))
+        lines.append(self._window_line(session, window))
 
     #
     # dead sessions
@@ -106,45 +120,60 @@ class FZFFormatter:
 
     # unloaded bar
     color = colors['unloaded_bar']
-    body = f' UN · LOADED '.center(self.fzf_width - 2, '─')
-    # line = f'\n{"<nop>":{self.snapshot.sname_max_width}}\t{ch}⋅⋅{cr}{color}{body}{cr}\n'
-    line = f'\n{"<nop>":{self.snapshot.sname_max_width}}\t{color}{body}{cr}\n'
+    body = f' UN · LOADED '.center(self.width - 2, '─')
+    line = f'\n{"<nop>":{self.part1Width}}\t{color}{body}{cr}\n'
     lines.append(line)
 
     for session in self.snapshot.dead_sessions:
-      lines.append(self.dead_session_line(session))
+      lines.append(self._dead_session_line(session))
 
-    return '\n'.join(lines)
+    if self.testMode:
+      return '\n'.join(lines).replace('\x20', '_')
+    else:
+      return '\n'.join(lines)
 
-  def window_line(self, session, window):
+  def _window_line(self, session, window):
+    hiddenPrefix = f'{window.id:{self.part1Width}}'
+
+    windowSymbol = '· '
+
     color1 = colors['window_line_window_name']
     part1 = f'{color1}{window.name}{cr}'
-    part1 = _left(part1, self.fzf_field_1_width)
+    part1 = _left(part1, self.part1Width)
+
+    gap = (self.testMode and '*' or '\x20') * self.gap
 
     color2 = colors['window_line_session_name']
-    part2 = f'{color2}{session.name}{cr}'
-    part2 = _right(part2, self.fzf_field_2_width)
+    part2 = _color(session.name, color2)
+    part2 = _right(part2, self.part2Width)
 
-    line = f'{window.id:{self.fzf_field_1_width}}' + \
-            f'\t{ch}⋅⋅{cr}· ' +                      \
-            f'{part1}' +                             \
-            f'{" " * self.fzf_gap}' +                \
-            f'{part2}'
+    line =             \
+        hiddenPrefix + \
+        '\t' +         \
+        _hide('⋅⋅') +  \
+        windowSymbol + \
+        part1 +        \
+        gap +          \
+        part2
 
     return line
 
-  def dead_session_line(self, session):
-    # field1
+  def _dead_session_line(self, session):
+    hiddenPrefix = f'{session.name:{self.part1Width}}'
+
     color1 = colors['dead_session_name']
-    part1 = f'{color1}{session.name}{cr}'
-    part1 = _left(part1, self.fzf_field_1_width)
+    part1 = _color(session.name, color1)
+    part1 = _left(part1, self.part1Width)
 
-    return f'{session.name:{self.fzf_field_1_width}}' + \
-            f'\t{ch}⋅⋅{cr}' +                           \
-            f'{part1}'
+    return hiddenPrefix + '\t' + _hide('⋅⋅') + part1
 
-  def live_session_line(self, session):
+  def _live_session_line(self, session):
+    hiddenPrefix = f'{session.id:{self.part1Width}}'
+
     symbol = symbols.get(session.name, default_live_symbol)
-    color = colors['session_line_live_session_name']
+    symbol = _left(symbol, _sessionSymbolWidth)
 
-    return f'{session.id:{self.snapshot.sname_max_width}}\t{symbol} {color}{session.name}{cr}'
+    color = colors['session_line_live_session_name']
+    sessionTitle = _color(session.name, color)
+
+    return f'{hiddenPrefix}\t{symbol}{sessionTitle}'
