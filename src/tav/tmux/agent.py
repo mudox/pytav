@@ -21,27 +21,26 @@ def prepareTmuxInterface(force):
 
 
 def getServerPID():
-  cmd = split('''
+  cmdstr = '''
     tmux list-sessions -F '#{pid}'
-  ''')
-  p = sp.run(cmd, stdout=sp.PIPE)
-
+  '''
+  p = execute(cmdstr)
   return int(p.stdout.decode().strip().splitlines()[0])
 
 
 def getLogTTY():
-  cmd = split(f'''
+  cmdstr = f'''
     tmux list-panes -t {settings.logWindowTarget} -F '#{{pane_tty}}'
-  ''')
+  '''
 
-  p = sp.run(cmd, stdout=sp.PIPE)
+  p = execute(cmdstr)
   if p.returncode != 0:
     return None
   else:
     return p.stdout.decode().strip()
 
 
-def list_all_windows():
+def listAllWindows():
   '''
   return tuple of (sid, sname, wid, wname)
   '''
@@ -54,23 +53,23 @@ def list_all_windows():
   ]
   format = ':'.join(format)
 
-  cmd = split(f'''
+  cmdstr = f'''
     tmux list-windows -a -F '{format}'
-  ''', comments=True)
+  '''
 
-  p = sp.run(cmd, stdout=sp.PIPE)
+  p = execute(cmdstr)
   lines = p.stdout.decode().strip().splitlines()
   return [line.split(':') for line in lines]
 
 
-def respawn_finder_window():
+def respawnFinderWindow():
 
-  cmd = f'''
+  cmdstr = f'''
     tmux respawn-window -k -t '{settings.finderWindowTarget}'
   '''
 
   hook.enable(False)
-  execute(cmd)
+  execute(cmdstr)
   hook.enable(True)
 
 
