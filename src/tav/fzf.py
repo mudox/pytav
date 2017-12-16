@@ -1,68 +1,39 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import re
-
-from . import settings
+from . import screen, settings
 
 # TODO!: make symbols and colors configurable
 
-symbols = {
+_symbols = {
     'Configure': '',
     'Update': '',
     'Dashboard': '',
     'Play': '',
 }
 
-default_live_symbol = ''
-# dead_symbol = ''
-dead_symbol = ''
+_defaultLiveSessionSymbol = ''
+_defaultDeadSessionSymbol = ''
 
-colors = {
-    'session_line_live_session_name': '\033[38;5;28m',
-    'window_line_window_name': '\033[38;5;81m',
-    'window_line_session_name': '\033[38;5;242m',
-    'unloaded_bar': '\033[38;5;88m',
-    'dead_session_name': '\033[38;5;242m',
+# _colors = {
+    # 'sessionLineLiveSessionName': '\033[38;5;28m',
+    # 'windowLineWindowName': '\033[38;5;81m',
+    # 'windowLineSessionName': '\033[38;5;242m',
+    # 'unloadedBar': '\033[38;5;88m',
+    # 'deadSessionName': '\033[38;5;242m',
+# }
+
+_colors = {
+    'sessionLineLiveSessionName': '\033[32m',
+    'windowLineWindowName': '\033[34m',
+    'windowLineSessionName': '\033[38;5;242m',
+    'unloadedBar': '\033[38;5;88m',
+    'deadSessionName': '\033[38;5;242m',
 }
 
-cr = '\033[0m'  # reset style
-ch = '\033[30m'  # hide foreground into background
-
 # TODO: 2 hard corded magic numbers
-minGap = 6
-minWidth = 46
-
-ansi_pat = re.compile('\x1b\[[^m]+m')
-
-def _color(text, color):
-  return f'{color}{text}\x1b[0m'
-
-
-def _hide(text):
-  return f'\x1b[30m{text}\x1b[0m'
-
-
-def _sgr_width(text):
-  chunks = ansi_pat.findall(text)
-  return sum([len(c) for c in chunks])
-
-
-def _screen_width(text):
-  return len(text) - _sgr_width(text)
-
-
-def _left(text, width, fillchar='\x20'):
-  return text.ljust(width + _sgr_width(text), fillchar)
-
-
-def _center(text, width, fillchar='\x20'):
-  return text.center(width + _sgr_width(text), fillchar)
-
-
-def _right(text, width, fillchar='\x20'):
-  return text.rjust(width + _sgr_width(text), fillchar)
-
+_minGap = 6
+_minWidth = 46
 
 _fzfLeftMargin = 2
 _sessionSymbolWidth = 2
@@ -88,10 +59,16 @@ class FZFFormatter:
         + self.part1Width     \
         + self.part2Width
 
-    withMinGap = withoutGap + minGap
+    withMinGap = withoutGap + _minGap
 
-    self.width = max(minWidth, withMinGap)
+    self.width = max(_minWidth, withMinGap)
     self.gap = self.width - withoutGap
+
+  def unloadedBar(self):
+    color = _colors['unloadedBar']
+    body = f' ─── DEAD SESSIONS ─── '.center(self.width - 2)
+    line = f'\n{"<nop>":{self.part1Width}}\t{screen.sgr(body, color)}\n'
+    return line
 
   def fzfLines(self):
     lines = []
@@ -111,18 +88,18 @@ class FZFFormatter:
 
         lines.append(self._window_line(session, window))
 
-    #
-    # dead sessions
-    #
-
     if self.snapshot.dead_session_count == 0:
       return '\n'.join(lines)
 
+    #
     # unloaded bar
-    color = colors['unloaded_bar']
-    body = f' UN · LOADED '.center(self.width - 2, '─')
-    line = f'\n{"<nop>":{self.part1Width}}\t{color}{body}{cr}\n'
-    lines.append(line)
+    #
+
+    lines.append(self.unloadedBar())
+
+    #
+    # dead sessions
+    #
 
     for session in self.snapshot.dead_sessions:
       lines.append(self._dead_session_line(session))
@@ -137,23 +114,23 @@ class FZFFormatter:
 
     windowSymbol = '· '
 
-    color1 = colors['window_line_window_name']
-    part1 = f'{color1}{window.name}{cr}'
-    part1 = _left(part1, self.part1Width)
+    color1 = _colors['windowLineWindowName']
+    part1 = screen.sgr(window.name, color1)
+    part1 = screen.left(part1, self.part1Width)
 
     gap = (self.testMode and '*' or '\x20') * self.gap
 
-    color2 = colors['window_line_session_name']
-    part2 = _color(session.name, color2)
-    part2 = _right(part2, self.part2Width)
+    color2 = _colors['windowLineSessionName']
+    part2 = screen.sgr(session.name, color2)
+    part2 = screen.right(part2, self.part2Width)
 
-    line =             \
-        hiddenPrefix + \
-        '\t' +         \
-        _hide('⋅⋅') +  \
-        windowSymbol + \
-        part1 +        \
-        gap +          \
+    line =                     \
+        hiddenPrefix +         \
+        '\t' +                 \
+        screen.sgrHide('⋅⋅') + \
+        windowSymbol +         \
+        part1 +                \
+        gap +                  \
         part2
 
     return line
@@ -161,19 +138,19 @@ class FZFFormatter:
   def _dead_session_line(self, session):
     hiddenPrefix = f'{session.name:{self.part1Width}}'
 
-    color1 = colors['dead_session_name']
-    part1 = _color(session.name, color1)
-    part1 = _left(part1, self.part1Width)
+    color1 = _colors['deadSessionName']
+    part1 = screen.sgr(session.name, color1)
+    part1 = screen.left(part1, self.part1Width)
 
-    return hiddenPrefix + '\t' + _hide('⋅⋅') + part1
+    return hiddenPrefix + '\t' + screen.sgrHide('⋅⋅') + part1
 
   def _live_session_line(self, session):
     hiddenPrefix = f'{session.id:{self.part1Width}}'
 
-    symbol = symbols.get(session.name, default_live_symbol)
-    symbol = _left(symbol, _sessionSymbolWidth)
+    symbol = _symbols.get(session.name, _defaultLiveSessionSymbol)
+    symbol = screen.left(symbol, _sessionSymbolWidth)
 
-    color = colors['session_line_live_session_name']
-    sessionTitle = _color(session.name, color)
+    color = _colors['sessionLineLiveSessionName']
+    sessionTitle = screen.sgr(session.name, color)
 
     return f'{hiddenPrefix}\t{symbol}{sessionTitle}'
