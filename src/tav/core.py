@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import json
+import logging
 import shlex
 import shutil
 import subprocess
 from time import sleep
 
-from . import settings
-from . import tmux
+from . import settings, tmux
 from .fzf import FZFFormatter
+
+logger = logging.getLogger(__name__)
 
 
 def update():
@@ -26,6 +28,9 @@ def update():
   formatter = FZFFormatter(snap)
   fzf_feed_lines = formatter.fzf_lines()
   fzf_ui_width = formatter.fzf_width
+
+  logger.debug(f'fzf ui width: {fzf_ui_width}')
+  logger.debug(fzf_feed_lines)
 
   info = {
       'tmux': {
