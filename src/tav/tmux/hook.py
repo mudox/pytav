@@ -46,4 +46,5 @@ def run():
     return
 
   core.update()
-  tmux.respawn_finder_window()
+  tmux.respawnFinderWindow()
+
