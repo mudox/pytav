@@ -18,7 +18,7 @@ def prepareTmuxInterface(force):
 
 def getServerPID():
   cmd = split('''
-    tmux list-clients -F '#{pid}'
+    tmux list-sessions -F '#{pid}'
   ''')
   p = sp.run(cmd, stdout=sp.PIPE)
 
