@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
 import subprocess as sp
 from shlex import split
 
 from . import settings
+from . import hook
+
+logger = logging.getLogger(__name__)
 
 
 def prepareTmuxInterface(force):
@@ -57,6 +61,19 @@ def list_all_windows():
   p = sp.run(cmd, stdout=sp.PIPE)
   lines = p.stdout.decode().strip().splitlines()
   return [line.split(':') for line in lines]
+
+
+def respawn_finder_window():
+
+  cmd = f'''
+    tmux respawn-window -k -t '{settings.finderWindowTarget}'
+  '''
+
+  hook.enable(False)
+  execute(cmd)
+  hook.enable(True)
+
+
 def execute(cmdstr, *args):
   cmd = split(cmdstr, comments=True)
   logger.debug(f'cmd: {cmd}')

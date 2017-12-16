@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import subprocess
+import logging
 from time import time
 
-from .. import core
-from .. import settings
+from .. import core, settings, tmux
+
+logger = logging.getLogger(__name__)
 
 
 def enable(flag):
@@ -41,8 +42,8 @@ def is_enabled() -> bool:
 
 def run():
   if not is_enabled():
+    logger.debug('hook update suppressed')
     return
-  else:
-    core.update()
-    subprocess.run(['tmux', 'respawn-window', '-k',
-                    '-t', settings.finderWindowTarget])
+
+  core.update()
+  tmux.respawn_finder_window()
