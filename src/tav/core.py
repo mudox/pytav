@@ -26,8 +26,8 @@ def update():
   snap = tmux.Snapshot()
 
   formatter = FZFFormatter(snap)
-  fzf_feed_lines = formatter.fzf_lines()
-  fzf_ui_width = formatter.fzf_width
+  fzf_feed_lines = formatter.fzfLines()
+  fzf_ui_width = formatter.width
 
   logger.debug(f'fzf ui width: {fzf_ui_width}')
   logger.debug(fzf_feed_lines)

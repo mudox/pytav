@@ -14,7 +14,6 @@ logWindowTarget = f'{tavSessionName}:Log'
 
 reenableHookInterval = 4
 
-# yapf: disable
 defaultConfig = {
     'version': 1,
     'color': {
@@ -29,7 +28,6 @@ defaultConfig = {
         'default': '+',
     }
 }
-# yapf: enable
 
 serverPID = str(tmux.getServerPID())
 
