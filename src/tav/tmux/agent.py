@@ -145,6 +145,10 @@ def respawnFinderWindow():
 
 
 def switchTo(target):
+  # quote for sessions id e.g. '$5'
+  # otherwise it would be expanded as an shell variable
+  target = f"'{target}'"
+
   if 'TMUX' in environ:
     _run(f'tmux switch-client -t {target}')
   else:
