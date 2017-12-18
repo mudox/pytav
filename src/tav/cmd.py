@@ -4,11 +4,13 @@
 import argparse
 import logging
 
-from . import core, log, settings, tests, tmux
+from jaclog import jaclog
 
-__version__ = '1.4.0'
+from . import core, settings, tests, tmux
 
-log.configureLogging()
+__version__ = '2.0.1'
+
+jaclog.configure('tav', 'log', logTTY=settings.paths.logTTY)
 logger = logging.getLogger(__name__)
 
 #
@@ -126,9 +128,12 @@ class Command:
     group.add_argument(
         'event',
         nargs='?',
-        choices=['window-linked', 'window-renamed', 'window-unlinked', 'session-renamed'],
-        help='event type that triggers the hook'
-    )
+        choices=[
+            'window-linked',
+            'window-renamed',
+            'window-unlinked',
+            'session-renamed'],
+        help='event type that triggers the hook')
     act_hook.set_defaults(func=self.hook, hookEnabled=None)
 
     # action `oneshot`
