@@ -13,7 +13,7 @@ _symbols = {
 }
 
 _defaultLiveSessionSymbol = ''
-_defaultDeadSessionSymbol = ''
+_defaultDeadSessionSymbol = ''
 
 # _colors = {
     # 'sessionLineLiveSessionName': '\033[38;5;28m',
@@ -66,7 +66,7 @@ class FZFFormatter:
 
   def unloadedBar(self):
     color = _colors['unloadedBar']
-    body = f' ─── DEAD SESSIONS ─── '.center(self.width - 2)
+    body = f' ──────  {_defaultDeadSessionSymbol}  ────── '.center(self.width - 2)
     line = f'\n{"<nop>":{self.part1Width}}\t{screen.sgr(body, color)}\n'
     return line
 
