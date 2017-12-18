@@ -22,7 +22,7 @@ if tmux has-session -t ${session_name} &>/dev/null; then
 fi
 
 #
-# window: Editor
+# window: Edit
 #
 
 root="${HOME}/Develop/Python/tav"
@@ -36,7 +36,7 @@ tmux new-session       \
   -c "${root}"         \
   -d
 tmux send-keys -t "${window}.1" '
-v py **/*.{py,sh} .*
+v py **/*.{py,sh} .exrc .tmux-session.sh
 '
 tmux split-window  \
   -t "${window}.1" \
@@ -48,3 +48,21 @@ tmux select-pane -t "${window}.1"
 tmux select-window -t "${session_name}:1.1"
 echo "[${session_name}]"
 tmux list-window -t "${session_name}" -F ' - #W'
+
+#
+# window: Log
+#
+
+root="${HOME}/.local/share/tav/log"
+window_name='Log'
+window="${session_name}:${window_name}"
+tmux new-window              \
+  -a                         \
+  -t "${session_name}:{end}" \
+  -n "${window_name}"        \
+  -c "${root}"               \
+  -d
+sleep 1
+tmux send-keys -t "${window}" "
+tail -f log
+"
