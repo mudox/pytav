@@ -24,7 +24,7 @@ from . import screen, settings
 
 
 _symbols = '''
-    Console     : 📘
+    Console     : 🐬
     Update      : 🎉
     Dashboard   : 🌿
     Play        : ⛑
@@ -51,7 +51,7 @@ _minGap = 6
 _minWidth = 46
 
 _fzfLeftMargin = 2
-_sessionSymbolWidth = 3
+_sessionSymbolWidth = 4
 _windowSymbolWidth = 2
 
 
@@ -170,7 +170,7 @@ class FZFFormatter:
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self.part1Width)
 
-    return f'{hiddenPrefix}\t{symbol}{part1}'
+    return f'\n{hiddenPrefix}\t{symbol}{part1}'
 
   def _live_session_line(self, session):
     hiddenPrefix = f'{session.id:{self.part1Width}}'
