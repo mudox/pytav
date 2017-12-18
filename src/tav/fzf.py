@@ -56,36 +56,47 @@ _windowSymbolWidth = 2
 
 
 class FZFFormatter:
+  """ Transfer information from `tmux.Snapshot` object into fzf source lines.
+
+  Attributes:
+    snapshot (tmux.Snapshot): The source snapshot object.
+    fzfWidth (int): Screen width of fzf interface.
+    fzfHeader (str): Passed to `fzf --header` option.
+    fzfFeed (str): Lines feed as stdin of `fzf`.
+
+  """
 
   def __init__(self, snapshot, testMode=False):
 
     self.snapshot = snapshot
-    self.testMode = testMode
+    self._testMode = testMode
 
     self._sessionSymbolPadding = screen.sgrHide('⋅' * _sessionSymbolWidth)
 
-    self.part1Width = max(self.snapshot.windowNameMaxWidth,
-                          self.snapshot.sessionNameMaxWidth)
+    self._part1Width = max(self.snapshot.windowNameMaxWidth,
+                           self.snapshot.sessionNameMaxWidth)
 
-    self.part2Width = self.snapshot.sessionNameMaxWidth
+    self._part2Width = self.snapshot.sessionNameMaxWidth
 
     withoutGap =              \
         _fzfLeftMargin        \
         + _sessionSymbolWidth \
         + _windowSymbolWidth  \
-        + self.part1Width     \
-        + self.part2Width
+        + self._part1Width     \
+        + self._part2Width
 
     withMinGap = withoutGap + _minGap
 
-    self.width = max(_minWidth, withMinGap)
-    self.gap = self.width - withoutGap
+    self.fzfWidth = max(_minWidth, withMinGap)
+    self._gap = self.fzfWidth - withoutGap
+
     self.fzfHeader = self._fzfHeaderLines()
+    self.fzfFeed = self._fzfLines()
 
   def unloadedBar(self):
     color = _colors['unloadedBar']
-    body = f' ──────  {_defaultDeadSessionSymbol}  ────── '.center(self.width - 2)
-    line = f'\n{"<nop>":{self.part1Width}}\t{screen.sgr(body, color)}\n'
+    body = f' ──────  {_defaultDeadSessionSymbol}  ────── '.center(self.fzfWidth - 2)
+    line = f'\n{"<nop>":{self._part1Width}}\t{screen.sgr(body, color)}'
     return line
 
   def _fzfHeaderLines(self):
@@ -98,6 +109,8 @@ class FZFFormatter:
     )
     lines += screen.sgrHide('\n·')
     return lines
+
+  def _fzfLines(self):
     lines = []
 
     #
@@ -109,11 +122,11 @@ class FZFFormatter:
       if session.name == settings.tavSessionName:
         continue
 
-      lines.append('\n' + self._live_session_line(session))
+      lines.append('\n' + self._liveSessionLine(session))
 
       for window in session.windows:
 
-        lines.append(self._window_line(session, window))
+        lines.append(self._windowLine(session, window))
 
     if self.snapshot.dead_session_count == 0:
       return '\n'.join(lines)
@@ -129,16 +142,16 @@ class FZFFormatter:
     #
 
     for session in self.snapshot.dead_sessions:
-      lines.append(self._dead_session_line(session))
+      lines.append(self._deadSessionLine(session))
 
-    if self.testMode:
+    if self._testMode:
       return '\n'.join(lines).replace('\x20', '_')
     else:
       return '\n'.join(lines)
 
-  def _window_line(self, session, window):
+  def _windowLine(self, session, window):
     # prefix
-    hiddenPrefix = f'{window.id:{self.part1Width}}'
+    hiddenPrefix = f'{window.id:{self._part1Width}}'
 
     # window symbol
     windowSymbol = '· '
@@ -146,15 +159,15 @@ class FZFFormatter:
     # part1
     color1 = _colors['windowLineWindowName']
     part1 = screen.sgr(window.name, color1)
-    part1 = screen.left(part1, self.part1Width)
+    part1 = screen.left(part1, self._part1Width)
 
     # gap
-    gap = (self.testMode and '*' or '\x20') * self.gap
+    gap = (self._testMode and '*' or '\x20') * self._gap
 
     # part2
     color2 = _colors['windowLineSessionName']
     part2 = screen.sgr(session.name, color2)
-    part2 = screen.right(part2, self.part2Width)
+    part2 = screen.right(part2, self._part2Width)
 
     line =                           \
         hiddenPrefix +               \
@@ -167,9 +180,9 @@ class FZFFormatter:
 
     return line
 
-  def _dead_session_line(self, session):
+  def _deadSessionLine(self, session):
     # prefix
-    hiddenPrefix = f'{session.name:{self.part1Width}}'
+    hiddenPrefix = f'{session.name:{self._part1Width}}'
 
     # session symbol if any
     symbol = _symbols.get(session.name, _defaultLiveSessionSymbol)
@@ -178,12 +191,12 @@ class FZFFormatter:
     # the only part: session name
     color1 = _colors['deadSessionName']
     part1 = screen.sgr(session.name, color1)
-    part1 = screen.left(part1, self.part1Width)
+    part1 = screen.left(part1, self._part1Width)
 
     return f'\n{hiddenPrefix}\t{symbol}{part1}'
 
-  def _live_session_line(self, session):
-    hiddenPrefix = f'{session.id:{self.part1Width}}'
+  def _liveSessionLine(self, session):
+    hiddenPrefix = f'{session.id:{self._part1Width}}'
 
     symbol = _symbols.get(session.name, _defaultLiveSessionSymbol)
     symbol = screen.left(symbol, _sessionSymbolWidth)

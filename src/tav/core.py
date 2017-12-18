@@ -23,25 +23,20 @@ def update():
   - `json.dump` the dict to disk
   '''
 
-  snap = tmux.Snapshot()
-
-  formatter = FZFFormatter(snap)
-  fzf_feed_lines = formatter.fzfLines()
-  fzf_ui_width = formatter.width
-
-  logger.debug(f'fzf ui width: {fzf_ui_width}')
-  logger.debug(fzf_feed_lines)
+  snapshot = tmux.Snapshot()
+  formatter = FZFFormatter(snapshot)
 
   info = {
       'tmux': {
-          'server_pid': snap.server_pid,
-          'window_count': snap.window_count,
-          'live_session_count': snap.live_session_count,
-          'dead_session_count': snap.dead_session_count,
+          'server_pid': snapshot.server_pid,
+          'window_count': snapshot.window_count,
+          'live_session_count': snapshot.live_session_count,
+          'dead_session_count': snapshot.dead_session_count,
       },
       'fzf': {
-          'ui_width': fzf_ui_width,
-          'lines': fzf_feed_lines,
+          'width': formatter.fzfWidth,
+          'header': formatter.fzfHeader,
+          'lines': formatter.fzfFeed,
       }
   }
 
@@ -59,7 +54,7 @@ def start_ui(oneshot):
 
   # center fzf ui
   t_width, t_height = shutil.get_terminal_size()
-  width = info['fzf']['ui_width']
+  width = info['fzf']['width']
 
   h_margin = int((t_width - width) / 2) - 3
   t_margin = 3
