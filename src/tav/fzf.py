@@ -5,23 +5,34 @@ from . import screen, settings
 
 # TODO!: make symbols and colors configurable
 
-_symbols = {
-    'Configure': '',
-    'Update': '',
-    'Dashboard': '',
-    'Play': '',
-}
-
-_defaultLiveSessionSymbol = ''
-_defaultDeadSessionSymbol = ''
+# _symbols = {
+# 'Console': '',
+# 'Update': '',
+# 'Dashboard': '',
+# 'Play': '',
+# }
+# _defaultLiveSessionSymbol = ''
+# _defaultDeadSessionSymbol = ''
 
 # _colors = {
-    # 'sessionLineLiveSessionName': '\033[38;5;28m',
-    # 'windowLineWindowName': '\033[38;5;81m',
-    # 'windowLineSessionName': '\033[38;5;242m',
-    # 'unloadedBar': '\033[38;5;88m',
-    # 'deadSessionName': '\033[38;5;242m',
+# 'sessionLineLiveSessionName': '\033[38;5;28m',
+# 'windowLineWindowName': '\033[38;5;81m',
+# 'windowLineSessionName': '\033[38;5;242m',
+# 'unloadedBar': '\033[38;5;88m',
+# 'deadSessionName': '\033[38;5;242m',
 # }
+
+
+_symbols = {
+    'Console': '⛑ ',
+    'Update': '🚀 ',
+    'Dashboard': '👽 ',
+    'Play': '🌿 ',
+    'Tav-Project': '🦊 ',
+}
+
+_defaultLiveSessionSymbol = screen.sgrHide('·')
+_defaultDeadSessionSymbol = '👻 '
 
 _colors = {
     'sessionLineLiveSessionName': '\033[32m',
@@ -36,7 +47,7 @@ _minGap = 6
 _minWidth = 46
 
 _fzfLeftMargin = 2
-_sessionSymbolWidth = 2
+_sessionSymbolWidth = 3
 _windowSymbolWidth = 2
 
 
@@ -124,13 +135,13 @@ class FZFFormatter:
     part2 = screen.sgr(session.name, color2)
     part2 = screen.right(part2, self.part2Width)
 
-    line =                     \
-        hiddenPrefix +         \
-        '\t' +                 \
-        screen.sgrHide('⋅⋅') + \
-        windowSymbol +         \
-        part1 +                \
-        gap +                  \
+    line =                                          \
+        hiddenPrefix +                              \
+        '\t' +                                      \
+        screen.sgrHide('⋅' * _sessionSymbolWidth) + \
+        windowSymbol +                              \
+        part1 +                                     \
+        gap +                                       \
         part2
 
     return line

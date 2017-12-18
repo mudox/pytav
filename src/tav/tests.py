@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import fzf
-from . import settings
-from . import tmux
+from . import fzf, settings, tmux
 
 
 def test(args):
@@ -33,8 +31,8 @@ def test_snapshot():
 def test_formatter():
   _title('\nTest [formatter] ...')
   snap = tmux.Snapshot()
-  formatter = fzf.FZFFormatter(snap)
-  print(formatter.fzf_lines())
+  formatter = fzf.FZFFormatter(snap, testMode=True)
+  print(formatter.fzfLines())
 
 
 def test_prepare_tmux_interface():
