@@ -54,7 +54,7 @@ class paths:
   # log
   logDir = dataDir / 'log'
   logDir.mkdir(parents=True, exist_ok=True)
-  logFile = logDir / serverPID
+  logFile = logDir / 'log'
 
   _tty = tmux.getLogTTY()
   logTTY = _tty is not None and Path(_tty) or None
