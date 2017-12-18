@@ -57,14 +57,6 @@ def start_ui(oneshot):
   with settings.paths.serveFile.open() as file:
     info = json.load(file)
 
-  # fzf header string
-  header = '{} sessions ({} alive, {} dead), {} windows'.format(
-      info['tmux']['live_session_count'] + info['tmux']['dead_session_count'],
-      info['tmux']['live_session_count'],
-      info['tmux']['dead_session_count'],
-      info['tmux']['window_count'],
-  )
-
   # center fzf ui
   t_width, t_height = shutil.get_terminal_size()
   width = info['fzf']['ui_width']
@@ -89,7 +81,7 @@ def start_ui(oneshot):
     # center interface in the terminal screen
     --margin={t_margin},{h_margin}
 
-    --header='{header}'
+    --header='{info["fzf"]["header"]}'
     --inline-info
 
     # fully transparent background

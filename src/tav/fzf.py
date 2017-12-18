@@ -80,6 +80,7 @@ class FZFFormatter:
 
     self.width = max(_minWidth, withMinGap)
     self.gap = self.width - withoutGap
+    self.fzfHeader = self._fzfHeaderLines()
 
   def unloadedBar(self):
     color = _colors['unloadedBar']
@@ -87,7 +88,16 @@ class FZFFormatter:
     line = f'\n{"<nop>":{self.part1Width}}\t{screen.sgr(body, color)}\n'
     return line
 
-  def fzfLines(self):
+  def _fzfHeaderLines(self):
+    lines = '{} sessions ({} alive, {} dead), {} windows'.format(
+        self.snapshot.live_session_count +
+        self.snapshot.dead_session_count,
+        self.snapshot.live_session_count,
+        self.snapshot.dead_session_count,
+        self.snapshot.window_count,
+    )
+    lines += screen.sgrHide('\n·')
+    return lines
     lines = []
 
     #
