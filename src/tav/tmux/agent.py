@@ -92,8 +92,11 @@ def getServerPID():
   cmdstr = '''
     tmux list-sessions -F '#{pid}'
   '''
-  p = _run(cmdstr)
-  return int(p.stdout.decode().strip().splitlines()[0])
+  out = _getStdout(cmdstr)
+  if out is not None:
+    return int(out.strip().splitlines()[0])
+  else:
+    return None
 
 
 def getLogTTY():
@@ -101,11 +104,11 @@ def getLogTTY():
     tmux list-panes -t {settings.logWindowTarget} -F '#{{pane_tty}}'
   '''
 
-  p = _run(cmdstr)
-  if p.returncode != 0:
-    return None
+  out = _getStdout(cmdstr)
+  if out is not None:
+    return out.strip()
   else:
-    return p.stdout.decode().strip()
+    return None
 
 
 def listAllWindows():
@@ -125,8 +128,8 @@ def listAllWindows():
     tmux list-windows -a -F '{format}'
   '''
 
-  p = _run(cmdstr)
-  lines = p.stdout.decode().strip().splitlines()
+  out = _getStdout(cmdstr)
+  lines = out.strip().splitlines()
   return [line.split(':') for line in lines]
 
 
@@ -146,3 +149,28 @@ def switchTo(target):
     _run(f'tmux switch-client -t {target}')
   else:
     _run(f'tmux attach-session -t {target}')
+
+
+def showMessageCentered(text):
+  # clear screen & hide cursor
+  _system('clear; tput civis')
+
+  ttyWidth, ttyHeight = get_terminal_size()
+
+  lines = text.splitlines()
+  textHeight = len(lines)
+  textWidth = reduce(max, [screenWidth(line) for line in lines])
+
+  x = int((ttyWidth - textWidth) / 2)
+  y = int((ttyHeight - textHeight) / 2)
+
+  _system(f'tput cup {y} {x}')
+
+  print(text, end=None)
+
+
+def showCursor(flag):
+  if flag:
+    _system('tput cnorm')
+  else:
+    _system('tput civis')

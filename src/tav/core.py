@@ -150,17 +150,14 @@ def start_ui(oneshot):
       # show creating message
       #
 
-      subprocess.run('clear')                        # clear screen
-      subprocess.run(f'tput civis'.split())          # hide cursor
-      x = int(t_width / 2 - 12)
-      y = int(t_height / 2)
-      subprocess.run(f'tput cup {y} {x}'.split())    # center message
-
-      print(f'\033[33mCreating session [{tag}] ...\033[0m', end=None)
+      text = f'\033[33mCreating session [{tag}] ...\033[0m'
+      tmux.showMessageCentered(text)
 
       #
       # create session
       #
+
+      logger.info(f'load session [{tag}]')
 
       tmux.hook.enable(False)                        # disable hook updating
 
@@ -178,4 +175,4 @@ def start_ui(oneshot):
 
     finally:
       tmux.hook.enable(True)
-      subprocess.run(['tput', 'cnorm'])
+      tmux.showCursor(True)
