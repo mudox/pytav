@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from tav.tav import main
+from tav.cmd import run
 
 if __name__ == '__main__':
-  main()
+  run()
