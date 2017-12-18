@@ -23,13 +23,16 @@ from . import screen, settings
 # }
 
 
-_symbols = {
-    'Console': '⛑ ',
-    'Update': '🚀 ',
-    'Dashboard': '👽 ',
-    'Play': '🌿 ',
-    'Tav-Project': '🦊 ',
-}
+_symbols = '''
+    Console     : 📘
+    Update      : 🎉
+    Dashboard   : 🌿
+    Play        : ⛑
+    Tav-Project : 🦊
+    Frameworks  : 🍄
+'''
+_symbols = [s.split(':') for s in _symbols.strip().splitlines()]
+_symbols = {s[0].strip(): s[1].strip() for s in _symbols}
 
 # a non-space character prevent fzf from strip the indentation
 _defaultLiveSessionSymbol = screen.sgrHide('·')
