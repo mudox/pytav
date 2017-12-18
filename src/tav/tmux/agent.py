@@ -3,33 +3,74 @@
 
 import logging
 import subprocess as sp
-from shlex import split as xsplit
 from os import environ
+from shlex import split as xsplit
+from shutil import get_terminal_size
+from functools import reduce
 
-from . import hook, settings
+from .. import settings
+from . import hook
+from ..screen import screenWidth
 
 logger = logging.getLogger(__name__)
 
 
-def _run(cmdstr, *args):
+def _system(cmdstr):
   """Execute the command line using `subprocess.run`.
 
-  The stdout & stderr are captured.
+  The stdout is left unchanged (link to controlling tty).
+  The stderr is captured.
 
-  Check the return code, log out stderr content if is not 0.
+  Check the return code, log out content captured from stderr if is not 0.
 
   Args:
-    cmstr (str): Command line string to run like in shell.
-    args: other arguments will be passed to subprocess.run() as is.
+    cmstr (str): Command line string to run like in shell which can contain comments.
+  """
+
+  _run(cmdstr, stdoutArg=None)
+
+
+def _getStdout(cmdstr):
+  """Execute the command line using `subprocess.run`.
+
+  The stdout is captured
+  The stderr is captured.
+
+  Check the return code, log out content captured from stderr if is not 0.
+
+  Args:
+    cmstr (str): Command line string to run like in shell which can contain comments.
+
+  Returns:
+    The captured stdout content if run successfully, `None` otherwise.
+  """
+
+  p = _run(cmdstr, stdoutArg=sp.PIPE)
+
+  return p.returncode == 0 and p.stdout.decode() or None
+
+
+def _run(cmdstr, stdoutArg=sp.DEVNULL):
+  """Execute the command line using `subprocess.run`.
+
+  The stdout is redirected to /dev/null.
+  The stderr is captured.
+
+  Check the return code, log out content captured from stderr if is not 0.
+
+  Args:
+    cmstr (str): Command line string to run like in shell which can contain comments.
 
   Returns:
     The process object returned from `subprocess.run`.
   """
 
-  cmd = xsplit(cmdstr, comments=True)
-  logger.debug(f'cmd: {cmd}')
+  logger.debug(f'cmd string: {cmdstr}')
 
-  p = sp.run(cmd, stderr=sp.PIPE, stdout=sp.PIPE, *args)
+  cmd = xsplit(cmdstr, comments=True)
+  logger.debug(f'splitted: {cmd}')
+
+  p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdoutArg)
 
   if p.returncode != 0:
     msg = p.stderr.decode()
