@@ -126,7 +126,7 @@ class Command:
     group.add_argument(
         'event',
         nargs='?',
-        choices=['window-linked', 'window-renamed', 'window-unlinked'],
+        choices=['window-linked', 'window-renamed', 'window-unlinked', 'session-renamed'],
         help='event type that triggers the hook'
     )
     act_hook.set_defaults(func=self.hook, hookEnabled=None)
