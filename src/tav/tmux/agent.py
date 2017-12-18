@@ -5,10 +5,22 @@ import logging
 import subprocess as sp
 from shlex import split as xsplit
 
-from . import settings
-from . import hook
+from . import hook, settings
 
 logger = logging.getLogger(__name__)
+
+
+def _run(cmdstr, *args):
+  cmd = xsplit(cmdstr, comments=True)
+  logger.debug(f'cmd: {cmd}')
+
+  p = sp.run(cmd, stderr=sp.PIPE, stdout=sp.PIPE, *args)
+
+  if p.returncode != 0:
+    msg = p.stderr.decode()
+    logger.error(f'error: {msg}')
+
+  return p
 
 
 def prepareTmuxInterface(force):
@@ -24,7 +36,7 @@ def getServerPID():
   cmdstr = '''
     tmux list-sessions -F '#{pid}'
   '''
-  p = execute(cmdstr)
+  p = _run(cmdstr)
   return int(p.stdout.decode().strip().splitlines()[0])
 
 
@@ -33,7 +45,7 @@ def getLogTTY():
     tmux list-panes -t {settings.logWindowTarget} -F '#{{pane_tty}}'
   '''
 
-  p = execute(cmdstr)
+  p = _run(cmdstr)
   if p.returncode != 0:
     return None
   else:
@@ -57,7 +69,7 @@ def listAllWindows():
     tmux list-windows -a -F '{format}'
   '''
 
-  p = execute(cmdstr)
+  p = _run(cmdstr)
   lines = p.stdout.decode().strip().splitlines()
   return [line.split(':') for line in lines]
 
@@ -69,18 +81,9 @@ def respawnFinderWindow():
   '''
 
   hook.enable(False)
-  execute(cmdstr)
+  _run(cmdstr)
   hook.enable(True)
 
 
-def execute(cmdstr, *args):
-  cmd = xsplit(cmdstr, comments=True)
-  logger.debug(f'cmd: {cmd}')
-
-  p = sp.run(cmd, stderr=sp.PIPE, stdout=sp.PIPE, *args)
-
-  if p.returncode != 0:
-    msg = p.stderr.decode()
-    logger.error(f'error: {msg}')
-
-  return p
+def switchTo(target):
+  _run(f'tmux attach-session -t {target}')
