@@ -135,7 +135,7 @@ def start_ui(oneshot):
 
   # live session or window line
   elif tag.startswith('$') or tag.startswith('@'):
-    subprocess.run(['tmux', 'switch-client', '-t', tag])
+    tmux.switchTo(tag)
 
   # other auxiliary lines, e.g. dead sessions group line
   elif tag == '<nop>':
@@ -174,7 +174,7 @@ def start_ui(oneshot):
 
       sleep(1)                                       # warming
 
-      subprocess.call(['tmux', 'switch-client', '-t', tag])
+      tmux.switchTo(tag)
 
     finally:
       tmux.hook.enable(True)

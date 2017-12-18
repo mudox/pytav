@@ -4,6 +4,7 @@
 import logging
 import subprocess as sp
 from shlex import split as xsplit
+from os import environ
 
 from . import hook, settings
 
@@ -11,6 +12,20 @@ logger = logging.getLogger(__name__)
 
 
 def _run(cmdstr, *args):
+  """Execute the command line using `subprocess.run`.
+
+  The stdout & stderr are captured.
+
+  Check the return code, log out stderr content if is not 0.
+
+  Args:
+    cmstr (str): Command line string to run like in shell.
+    args: other arguments will be passed to subprocess.run() as is.
+
+  Returns:
+    The process object returned from `subprocess.run`.
+  """
+
   cmd = xsplit(cmdstr, comments=True)
   logger.debug(f'cmd: {cmd}')
 
@@ -24,10 +39,10 @@ def _run(cmdstr, *args):
 
 
 def prepareTmuxInterface(force):
-  '''
-  check states of tav tmux session and windows
-  create if not
-  '''
+  """
+  Check the availability of tav tmux session and windows, create them if not.
+  """
+
   cmd = settings.paths.scripts / 'prepare-tmux-interface.sh'
   sp.call([str(cmd), force and 'kill' or 'nokill'])
 
@@ -86,4 +101,7 @@ def respawnFinderWindow():
 
 
 def switchTo(target):
-  _run(f'tmux attach-session -t {target}')
+  if 'TMUX' in environ:
+    _run(f'tmux switch-client -t {target}')
+  else:
+    _run(f'tmux attach-session -t {target}')
