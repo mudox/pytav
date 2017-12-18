@@ -31,6 +31,7 @@ _symbols = {
     'Tav-Project': '🦊 ',
 }
 
+# a non-space character prevent fzf from strip the indentation
 _defaultLiveSessionSymbol = screen.sgrHide('·')
 _defaultDeadSessionSymbol = '👻 '
 
@@ -57,6 +58,8 @@ class FZFFormatter:
 
     self.snapshot = snapshot
     self.testMode = testMode
+
+    self._sessionSymbolPadding = screen.sgrHide('⋅' * _sessionSymbolWidth)
 
     self.part1Width = max(self.snapshot.windowNameMaxWidth,
                           self.snapshot.sessionNameMaxWidth)
@@ -121,39 +124,50 @@ class FZFFormatter:
       return '\n'.join(lines)
 
   def _window_line(self, session, window):
+    # prefix
     hiddenPrefix = f'{window.id:{self.part1Width}}'
 
+    # window symbol
     windowSymbol = '· '
 
+    # part1
     color1 = _colors['windowLineWindowName']
     part1 = screen.sgr(window.name, color1)
     part1 = screen.left(part1, self.part1Width)
 
+    # gap
     gap = (self.testMode and '*' or '\x20') * self.gap
 
+    # part2
     color2 = _colors['windowLineSessionName']
     part2 = screen.sgr(session.name, color2)
     part2 = screen.right(part2, self.part2Width)
 
-    line =                                          \
-        hiddenPrefix +                              \
-        '\t' +                                      \
-        screen.sgrHide('⋅' * _sessionSymbolWidth) + \
-        windowSymbol +                              \
-        part1 +                                     \
-        gap +                                       \
+    line =                           \
+        hiddenPrefix +               \
+        '\t' +                       \
+        self._sessionSymbolPadding + \
+        windowSymbol +               \
+        part1 +                      \
+        gap +                        \
         part2
 
     return line
 
   def _dead_session_line(self, session):
+    # prefix
     hiddenPrefix = f'{session.name:{self.part1Width}}'
 
+    # session symbol if any
+    symbol = _symbols.get(session.name, _defaultLiveSessionSymbol)
+    symbol = screen.left(symbol, _sessionSymbolWidth)
+
+    # the only part: session name
     color1 = _colors['deadSessionName']
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self.part1Width)
 
-    return hiddenPrefix + '\t' + screen.sgrHide('⋅⋅') + part1
+    return f'{hiddenPrefix}\t{symbol}{part1}'
 
   def _live_session_line(self, session):
     hiddenPrefix = f'{session.id:{self.part1Width}}'
