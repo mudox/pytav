@@ -154,7 +154,7 @@ class Command:
     )
     act_serve.set_defaults(func=self.serve)
 
-  def parse_args(self):
+  def run(self):
 
     # dispatch tasks
     args = self.parser.parse_args()
@@ -163,6 +163,5 @@ class Command:
     args.func(args)
 
 
-def main():
-  cmd = Command()
-  cmd.parse_args()
+def run():
+  Command().run()
