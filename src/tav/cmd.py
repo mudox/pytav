@@ -10,7 +10,12 @@ from . import core, settings, tests, tmux
 
 __version__ = '2.0.1'
 
-jaclog.configure('tav', 'log', logTTY=settings.paths.logTTY)
+jaclog.configure(
+    appName='tav',
+    fileName='tav.log',
+    logTTY=settings.paths.logTTY,
+    compact=True
+)
 logger = logging.getLogger(__name__)
 
 #
@@ -79,13 +84,7 @@ class Command:
     # defaults to update and choose once
     self.parser.set_defaults(func=self.oneshot)
 
-    self.parser.add_argument('--version', action='version', version='1.1')
-    self.parser.add_argument(
-        '-v, --verbose',
-        action='store_true',
-        dest='verbose',
-        help='verbose (debug) mode'
-    )
+    self.parser.add_argument('--version', action='version', version=__version__)
 
     #
     # actions
@@ -163,8 +162,6 @@ class Command:
 
     # dispatch tasks
     args = self.parser.parse_args()
-
-    settings.verbose = args.verbose
     args.func(args)
 
 

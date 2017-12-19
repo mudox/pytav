@@ -18,7 +18,7 @@ def enable(flag):
   settings.paths.hookEnabled.write_text(text)
 
 
-def is_enabled() -> bool:
+def isEnabled() -> bool:
   if not settings.paths.hookEnabled.exists():
     return True
 
