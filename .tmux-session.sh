@@ -3,6 +3,9 @@ set -euo pipefail
 
 source ~/Git/dot-files/bash/lib/jack
 
+tput civis
+trap 'tput cnorm' EXIT
+
 # tty size
 set +u
 if [[ -n "$TMUX" ]]; then
@@ -24,6 +27,8 @@ fi
 #
 # window: Edit
 #
+jackProgress 'Creating window [Edit] ...'
+
 
 root="${HOME}/Develop/Python/tav"
 window_name='Edit'
@@ -52,6 +57,7 @@ tmux list-window -t "${session_name}" -F ' - #W'
 #
 # window: Log
 #
+jackProgress 'Creating window [Log] ...'
 
 root="${HOME}/.local/share/tav/log"
 window_name='Log'
@@ -66,3 +72,8 @@ sleep 1
 tmux send-keys -t "${window}" "
 tail -f log
 "
+
+jackEndProgress
+tmux select-window -t "${session_name}:1.1"
+echo "[${session_name}]"
+tmux list-window -t "${session_name}" -F ' - #W'
