@@ -34,17 +34,15 @@ def is_enabled() -> bool:
     seconds = now - disabled_time
     result = seconds > settings.reenableHookInterval
 
-  if settings.verbose:
-    print('hook: ' + (result and '✔' or '✘'))
-
   return result
 
 
 def run():
-  if not is_enabled():
-    logger.debug('hook update suppressed')
+  if not isEnabled():
+    logger.debug('hook update ✘')
     return
-
-  core.update()
-  tmux.respawnFinderWindow()
+  else:
+    logger.debug('hook update ✔')
+    core.update()
+    tmux.respawnFinderWindow()
 

@@ -65,10 +65,10 @@ def _run(cmdstr, stdoutArg=sp.DEVNULL):
     The process object returned from `subprocess.run`.
   """
 
-  logger.debug(f'cmd string: {cmdstr}')
+  logger.debug(f'cmd string:\n  {cmdstr.strip()}')
 
   cmd = xsplit(cmdstr, comments=True)
-  logger.debug(f'splitted: {cmd}')
+  logger.debug(f'splitted:\n  {cmd}')
 
   p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdoutArg)
 
