@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from datetime import datetime
 from time import time
 
 from .. import core, settings, tmux
@@ -10,39 +11,38 @@ logger = logging.getLogger(__name__)
 
 
 def enable():
-  text = '-1'
-  settings.paths.update.write_text(text)
-  logger.debug(f'{settings.paths.update}: <- [{text}]')
+  line = f'{datetime.now()} | enable\n'
+  with settings.paths.update.open('a') as file:
+    file.write(line)
 
 
 def disable():
-  text = str(time())
-  settings.paths.update.write_text(text)
-  logger.debug(f'"{settings.paths.update}" <- [{text}]')
+  line = f'{datetime.now()} | {time()}\n'
+  with settings.paths.update.open('a') as file:
+    file.write(line)
 
 
 def isEnabled() -> bool:
   if not settings.paths.update.exists():
-    logger.debug('"{settings.paths.update}" does not exists, return [True]')
+    logger.debug(f'update file ({settings.paths.update}) does not exists, return ✔')
     return True
 
-  text = settings.paths.update.read_text()
-  disabled_time = float(text)
-  logger.debug(f'"{settings.paths.update}" - read -> [{disabled_time}]')
+  lines = settings.paths.update.read_text()
+  lastLine = lines[-1]
+  flag = lastLine.split('|')[1].strip()
 
-  if disabled_time == -1:
-    # enabled explicitly
-    logger.debug('enabled explicitly, return [True]')
-    result = True
+  if flag == 'enable':
+    logger.debug('o:✔  explicitly')
+    return True
   else:
-    # re-enable after a given time interval
-    now = time()
-    seconds = now - disabled_time
-    logger.debug(f'seconds since last disable: {seconds}')
-    result = seconds > settings.maxDisableUpdateInterval
-    logger.debug('auto-enabled' if result else 'still disabled')
-
-  return result
+    disabledTime = float(flag)
+    timeElapsed = time() - disabledTime
+    if timeElapsed > settings.maxDisableUpdateInterval:
+      logger.debug('o:✔  out of interval')
+      return True
+    else:
+      logger.debug('o:✘  with interval')
+      return False
 
 
 def run():
