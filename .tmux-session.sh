@@ -4,8 +4,7 @@ set -euo pipefail
 source ~/Git/dot-files/bash/lib/jack
 
 tput civis
-tav hook -d
-trap 'tput cnorm; tav hook -e; tav hook after-enabled' EXIT
+trap 'tput cnorm' EXIT
 
 # tty size
 set +u
@@ -97,7 +96,9 @@ tmux split-window  \
 
 tmux select-pane -t "${window}.3"
 
+
 jackEndProgress
+
 tmux select-window -t "${session_name}:1.1"
 echo "[${session_name}]"
 tmux list-window -t "${session_name}" -F ' - #W'
