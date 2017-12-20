@@ -129,7 +129,11 @@ def start_ui(oneshot):
 
   # live session or window line
   elif tag.startswith('$') or tag.startswith('@'):
-    tmux.switchTo(tag)
+    p = tmux.switchTo(tag)
+    if p.returncode != -0:
+      tmux.showMessageCentered('Switching failed, update data ...')
+      update()
+    return
 
   # other auxiliary lines, e.g. dead sessions group line
   elif tag == '<nop>':
@@ -170,4 +174,3 @@ def start_ui(oneshot):
     finally:
       tmux.hook.enable()
       tmux.showCursor(True)
-
