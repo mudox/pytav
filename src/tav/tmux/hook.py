@@ -27,7 +27,7 @@ def isEnabled() -> bool:
     logger.debug(f'update file ({settings.paths.update}) does not exists, return ✔')
     return True
 
-  lines = settings.paths.update.read_text()
+  lines = settings.paths.update.read_text().strip().splitlines()
   lastLine = lines[-1]
   flag = lastLine.split('|')[1].strip()
 
@@ -47,9 +47,8 @@ def isEnabled() -> bool:
 
 def run():
   if not isEnabled():
-    logger.warn('o: ✘')
+    logger.warn('o: disabled')
     return
   else:
-    logger.debug('o: ✔')
     core.update()
     tmux.respawnFinderWindow()
