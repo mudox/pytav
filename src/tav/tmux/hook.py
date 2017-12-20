@@ -32,22 +32,24 @@ def isEnabled() -> bool:
 
   if disabled_time == -1:
     # enabled explicitly
+    logger.debug('enabled explicitly, return [True]')
     result = True
   else:
     # re-enable after a given time interval
     now = time()
     seconds = now - disabled_time
-    result = seconds > settings.reenableHookInterval
+    logger.debug(f'seconds since last disable: {seconds}')
+    result = seconds > settings.maxDisableUpdateInterval
+    logger.debug('auto-enabled' if result else 'still disabled')
 
   return result
 
 
 def run():
   if not isEnabled():
-    logger.debug('hook update ✘')
+    logger.warn('o: ✘')
     return
   else:
-    logger.debug('hook update ✔')
+    logger.debug('o: ✔')
     core.update()
     tmux.respawnFinderWindow()
-

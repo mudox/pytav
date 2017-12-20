@@ -3,20 +3,21 @@
 
 import logging
 import subprocess as sp
+from functools import reduce
 from os import environ
 from shlex import split as xsplit
 from shutil import get_terminal_size
-from functools import reduce
 
-from .. import settings
 from . import hook
+from .. import settings
 from ..screen import screenWidth
 
 logger = logging.getLogger(__name__)
 
 
 def _system(cmdstr):
-  """Execute the command line using `subprocess.run`.
+  """Execute the command line using `subprocess.run`, left the stdout unchanged
+  to controlling terminal.
 
   The stdout is left unchanged (link to controlling tty).
   The stderr is captured.
@@ -31,7 +32,8 @@ def _system(cmdstr):
 
 
 def _getStdout(cmdstr):
-  """Execute the command line using `subprocess.run`.
+  """Execute the command line using `subprocess.run`, return the content of
+  stdout.
 
   The stdout is captured
   The stderr is captured.
