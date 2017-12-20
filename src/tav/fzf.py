@@ -18,7 +18,7 @@ from . import screen, settings
 # 'sessionLineLiveSessionName': '\033[38;5;28m',
 # 'windowLineWindowName': '\033[38;5;81m',
 # 'windowLineSessionName': '\033[38;5;242m',
-# 'unloadedBar': '\033[38;5;88m',
+# '_unloadedBar': '\033[38;5;88m',
 # 'deadSessionName': '\033[38;5;242m',
 # }
 
@@ -42,7 +42,7 @@ _colors = {
     'sessionLineLiveSessionName': '\033[32m',
     'windowLineWindowName': '\033[34m',
     'windowLineSessionName': '\033[38;5;242m',
-    'unloadedBar': '\033[38;5;88m',
+    'unloadedBar': '\033[38;5;20m',
     'deadSessionName': '\033[38;5;242m',
 }
 
@@ -82,7 +82,7 @@ class FZFFormatter:
         _fzfLeftMargin        \
         + _sessionSymbolWidth \
         + _windowSymbolWidth  \
-        + self._part1Width     \
+        + self._part1Width    \
         + self._part2Width
 
     withMinGap = withoutGap + _minGap
@@ -93,7 +93,7 @@ class FZFFormatter:
     self.fzfHeader = self._fzfHeaderLines()
     self.fzfFeed = self._fzfLines()
 
-  def unloadedBar(self):
+  def _unloadedBar(self):
     color = _colors['unloadedBar']
     body = f' ──────  {_defaultDeadSessionSymbol}  ────── '.center(self.fzfWidth - 2)
     line = f'\n{"<nop>":{self._part1Width}}\t{screen.sgr(body, color)}'
@@ -135,7 +135,7 @@ class FZFFormatter:
     # unloaded bar
     #
 
-    lines.append(self.unloadedBar())
+    lines.append(self._unloadedBar())
 
     #
     # dead sessions
