@@ -39,6 +39,7 @@ serverPID = str(tmux.getServerPID())
 
 
 class paths:
+  scriptsDir = install / 'scripts'
   resourcesDir = install / 'resources'
 
   # configuration

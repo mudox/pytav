@@ -86,7 +86,7 @@ def prepareTmuxInterface(force):
   Check the availability of tav tmux session and windows, create them if not.
   """
 
-  cmd = settings.paths.scripts / 'prepare-tmux-interface.sh'
+  cmd = settings.paths.scriptsDir / 'prepare-tmux-interface.sh'
   sp.call([str(cmd), force and 'kill' or 'nokill'])
 
 
