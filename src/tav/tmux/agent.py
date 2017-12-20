@@ -55,19 +55,22 @@ def _getStdout(cmdstr):
 def _run(cmdstr, stdoutArg=sp.DEVNULL):
   """Execute the command line using `subprocess.run`.
 
-  The stdout is redirected to /dev/null.
+  The stdout's redirection is controlled by the argument `stdoutArg`, which is
+    `DEVNULL` by defaults.
   The stderr is captured.
 
   Check the return code, log out content captured from stderr if is not 0.
 
   Args:
-    cmstr (str): Command line string to run like in shell which can contain comments.
+    cmstr (str): Command line string to run like in shell which can contain
+      comments.
+    stdoutArg (number of file object): Control the redireciton of the stdout.
 
   Returns:
     The process object returned from `subprocess.run`.
   """
 
-  # logger.debug(f'cmd: {cmdstr.strip()}')
+  logger.debug(f'cmd: {cmdstr.strip()}')
 
   p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdoutArg)
 
@@ -136,6 +139,9 @@ def refreshFinderWindow():
     tmux send-keys -t {settings.finderWindowTarget} C-u C-m
   '''
 
+  _run(cmdstr)
+
+# TODO: unused
 def respawnFinderWindow():
 
   cmdstr = f'''
@@ -149,13 +155,15 @@ def respawnFinderWindow():
 
 def switchTo(target):
   # quote for sessions id e.g. '$5'
-  # otherwise it would be expanded as an shell variable
+  # avoid shell parsing on it
   target = f"'{target}'"
 
   if 'TMUX' in environ:
-    _run(f'tmux switch-client -t {target}')
+    p = _run(f'tmux switch-client -t {target}')
   else:
-    _run(f'tmux attach-session -t {target}')
+    p = _run(f'tmux attach-session -t {target}')
+
+  return p
 
 
 def showMessageCentered(text):
