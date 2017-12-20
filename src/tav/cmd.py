@@ -10,8 +10,6 @@ from jaclog import jaclog
 
 from . import core, settings, tests, tmux
 
-__version__ = '2.0.1'
-
 jaclog.configure(
     appName='tav',
     fileName='tav.log',
@@ -22,6 +20,10 @@ logger = logging.getLogger(__name__)
 cmdline = '\x20'.join(argv)
 cmdline = basename(cmdline)
 logger.info(f'o:{cmdline}')
+
+
+__version__ = '2.1'
+
 
 #
 # actions (sub-commands)

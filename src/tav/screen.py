@@ -3,29 +3,22 @@
 
 import re
 
-_symbols = {
-    'Configure': '',
-    'Update': '',
-    'Dashboard': '',
-    'Play': '',
-}
-
-_r = '\033[0m'   # reset style
-_h = '\033[30m'  # hide foreground into background
-
-sgrPattern = re.compile('\x1b\[[^m]+m')
+_sgrPattern = re.compile('\x1b\[[^m]+m')
 
 
 def sgr(text, color):
   return f'{color}{text}\x1b[0m'
 
+def sgrRGB(text, rgb):
+    r, g, b = rgb
+    return f'\x1b[38;2;{r};{g};{b}m{text}\x1b[0m'
 
 def sgrHide(text):
   return f'\x1b[30m{text}\x1b[0m'
 
 
 def sgrWidth(text):
-  chunks = sgrPattern.findall(text)
+  chunks = _sgrPattern.findall(text)
   return sum([len(c) for c in chunks])
 
 
