@@ -9,13 +9,16 @@ from .. import core, settings, tmux
 logger = logging.getLogger(__name__)
 
 
-def enable(flag):
-  if flag:
-    text = '-1'
-  else:
-    text = str(time())
+def enable():
+  text = '-1'
+  settings.paths.update.write_text(text)
+  logger.debug(f'{settings.paths.update}: <- [{text}]')
 
-  settings.paths.hookEnabled.write_text(text)
+
+def disable():
+  text = str(time())
+  settings.paths.update.write_text(text)
+  logger.debug(f'"{settings.paths.update}" <- [{text}]')
 
 
 def isEnabled() -> bool:

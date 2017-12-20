@@ -146,7 +146,7 @@ def start_ui(oneshot):
 
       logger.info(f'load session [{tag}]')
 
-      tmux.hook.enable(False)                        # disable hook updating
+      tmux.hook.disable()                        # disable hook updating
 
       path = settings.paths.sessions / tag           # create session
       subprocess.run(
@@ -161,5 +161,6 @@ def start_ui(oneshot):
       tmux.switchTo(tag)
 
     finally:
-      tmux.hook.enable(True)
+      tmux.hook.enable()
       tmux.showCursor(True)
+

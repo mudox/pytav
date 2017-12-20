@@ -69,7 +69,10 @@ class Command:
       msg += f'\n{args.hookEnabled and "enable" or "disable"} hook update'
       logger.debug(msg)
 
-      tmux.hook.enable(args.hookEnabled)
+      if args.hookEnabled:
+        tmux.hook.enable()
+      else:
+        tmux.hook.disable()
 
   #
   # CLI interface
