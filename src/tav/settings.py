@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
 from pathlib import Path
 
+from ruamel.yaml import YAML
+
 from . import tmux
+from .screen import sgrHide
+
+logger = logging.getLogger(__name__)
 
 tavSessionName = 'Tav'
 
@@ -33,6 +39,7 @@ serverPID = str(tmux.getServerPID())
 
 
 class paths:
+  resourcesDir = install / 'resources'
 
   # configuration
   configDir = Path('~/.config/tav').expanduser()

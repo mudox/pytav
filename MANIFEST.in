@@ -1,1 +1,2 @@
 include src/tav/scripts/*.sh
+include src/tav/resources/*

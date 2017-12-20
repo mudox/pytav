@@ -1,0 +1,48 @@
+
+version: 1
+
+symbols:
+
+  # The value MUST be one of the names of symbol schemes listed below.
+  use: emoji
+
+  # A symbol scheme named `nerd` use nerd font:
+  # https://github.com/ryanoasis/nerd-fonts
+  nerd: # specify it as value of key `use` above to select this symbol scheme.
+
+    # symbol shown in the center of the unloaded bar
+    unloaded:  
+
+    # Uncomment to specify a default symbol for all sessions.
+    sessionDefault:   
+
+    session:
+
+      # Add, change whatever session names (CASE-SENSITIVE) you like and their
+      # corresponding symbols here.
+      # Symbol (the value) MUST be 1 character.
+
+      Console      :  
+      Update       :  
+      Dashboard    :  
+      Play         :  
+      Tav-Project  :  
+      Xcode-Log    :  
+      Frameworks   :  
+
+
+  # You can add more schemes below.
+
+  # There is an another symbol scheme named `emoji` use emoji's.
+  # https://github.com/ryanoasis/nerd-fonts
+  emoji:
+    unloaded: 🌔
+    sessionDefault:  🐠
+    session:
+      Console      : 🐬
+      Update       : 🎉
+      Dashboard    : 🌿
+      Play         : ⛑
+      Tav-Project  : 🦊
+      Xcode-Log    : 💡
+      Frameworks   : 🍄
