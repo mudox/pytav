@@ -32,7 +32,7 @@ def test_formatter():
   _title('\nTest [formatter] ...')
   snap = tmux.Snapshot()
   formatter = fzf.FZFFormatter(snap, testMode=True)
-  print(formatter.fzfLines())
+  print(formatter.fzfFeed)
 
 
 def test_prepare_tmux_interface():
