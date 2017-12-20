@@ -6,11 +6,12 @@ from . import screen, settings
 # TODO!: make symbols and colors configurable
 
 _symbols_nerd = '''
-    Console     : 
+    Console     : 
     Update      : 
     Dashboard   : 
     Play        : 
     Tav-Project : 
+    Xcode-Log   : 
     Frameworks  : 
     .unloaded.  : 
 '''
@@ -21,11 +22,12 @@ _symbols_emoji = '''
     Dashboard   : 🌿
     Play        : ⛑
     Tav-Project : 🦊
+    Xcode-Log   : 💡
     Frameworks  : 🍄
     .unloaded.  : 🌔
 '''
 
-_symbols = _symbols_emoji
+_symbols = _symbols_nerd
 _symbols = [s.split(':') for s in _symbols.strip().splitlines()]
 _symbols = {s[0].strip(): s[1].strip() for s in _symbols}
 
@@ -38,6 +40,7 @@ _colors = {
     'windowLineSessionName': '\033[38;5;242m',
     'unloadedBar': '\033[38;5;20m',
     'deadSessionName': '\033[38;5;242m',
+    'deadSessionLineRight': '\033[38;5;242m',
 }
 
 # TODO: 2 hard corded magic numbers
@@ -47,6 +50,8 @@ _minWidth = 46
 _fzfLeftMargin = 2
 _sessionSymbolWidth = 4
 _windowSymbolWidth = 2
+
+_loadSessionPrompt = '[Load The Session]'
 
 
 class FZFFormatter:
@@ -67,22 +72,27 @@ class FZFFormatter:
 
     self._sessionSymbolPadding = screen.sgrHide('⋅' * _sessionSymbolWidth)
 
-    self._part1Width = max(self.snapshot.windowNameMaxWidth,
-                           self.snapshot.sessionNameMaxWidth)
+    self._part1Width = max(
+        self.snapshot.windowNameMaxWidth,
+        self.snapshot.sessionNameMaxWidth,
+    )
 
-    self._part2Width = self.snapshot.sessionNameMaxWidth
+    self._part2Width = max(
+        self.snapshot.sessionNameMaxWidth,
+        len(_loadSessionPrompt)
+    )
 
     withoutGap =              \
-        _fzfLeftMargin        \
-        + _sessionSymbolWidth \
-        + _windowSymbolWidth  \
-        + self._part1Width    \
-        + self._part2Width
+        _fzfLeftMargin +      \
+        _sessionSymbolWidth + \
+        _windowSymbolWidth +  \
+        self._part1Width +    \
+        self._part2Width      \
 
     withMinGap = withoutGap + _minGap
 
     self.fzfWidth = max(_minWidth, withMinGap)
-    self._gap = self.fzfWidth - withoutGap
+    self._gapWidth = self.fzfWidth - withoutGap
 
     self.fzfHeader = self._fzfHeaderLines()
     self.fzfFeed = self._fzfLines()
@@ -161,15 +171,14 @@ class FZFFormatter:
     part1 = screen.left(part1, self._part1Width)
 
     # gap
-    gap = (self._testMode and '*' or '\x20') * self._gap
+    gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
     # part2
     color2 = _colors['windowLineSessionName']
     part2 = screen.sgr(session.name, color2)
     part2 = screen.right(part2, self._part2Width)
 
-    line =                           \
-        hiddenPrefix +               \
+    line = hiddenPrefix +            \
         '\t' +                       \
         self._sessionSymbolPadding + \
         windowSymbol +               \
@@ -192,7 +201,14 @@ class FZFFormatter:
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self._part1Width)
 
-    return f'\n{hiddenPrefix}\t{symbol}{part1}'
+    # gap
+    gap = ('*' if self._testMode else '\x20') * self._gapWidth
+
+    color2 = _colors['deadSessionLineRight']
+    part2 = screen.sgr('[Load The Session]', color2)
+    part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
+
+    return f'\n{hiddenPrefix}\t{symbol}{part1}{gap}{part2}'
 
   def _liveSessionLine(self, session):
     hiddenPrefix = f'{session.id:{self._part1Width}}'
@@ -200,7 +216,15 @@ class FZFFormatter:
     symbol = _symbols.get(session.name, _defaultLiveSessionSymbol)
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
-    color = _colors['sessionLineLiveSessionName']
-    sessionTitle = screen.sgr(session.name, color)
+    color1 = _colors['sessionLineLiveSessionName']
+    part1 = screen.sgr(session.name, color1)
+    part1 = screen.left(part1, self._part1Width)
 
-    return f'{hiddenPrefix}\t{symbol}{sessionTitle}'
+    # gap
+    gap = ('*' if self._testMode else '\x20') * self._gapWidth
+
+    color2 = _colors['deadSessionLineRight']
+    part2 = screen.sgr('[S]', color2)
+    part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
+
+    return f'{hiddenPrefix}\t{symbol}{part1}{gap}{part2}'
