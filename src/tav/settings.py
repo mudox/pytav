@@ -12,7 +12,7 @@ finderWindowTarget = f'{tavSessionName}:{finderWindowName}'
 
 logWindowTarget = f'{tavSessionName}:Log'
 
-maxDisableUpdateInterval = 4
+maxDisableUpdateInterval = 10  # 10s
 
 defaultConfig = {
     'version': 1,

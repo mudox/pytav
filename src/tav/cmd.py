@@ -3,8 +3,8 @@
 
 import argparse
 import logging
-from sys import argv
 from os.path import basename
+from sys import argv
 
 from jaclog import jaclog
 
@@ -50,7 +50,9 @@ class Command:
   def hook(self, args):
     settings.action = 'hook'
 
-    if args.hookEnabled is None:
+    if args.hookEnabled is None:  # perform hook update
+
+      # must specify event type or arbitrary reason
       if args.event is None:
         msg = 'must specify either the trigger event type or [-d|-e] option\n\n'
         msg += self.parser.format_usage()
@@ -82,7 +84,11 @@ class Command:
     # defaults to update and choose once
     self.parser.set_defaults(func=self.oneshot)
 
-    self.parser.add_argument('--version', action='version', version=__version__)
+    self.parser.add_argument(
+        '--version',
+        action='version',
+        version=__version__
+    )
 
     #
     # actions
@@ -129,7 +135,9 @@ class Command:
             'window-linked',
             'window-renamed',
             'window-unlinked',
-            'session-renamed'],
+            'session-renamed',
+            'after-enabled'
+        ],
         help='event type that triggers the hook')
     act_hook.set_defaults(func=self.hook, hookEnabled=None)
 

@@ -41,7 +41,7 @@ def isEnabled() -> bool:
       logger.debug('o:✔  out of interval')
       return True
     else:
-      logger.debug('o:✘  with interval')
+      logger.debug('o:✘  within interval')
       return False
 
 
