@@ -3,6 +3,8 @@
 
 import argparse
 import logging
+from sys import argv
+from os.path import basename
 
 from jaclog import jaclog
 
@@ -17,6 +19,9 @@ jaclog.configure(
     compact=True
 )
 logger = logging.getLogger(__name__)
+cmdline = '\x20'.join(argv)
+cmdline = basename(cmdline)
+logger.info(f'o:{cmdline}')
 
 #
 # actions (sub-commands)
@@ -27,19 +32,16 @@ class Command:
 
   def snapshot(self, args):
     settings.action = 'snapshot'
-    logger.debug('invoked to perform action: [snapshot]')
 
     core.update()
 
   def oneshot(self, args):
     settings.action = 'oneshot'
-    logger.debug('invoked to perform action: [oneshot]')
 
     core.update()
     core.start_ui(oneshot=True)
 
   def serve(self, args):
-    logger.debug('invoked to perform action: [serve]')
     settings.action = 'serve'
 
     while True:
@@ -57,17 +59,10 @@ class Command:
 
       settings.hookEvent = args.event
 
-      msg = f'invoked to perform action: [hook]'
-      msg += f'\ntriggered by: [{args.event}]'
-      logger.debug(msg)
-
       tmux.prepareTmuxInterface(force=False)
       tmux.hook.run()
 
     else:
-      msg = f'invoked to perform action: [hook]'
-      msg += f'\n{args.hookEnabled and "enable" or "disable"} hook update'
-      logger.debug(msg)
 
       if args.hookEnabled:
         tmux.hook.enable()
