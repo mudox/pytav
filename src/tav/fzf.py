@@ -5,38 +5,32 @@ from . import screen, settings
 
 # TODO!: make symbols and colors configurable
 
-# _symbols = {
-# 'Console': '',
-# 'Update': '',
-# 'Dashboard': '',
-# 'Play': '',
-# }
-# _defaultLiveSessionSymbol = ''
-# _defaultDeadSessionSymbol = ''
+_symbols_nerd = '''
+    Console     : 
+    Update      : 
+    Dashboard   : 
+    Play        : 
+    Tav-Project : 
+    Frameworks  : 
+    .unloaded.  : 
+'''
 
-# _colors = {
-# 'sessionLineLiveSessionName': '\033[38;5;28m',
-# 'windowLineWindowName': '\033[38;5;81m',
-# 'windowLineSessionName': '\033[38;5;242m',
-# '_unloadedBar': '\033[38;5;88m',
-# 'deadSessionName': '\033[38;5;242m',
-# }
-
-
-_symbols = '''
+_symbols_emoji = '''
     Console     : 🐬
     Update      : 🎉
     Dashboard   : 🌿
     Play        : ⛑
     Tav-Project : 🦊
     Frameworks  : 🍄
+    .unloaded.  : 🌔
 '''
+
+_symbols = _symbols_emoji
 _symbols = [s.split(':') for s in _symbols.strip().splitlines()]
 _symbols = {s[0].strip(): s[1].strip() for s in _symbols}
 
 # a non-space character prevent fzf from strip the indentation
 _defaultLiveSessionSymbol = screen.sgrHide('·')
-_defaultDeadSessionSymbol = '👻 '
 
 _colors = {
     'sessionLineLiveSessionName': '\033[32m',
@@ -95,7 +89,12 @@ class FZFFormatter:
 
   def _unloadedBar(self):
     color = _colors['unloadedBar']
-    body = f' ──────  {_defaultDeadSessionSymbol}  ────── '.center(self.fzfWidth - 2)
+    symbol = _symbols['.unloaded.']
+    if ord(symbol) > 0x10000:
+      symbolPart = f'  {symbol}   '
+    else:
+      symbolPart = f'  {symbol}  '
+    body = f' ──────{symbolPart}────── '.center(self.fzfWidth)
     line = f'\n{"<nop>":{self._part1Width}}\t{screen.sgr(body, color)}'
     return line
 
