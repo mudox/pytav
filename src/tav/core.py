@@ -52,14 +52,20 @@ def start_ui(oneshot):
   with settings.paths.serveFile.open() as file:
     info = json.load(file)
 
+  #
   # center fzf ui
+  #
+
   t_width, t_height = shutil.get_terminal_size()
   width = info['fzf']['width']
 
   h_margin = int((t_width - width) / 2) - 3
   t_margin = 3
 
+  #
   # compose fzf command line
+  #
+
   cmd = shlex.split(f'''
     fzf
     --exact
@@ -110,7 +116,8 @@ def start_ui(oneshot):
     # TODO!: alert error, wait for a key to continue
     return
 
-  tag = process.stdout.decode().split('\t')[0].strip()
+  selectedLine = process.stdout.decode().strip()
+  tag = selectedLine.split('\t')[0].strip()
 
   #
   # handle the tag

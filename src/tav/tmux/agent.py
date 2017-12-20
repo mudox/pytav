@@ -131,6 +131,10 @@ def listAllWindows():
   lines = out.strip().splitlines()
   return [line.split(':') for line in lines]
 
+def refreshFinderWindow():
+  cmdstr = f'''
+    tmux send-keys -t {settings.finderWindowTarget} C-u C-m
+  '''
 
 def respawnFinderWindow():
 

@@ -51,4 +51,5 @@ def run():
     return
   else:
     core.update()
-    tmux.respawnFinderWindow()
+    # tmux.respawnFinderWindow()
+    tmux.refreshFinderWindow()
