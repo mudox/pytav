@@ -12,7 +12,7 @@ finderWindowTarget = f'{tavSessionName}:{finderWindowName}'
 
 logWindowTarget = f'{tavSessionName}:Log'
 
-reenableHookInterval = 4
+maxDisableUpdateInterval = 4
 
 defaultConfig = {
     'version': 1,
@@ -64,7 +64,7 @@ class paths:
   serveDir.mkdir(parents=True, exist_ok=True)
   serveFile = serveDir / serverPID
 
-  hookEnabled = dataDir / 'update'
+  update = dataDir / 'update'
 
   sessions = dataDir / 'sessions'
 

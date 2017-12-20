@@ -65,10 +65,7 @@ def _run(cmdstr, stdoutArg=sp.DEVNULL):
     The process object returned from `subprocess.run`.
   """
 
-  logger.debug(f'cmd string:\n  {cmdstr.strip()}')
-
-  cmd = xsplit(cmdstr, comments=True)
-  logger.debug(f'splitted:\n  {cmd}')
+  # logger.debug(f'cmd: {cmdstr.strip()}')
 
   p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdoutArg)
 
@@ -139,9 +136,9 @@ def respawnFinderWindow():
     tmux respawn-window -k -t '{settings.finderWindowTarget}'
   '''
 
-  hook.enable(False)
+  hook.disable()
   _run(cmdstr)
-  hook.enable(True)
+  hook.enable()
 
 
 def switchTo(target):

@@ -22,11 +22,13 @@ def disable():
 
 
 def isEnabled() -> bool:
-  if not settings.paths.hookEnabled.exists():
+  if not settings.paths.update.exists():
+    logger.debug('"{settings.paths.update}" does not exists, return [True]')
     return True
 
-  text = settings.paths.hookEnabled.read_text()
+  text = settings.paths.update.read_text()
   disabled_time = float(text)
+  logger.debug(f'"{settings.paths.update}" - read -> [{disabled_time}]')
 
   if disabled_time == -1:
     # enabled explicitly
