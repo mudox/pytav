@@ -3,36 +3,7 @@
 
 from . import screen, settings
 
-# TODO!: make symbols and colors configurable
-
-_symbols_nerd = '''
-    Console     : 
-    Update      : 
-    Dashboard   : 
-    Play        : 
-    Tav-Project : 
-    Xcode-Log   : 
-    Frameworks  : 
-    .unloaded.  : 
-'''
-
-_symbols_emoji = '''
-    Console     : 🐬
-    Update      : 🎉
-    Dashboard   : 🌿
-    Play        : ⛑
-    Tav-Project : 🦊
-    Xcode-Log   : 💡
-    Frameworks  : 🍄
-    .unloaded.  : 🌔
-'''
-
-_symbols = _symbols_nerd
-_symbols = [s.split(':') for s in _symbols.strip().splitlines()]
-_symbols = {s[0].strip(): s[1].strip() for s in _symbols}
-
-# a non-space character prevent fzf from strip the indentation
-_defaultLiveSessionSymbol = screen.sgrHide('·')
+# TODO!: make colors configurable
 
 _colors = {
     'sessionLineLiveSessionName': '\033[32m',
@@ -99,7 +70,7 @@ class FZFFormatter:
 
   def _unloadedBar(self):
     color = _colors['unloadedBar']
-    symbol = _symbols['.unloaded.']
+    symbol = settings.symbols.unloaded
     if ord(symbol) > 0x10000:
       symbolPart = f'  {symbol}   '
     else:
@@ -193,7 +164,10 @@ class FZFFormatter:
     hiddenPrefix = f'{session.name:{self._part1Width}}'
 
     # session symbol if any
-    symbol = _symbols.get(session.name, _defaultLiveSessionSymbol)
+    symbol = settings.symbols.sessionSymbols.get(
+        session.name,
+        settings.symbols.sessionDefault
+    )
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
     # the only part: session name
@@ -213,7 +187,10 @@ class FZFFormatter:
   def _liveSessionLine(self, session):
     hiddenPrefix = f'{session.id:{self._part1Width}}'
 
-    symbol = _symbols.get(session.name, _defaultLiveSessionSymbol)
+    symbol = settings.symbols.sessionSymbols.get(
+        session.name,
+        settings.symbols.sessionDefault
+    )
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
     color1 = _colors['sessionLineLiveSessionName']

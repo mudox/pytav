@@ -39,21 +39,18 @@ serverPID = str(tmux.getServerPID())
 
 
 class paths:
+  # install
+  install = Path(__file__).parent
   scriptsDir = install / 'scripts'
   resourcesDir = install / 'resources'
 
   # configuration
   configDir = Path('~/.config/tav').expanduser()
   configDir.mkdir(parents=True, exist_ok=True)
-
-  config = configDir / 'settings.json'
+  config = configDir / 'tav.yml'
+  defaultConfig = resourcesDir / 'tav.yml'
   if not config.exists():
-    # TODO!!: populate default json content to setting.json
-    pass
-
-  # install
-  install = Path(__file__).parent
-  scripts = install / 'scripts'
+    config.write_text(defaultConfig.read_text())
 
   # data
   dataDir = Path('~/.local/share/tav').expanduser()
@@ -77,11 +74,52 @@ class paths:
   sessions = dataDir / 'sessions'
 
 
-class colors:
-  # TODO: migrate colors here
-  pass
+# config data
+_yaml = YAML()
+configData = _yaml.load(paths.config)
+defaultConfigData = _yaml.load(paths.defaultConfig)
+
+
+def _get(d, *keyss):
+  if d is None:
+    return None
+
+  if keyss is None:
+    return None
+
+  for keys in keyss:
+    if keys is None:
+      return None
+
+    keys = keys.split('.')
+    for key in keys:
+      d = d.get(key, None)
+      if d is None:
+        return None
+
+  return d
 
 
 class symbols:
-  # TODO: migrate symbols here
-  pass
+
+  _schemeName = _get(configData, 'symbols.use')
+  _scheme = _get(configData, 'symbols', _schemeName)
+
+  sessionSymbols = _get(_scheme, 'session')
+  if not isinstance(sessionSymbols, dict):
+    logger.warn('fail to load [symbols.sessionSymbols] fallback to default')
+    sessionSymbols = {}
+
+  unloaded = _get(_scheme, 'unloaded')
+  if isinstance(unloaded, str) and unloaded.strip() != '':
+    unloaded = unloaded[0]
+  else:
+    logger.warn('fail to load [symbols.unloaded] fallback to default')
+    unloaded = '·'
+
+  sessionDefault = _get(_scheme, 'sessionDefault')
+  if isinstance(sessionDefault, str) and sessionDefault.strip() != '':
+    sessionDefault = sessionDefault[0]
+  else:
+    logger.warn('fail to load [symbols.sessionDefault] fallback to default')
+    sessionDefault = sgrHide('·')
