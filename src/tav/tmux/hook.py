@@ -22,32 +22,29 @@ def disable():
     file.write(line)
 
 
-def isEnabled() -> bool:
+def isEnabled() -> '2-tuple: (bool, explain)':
   if not settings.paths.update.exists():
-    logger.debug(f'update file ({settings.paths.update}) does not exists, return ✔')
-    return True
+    return True, f'update file ({settings.paths.update}) does not exists'
 
   lines = settings.paths.update.read_text().strip().splitlines()
   lastLine = lines[-1]
   flag = lastLine.split('|')[1].strip()
 
   if flag == 'enable':
-    logger.debug('o:✔  explicitly')
-    return True
+    return True, 'enalbed explicitly'
   else:
     disabledTime = float(flag)
     timeElapsed = time() - disabledTime
     if timeElapsed > settings.maxDisableUpdateInterval:
-      logger.debug('o:✔  out of interval')
-      return True
+      return True, 'time overdue'
     else:
-      logger.debug('o:✘  within interval')
-      return False
+      return False, 'within interval'
 
 
 def run():
-  if not isEnabled():
-    logger.warn('o: disabled')
+  enabled, why = isEnabled()
+  if not enabled:
+    logger.warn(f'o: skip [{why}]')
     return
   else:
     core.update()
