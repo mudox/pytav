@@ -38,8 +38,8 @@ class Snapshot:
     groups = groupby(window_info_tuples, lambda x: (x[0], x[1]))
     for (sid, sname), value in groups:
       session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
-      for _, _, wid, wname in value:
-        session.windows.append(tmux.Window(id=wid, name=wname))
+      for _, _, wid, wname, windex in value:
+        session.windows.append(tmux.Window(wid, wname, windex))
 
       self.live_sessions.append(session)
 

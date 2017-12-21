@@ -146,7 +146,8 @@ class FZFFormatter:
 
     # part2
     color2 = _colors['windowLineSessionName']
-    part2 = screen.sgr(session.name, color2)
+    part2 = f'{session.name}:{window.index}'
+    part2 = screen.sgr(part2, color2)
     part2 = screen.right(part2, self._part2Width)
 
     line = hiddenPrefix +            \

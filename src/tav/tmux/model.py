@@ -7,6 +7,7 @@ from typing import NamedTuple
 class Window(NamedTuple):
   id: str
   name: str
+  index: int
 
 
 class Session(NamedTuple):

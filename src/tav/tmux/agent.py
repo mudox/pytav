@@ -123,6 +123,7 @@ def listAllWindows():
       '#{session_name}',
       '#{window_id}',
       '#{window_name}',
+      '#{window_index}',
   ]
   format = ':'.join(format)
 
