@@ -60,7 +60,7 @@ class FZFFormatter:
     self._gapWidth = self.fzfWidth - withoutGap
 
     # determine height
-    self.layoutLevel = settings.layoutLevel
+    self.layoutLevel = settings.fzf.layoutLevel
     if self.layoutLevel == 'auto':
       _, tHeight = shutil.get_terminal_size()
       for lvl in range(4):

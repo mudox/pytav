@@ -88,7 +88,11 @@ def _get(d, *keyss):
   return d
 
 
-layoutLevel = _get(configData, 'layoutLevel') or 'auto'
+class fzf:
+
+  layoutLevel = _get(configData, 'layoutLevel') or 'auto'
+
+  yMargin = 2
 
 #
 # settings.symbols

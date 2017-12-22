@@ -64,7 +64,6 @@ def start_ui(oneshot):
   width = info['fzf']['width']
 
   h_margin = int((t_width - width) / 2) - 3
-  t_margin = 3
 
   #
   # compose fzf command line
@@ -84,7 +83,7 @@ def start_ui(oneshot):
     --height=100%   # fullscreen mode
 
     # center interface in the terminal screen
-    --margin={t_margin},{h_margin}
+    --margin={settings.fzf.yMargin},{h_margin}
 
     --header='{info["fzf"]["header"]}'
     --inline-info
