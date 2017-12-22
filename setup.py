@@ -17,15 +17,27 @@ version = re.search(
 
 setup(
     name='tav',
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    include_package_data=True,
-    entry_points={
-        "console_scripts": ['tav = tav.cmd:run']},
     version=version,
+
     description='TBD',
     long_description='TBD',
+
     author='Mudox',
     author_email='imudox@gmail.com',
-    url='https://github.com/mudox/tav'
+    url='https://github.com/mudox/tav',
+
+    package_dir={'': 'src'},
+    packages=find_packages('src'),
+
+    install_requires=[
+        'libtmux',
+    ],
+
+    package_data={
+        '': ['scripts/*', 'resources/*'],
+    },
+
+    entry_points={
+        "console_scripts": ['tav = tav.cmd:run']
+    }
 )
