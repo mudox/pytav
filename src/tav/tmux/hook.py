@@ -35,7 +35,7 @@ def isEnabled() -> '2-tuple: (bool, explain)':
   else:
     disabledTime = float(flag)
     timeElapsed = time() - disabledTime
-    if timeElapsed > settings.maxDisableUpdateInterval:
+    if timeElapsed > settings.tmux.maxDisableUpdateInterval:
       return True, 'time overdue'
     else:
       return False, 'within interval'

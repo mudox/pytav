@@ -99,7 +99,7 @@ class FZFFormatter:
 
     for session in self.snapshot.live_sessions:
       # filter out tav interface session
-      if session.name == settings.tavSessionName:
+      if session.name == settings.tmux.tavSessionName:
         continue
 
       lines.append('\n' + self._liveSessionLine(session))

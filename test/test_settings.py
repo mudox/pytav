@@ -4,10 +4,10 @@
 from tav import settings
 
 
-def test_serverPID():
-  assert settings.serverPID is not None
+def test_tmux_serverPID():
+  assert settings.tmux.serverPID is not None
 
 
 def test_logTTY():
-  assert settings.paths.logTTY is not None
-  assert settings.paths.logTTY.exists()
+  assert settings.tmux.logTTY is not None
+  assert settings.tmux.logTTY.exists()

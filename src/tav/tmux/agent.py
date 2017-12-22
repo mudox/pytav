@@ -103,7 +103,7 @@ def getServerPID():
 
 def getLogTTY():
   cmdstr = f'''
-    tmux list-panes -t {settings.logWindowTarget} -F '#{{pane_tty}}'
+    tmux list-panes -t {settings.tmux.logWindowTarget} -F '#{{pane_tty}}'
   '''
 
   out = _getStdout(cmdstr)
@@ -137,7 +137,7 @@ def listAllWindows():
 
 def refreshFinderWindow():
   cmdstr = f'''
-    tmux send-keys -t {settings.finderWindowTarget} C-u C-m
+    tmux send-keys -t {settings.tmux.finderWindowTarget} C-u C-m
   '''
 
   _run(cmdstr)
@@ -146,7 +146,7 @@ def refreshFinderWindow():
 def respawnFinderWindow():
 
   cmdstr = f'''
-    tmux respawn-window -k -t '{settings.finderWindowTarget}'
+    tmux respawn-window -k -t '{settings.tmux.finderWindowTarget}'
   '''
 
   hook.disable()
