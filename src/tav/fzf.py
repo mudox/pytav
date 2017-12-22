@@ -85,7 +85,7 @@ class FZFFormatter:
     assert level in range(5)
 
     # level 0
-    fzfHeader = 4
+    fzfHeader = 4 + 1 # 1st line be empty line
     bareUnloadedBar = 1
     height =                             \
         _minYMargin * 2 +                \
@@ -137,7 +137,7 @@ class FZFFormatter:
     return lines
 
   def _fzfLines(self):
-    lines = []
+    lines = ['']
 
     #
     # live sessions
