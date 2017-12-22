@@ -11,6 +11,9 @@ from jaclog import jaclog
 
 
 def _initLogging():
+  # block libtmux logging
+  logging.getLogger('libtmux').setLevel(logging.CRITICAL)
+
   # get logging tty if any
   cmdstr = f'''
     tmux list-panes -t "Tav:Log" -F '#{{pane_tty}}'
