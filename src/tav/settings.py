@@ -88,9 +88,12 @@ def _get(d, *keyss):
   return d
 
 
+layoutLevel = _get(configData, 'layoutLevel') or 'auto'
+
 #
 # settings.symbols
 #
+
 
 class symbols:
 
@@ -115,6 +118,10 @@ class symbols:
   else:
     logger.warn('fail to load [symbols.sessionDefault] fallback to default')
     sessionDefault = sgrHide('·')
+
+#
+# settings.colors
+#
 
 
 class colors:

@@ -1,5 +1,9 @@
 version: 1
 
+# [0 - 4] or `auto`
+# The smaller the number, the more compact the layout
+layoutLevel: auto
+
 symbol:
 
   # The value MUST be one of the names of symbol schemes listed below.
