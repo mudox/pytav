@@ -3,7 +3,6 @@
 
 from . import screen, settings
 
-
 # TODO: 2 hard corded magic numbers
 _minGap = 6
 _minWidth = 46
@@ -31,6 +30,8 @@ class FZFFormatter:
     self.snapshot = snapshot
     self._testMode = testMode
 
+    # calculate widths
+
     self._sessionSymbolPadding = screen.sgrHide('⋅' * _sessionSymbolWidth)
 
     self._part1Width = max(
@@ -55,10 +56,16 @@ class FZFFormatter:
     self.fzfWidth = max(_minWidth, withMinGap)
     self._gapWidth = self.fzfWidth - withoutGap
 
+    # determine height
+    self.layoutLevel = settings.layoutLevel
+    if self.layoutLevel == 'auto':
+      # TODO!!: if is `auto`, decide the level
+      self.layoutLevel = 4
+
     self.fzfHeader = self._fzfHeaderLines()
     self.fzfFeed = self._fzfLines()
 
-  def _height(level):
+  def _height(self, level):
     """
     - level 0: no empty lines
     - level 1: add empty lines around unlaoded bar
@@ -105,7 +112,7 @@ class FZFFormatter:
     else:
       symbolPart = f'  {symbol}  '
     body = f' ──────{symbolPart}────── '.center(self.fzfWidth)
-    line = f'\n{"<nop>":{self._part1Width}}\t{screen.sgr(body, color)}'
+    line = f'{"<nop>":{self._part1Width}}\t{screen.sgr(body, color)}'
     return line
 
   def _fzfHeaderLines(self):
@@ -131,7 +138,7 @@ class FZFFormatter:
       if session.name == settings.tmux.tavSessionName:
         continue
 
-      lines.append('\n' + self._liveSessionLine(session))
+      lines.append(self._liveSessionLine(session))
 
       for window in session.windows:
 
@@ -144,7 +151,10 @@ class FZFFormatter:
     # unloaded bar
     #
 
-    lines.append(self._unloadedBar())
+    if self.layoutLevel >= 1:
+      lines += ['', self._unloadedBar(), '']
+    else:
+      lines.append(self._unloadedBar())
 
     #
     # dead sessions
@@ -212,7 +222,7 @@ class FZFFormatter:
     part2 = screen.sgr('[Load The Session]', color2)
     part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
 
-    return f'\n{hiddenPrefix}\t{symbol}{part1}{gap}{part2}'
+    return f'{hiddenPrefix}\t{symbol}{part1}{gap}{part2}'
 
   def _liveSessionLine(self, session):
     hiddenPrefix = f'{session.id:{self._part1Width}}'
