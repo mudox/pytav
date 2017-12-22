@@ -3,16 +3,6 @@
 
 from . import screen, settings
 
-# TODO!: make colors configurable
-
-# _colors = {
-    # 'sessionLineLiveSessionName': '\033[32m',
-    # 'windowLineWindowName': '\033[34m',
-    # 'windowLineSessionName': '\033[38;5;242m',
-    # 'unloadedBar': '\033[38;5;20m',
-    # 'deadSessionName': '\033[38;5;242m',
-    # 'deadSessionLineRight': '\033[38;5;242m',
-# }
 
 # TODO: 2 hard corded magic numbers
 _minGap = 6
