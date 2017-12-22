@@ -6,7 +6,7 @@ import logging
 
 from . import core, settings, tests, tmux
 
-__version__ = '2.2'
+__version__ = '2.2.1'
 
 logger = logging.getLogger(__name__)
 
