@@ -49,6 +49,10 @@ def start_ui(oneshot):
   compose fzf command line, show it centered in current terimnal secreen.
   '''
 
+  if not settings.paths.serveFile.exists():
+    logger.warn('server file ({settings.paths.serveFile}) does not exists, update first')
+    update()
+
   with settings.paths.serveFile.open() as file:
     info = json.load(file)
 
