@@ -90,7 +90,10 @@ def _get(d, *keyss):
 
 class fzf:
 
-  layoutLevel = _get(configData, 'layoutLevel') or 'auto'
+  layoutLevel = _get(configData, 'layoutLevel')
+  if layoutLevel not in (0, 1, 2, 3, 4, 'auto'):
+    logger.warn(f'invalid `layoutLevel` settings ({layoutLevel}), fallback to `auto`')
+    layoutLevel = 'auto'
 
   yMargin = 2
 
