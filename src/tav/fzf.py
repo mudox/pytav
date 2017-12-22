@@ -133,12 +133,12 @@ class FZFFormatter:
     # live sessions
     #
 
-    for session in self.snapshot.liveSessions:
+    for idx, session in enumerate(self.snapshot.liveSessions):
       # filter out tav interface session
       if session.name == settings.tmux.tavSessionName:
         continue
 
-      if self.layoutLevel >= 2:
+      if self.layoutLevel >= 2 and idx > 0:
         lines.append('')
 
       lines.append(self._liveSessionLine(session))
@@ -162,7 +162,9 @@ class FZFFormatter:
     # dead sessions
     #
 
-    for session in self.snapshot.deadSessions:
+    for idx, session in enumerate(self.snapshot.deadSessions):
+      if self.layoutLevel >= 3 and idx > 0:
+        lines.append('')
       lines.append(self._deadSessionLine(session))
 
     if self._testMode:
