@@ -31,6 +31,7 @@ setup(
 
     install_requires=[
         'libtmux',
+        'ruamel.yaml',
     ],
 
     package_data={
