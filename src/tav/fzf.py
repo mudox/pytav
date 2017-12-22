@@ -58,6 +58,45 @@ class FZFFormatter:
     self.fzfHeader = self._fzfHeaderLines()
     self.fzfFeed = self._fzfLines()
 
+  def _height(level):
+    """
+    - level 0: no empty lines
+    - level 1: add empty lines around unlaoded bar
+    - level 2: add empty lines between live session lines on the base of level 1
+    - level 3: add empty lines between dead session lines on the base of level 2
+    - level 4: add empty lines between window lines on the base of level 3
+    """
+    assert level in range(5)
+
+    # level 0
+    fzfHeader = 4
+    bareUnloadedBar = 1
+    height =                             \
+        fzfHeader +                      \
+        self.snapshot.windowCount +      \
+        self.snapshot.liveSessionCount + \
+        bareUnloadedBar +                \
+        self.deadSessionCount
+
+    if level == 0:
+      return height
+
+    height += 2  # empty line around unloaded bar
+    if level == 1:
+      return height
+
+    height += self.snapshot.liveSessionCount - 1
+    if level == 2:
+      return height
+
+    height += self.snapshot.deadSessionCount - 1
+    if level == 3:
+      return height
+
+    height += self.snapshot.windowCount
+    if level == 4:
+      return height
+
   def _unloadedBar(self):
     color = settings.colors.unloadedBar
     symbol = settings.symbols.unloaded
