@@ -1,4 +1,3 @@
-
 version: 1
 
 symbols:
@@ -14,7 +13,7 @@ symbols:
     unloaded:  
 
     # Uncomment to specify a default symbol for all sessions.
-    sessionDefault:   
+    sessionDefault:
 
     session:
 
@@ -23,26 +22,44 @@ symbols:
       # Symbol (the value) MUST be 1 character.
 
       Console      :  
+
       Update       :  
+
       Dashboard    :  
+
       Play         :  
+
       Tav-Project  :  
+
       Xcode-Log    :  
+
       Frameworks   :  
 
+  # You can add more schemes below ...
 
-  # You can add more schemes below.
-
-  # There is an another symbol scheme named `emoji` use emoji's.
+  # There is an another symbol scheme named `emoji` using emoji's.
   # https://github.com/ryanoasis/nerd-fonts
   emoji:
+
     unloaded: 🌔
+
     sessionDefault:  🐠
+
     session:
+
       Console      : 🐬
+
       Update       : 🎉
+
       Dashboard    : 🌿
+
       Play         : ⛑
+
       Tav-Project  : 🦊
+
       Xcode-Log    : 💡
+
       Frameworks   : 🍄
+
+colors:
+
