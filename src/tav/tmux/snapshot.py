@@ -35,7 +35,7 @@ class Snapshot:
 
     self.liveSessions = []
     # filter out tav session
-    tuples = filter(lambda x: x[1] != settings.tmux.tavSessionName, infoTuples)
+    infoTuples = list(filter(lambda x: x[1] != settings.tmux.tavSessionName, infoTuples))
     groups = groupby(infoTuples, lambda x: (x[0], x[1]))
     for (sid, sname), value in groups:
       session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
