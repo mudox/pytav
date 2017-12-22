@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import shutil
+
 from . import screen, settings
 
 # TODO: 2 hard corded magic numbers
+_minYMargin = 2
 _minGap = 6
 _minWidth = 46
 
@@ -59,8 +62,14 @@ class FZFFormatter:
     # determine height
     self.layoutLevel = settings.layoutLevel
     if self.layoutLevel == 'auto':
-      # TODO!!: if is `auto`, decide the level
-      self.layoutLevel = 4
+      _, tHeight = shutil.get_terminal_size()
+      for lvl in range(4):
+        height = self._height(level=lvl)
+        if height > tHeight:
+          self.layoutLevel = max(0, lvl - 1)
+          break
+      else:
+        self.layoutLevel = 4
 
     self.fzfHeader = self._fzfHeaderLines()
     self.fzfFeed = self._fzfLines()
@@ -79,11 +88,12 @@ class FZFFormatter:
     fzfHeader = 4
     bareUnloadedBar = 1
     height =                             \
+        _minYMargin * 2 +                \
         fzfHeader +                      \
         self.snapshot.windowCount +      \
         self.snapshot.liveSessionCount + \
         bareUnloadedBar +                \
-        self.deadSessionCount
+        self.snapshot.deadSessionCount
 
     if level == 0:
       return height
@@ -144,7 +154,7 @@ class FZFFormatter:
       lines.append(self._liveSessionLine(session))
 
       for window in session.windows:
-        if self.layoutLevel >=4:
+        if self.layoutLevel >= 4:
           lines.append('')
         lines.append(self._windowLine(session, window))
 

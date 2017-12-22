@@ -2,7 +2,7 @@ version: 1
 
 # [0 - 4] or `auto`
 # The smaller the number, the more compact the layout
-layoutLevel: 4
+layoutLevel: auto
 
 symbol:
 
