@@ -138,10 +138,12 @@ class FZFFormatter:
       if session.name == settings.tmux.tavSessionName:
         continue
 
+      if self.layoutLevel >= 2:
+        lines.append('')
+
       lines.append(self._liveSessionLine(session))
 
       for window in session.windows:
-
         lines.append(self._windowLine(session, window))
 
     if self.snapshot.deadSessionCount == 0:
