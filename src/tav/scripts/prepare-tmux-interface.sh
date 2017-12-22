@@ -20,8 +20,11 @@ create_session() {
   fi
 
   # disable hook updating temporarily
-  date '+%s' > "${HOME}/.local/share/tav/update"
-  trap 'echo "-1" > "${HOME}/.local/share/tav/update"' EXIT
+  word="$(date +'%Y-%m-%d %H:%M:%S.%N') | $(date +%s)"
+  echo "${word}" >> "${HOME}/.local/share/tav/update"
+
+  word="$(date +'%Y-%m-%d %H:%M:%S.%N') | enable"
+  #trap "echo '${word}' >> ${HOME}/.local/share/tav/update" EXIT
 
   #
   # window: Finder
@@ -74,4 +77,3 @@ else
     create_session
   fi
 fi
-
