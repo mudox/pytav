@@ -81,11 +81,11 @@ class FZFFormatter:
 
   def _fzfHeaderLines(self):
     lines = '{} sessions ({} alive, {} dead), {} windows'.format(
-        self.snapshot.live_session_count +
-        self.snapshot.dead_session_count,
-        self.snapshot.live_session_count,
-        self.snapshot.dead_session_count,
-        self.snapshot.window_count,
+        self.snapshot.liveSessionCount +
+        self.snapshot.deadSessionCount,
+        self.snapshot.liveSessionCount,
+        self.snapshot.deadSessionCount,
+        self.snapshot.windowCount,
     )
     lines += screen.sgrHide('\n·')
     return lines
@@ -97,7 +97,7 @@ class FZFFormatter:
     # live sessions
     #
 
-    for session in self.snapshot.live_sessions:
+    for session in self.snapshot.liveSessions:
       # filter out tav interface session
       if session.name == settings.tmux.tavSessionName:
         continue
@@ -108,7 +108,7 @@ class FZFFormatter:
 
         lines.append(self._windowLine(session, window))
 
-    if self.snapshot.dead_session_count == 0:
+    if self.snapshot.deadSessionCount == 0:
       return '\n'.join(lines)
 
     #
@@ -121,7 +121,7 @@ class FZFFormatter:
     # dead sessions
     #
 
-    for session in self.snapshot.dead_sessions:
+    for session in self.snapshot.deadSessions:
       lines.append(self._deadSessionLine(session))
 
     if self._testMode:
@@ -201,7 +201,7 @@ class FZFFormatter:
     # gap
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
-    part2 = screen.sgrHide('·')
+    part2 = screen.sgrHide('[S]')
     part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
 
     return f'{hiddenPrefix}\t{symbol}{part1}{gap}{part2}'

@@ -28,10 +28,10 @@ def update():
 
   info = {
       'tmux': {
-          'server_pid': snapshot.server_pid,
-          'window_count': snapshot.window_count,
-          'live_session_count': snapshot.live_session_count,
-          'dead_session_count': snapshot.dead_session_count,
+          'serverPID': snapshot.serverPID,
+          'windowCount': snapshot.windowCount,
+          'liveSessionCount': snapshot.liveSessionCount,
+          'deadSessionCount': snapshot.deadSessionCount,
       },
       'fzf': {
           'width': formatter.fzfWidth,

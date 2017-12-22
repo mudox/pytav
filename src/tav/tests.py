@@ -19,13 +19,13 @@ def _title(text):
 def test_snapshot():
   _title('Test [snapshot] ...')
   snap = tmux.Snapshot()
-  for s in snap.all_sessions:
+  for s in snap.allSessions:
     print(f' {s.name:24} {s.loaded and "live" or "dead"}')
 
-  print(f'\n windows: {snap.window_count}')
-  print(f' live sessions: {snap.live_session_count}')
-  print(f' dead sessions: {snap.dead_session_count}')
-  print(f' server pid: {snap.server_pid}')
+  print(f'\n windows: {snap.windowCount}')
+  print(f' live sessions: {snap.liveSessionCount}')
+  print(f' dead sessions: {snap.deadSessionCount}')
+  print(f' server pid: {snap.serverPID}')
 
 
 def test_formatter():

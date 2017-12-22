@@ -32,11 +32,6 @@ def _initLogging():
 
   logger = logging.getLogger(__name__)
 
-  # log command line
-  cmdline = '\x20'.join(argv)
-  cmdline = basename(cmdline)
-  logger.info(f'invoked as: {cmdline}')
-
   # log tty searching error if any
   if ttyLog is not None:
     logger.warn(ttyLog)

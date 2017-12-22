@@ -135,6 +135,7 @@ def listAllWindows():
   lines = out.strip().splitlines()
   return [line.split(':') for line in lines]
 
+
 def refreshFinderWindow():
   cmdstr = f'''
     tmux send-keys -t {settings.tmux.finderWindowTarget} C-u C-m
@@ -142,8 +143,9 @@ def refreshFinderWindow():
 
   _run(cmdstr)
 
-# TODO: unused
+
 def respawnFinderWindow():
+  # TODO: unused
 
   cmdstr = f'''
     tmux respawn-window -k -t '{settings.tmux.finderWindowTarget}'
