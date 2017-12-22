@@ -3,27 +3,12 @@
 
 import argparse
 import logging
-from os.path import basename
-from sys import argv
-
-from jaclog import jaclog
 
 from . import core, settings, tests, tmux
 
-jaclog.configure(
-    appName='tav',
-    fileName='tav.log',
-    logTTY=settings.paths.logTTY,
-    compact=True
-)
-logger = logging.getLogger(__name__)
-cmdline = '\x20'.join(argv)
-cmdline = basename(cmdline)
-logger.info(f'o:{cmdline}')
-
-
 __version__ = '2.1'
 
+logger = logging.getLogger(__name__)
 
 #
 # actions (sub-commands)
