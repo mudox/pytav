@@ -1,65 +1,47 @@
 version: 1
 
-symbols:
+symbol:
 
   # The value MUST be one of the names of symbol schemes listed below.
   use: emoji
 
-  # A symbol scheme named `nerd` use nerd font:
-  # https://github.com/ryanoasis/nerd-fonts
-  nerd: # specify it as value of key `use` above to select this symbol scheme.
+  schemes:
 
-    # symbol shown in the center of the unloaded bar
-    unloaded:  
+    # A symbol scheme named `nerd` use nerd font:
+    # https://github.com/ryanoasis/nerd-fonts
+    nerd: # specify it as value of key `use` above to select this symbol scheme.
 
-    # Uncomment to specify a default symbol for all sessions.
-    sessionDefault:
+      # symbol shown in the center of the unloaded bar
+      unloaded:  
 
-    session:
+      # can be empty
+      sessionDefault:
 
-      # Add, change whatever session names (CASE-SENSITIVE) you like and their
-      # corresponding symbols here.
-      # Symbol (the value) MUST be 1 character.
+      sessions:
+        # Add, change whatever session names (CASE-SENSITIVE) you like and their
+        # corresponding symbols here.
+        # Symbol (the value) MUST be 1 character.
 
-      Console      :  
+        Console      :  
+        Update       :  
+        Dashboard    :  
+        Play         :  
+        Tav-Project  :  
+        Xcode-Log    :  
+        Frameworks   :  
 
-      Update       :  
+    # You can add more schemes below ...
 
-      Dashboard    :  
-
-      Play         :  
-
-      Tav-Project  :  
-
-      Xcode-Log    :  
-
-      Frameworks   :  
-
-  # You can add more schemes below ...
-
-  # There is an another symbol scheme named `emoji` using emoji's.
-  # https://github.com/ryanoasis/nerd-fonts
-  emoji:
-
-    unloaded: 🌔
-
-    sessionDefault:  🐠
-
-    session:
-
-      Console      : 🐬
-
-      Update       : 🎉
-
-      Dashboard    : 🌿
-
-      Play         : ⛑
-
-      Tav-Project  : 🦊
-
-      Xcode-Log    : 💡
-
-      Frameworks   : 🍄
-
-colors:
-
+    # There is an another symbol scheme named `emoji` using emoji's.
+    # https://github.com/ryanoasis/nerd-fonts
+    emoji:
+      unloaded: 🌔
+      sessionDefault:  🐠
+      sessions:
+        Console      : 🐬
+        Update       : 🎉
+        Dashboard    : 🌿
+        Play         : ⛑
+        Tav-Project  : 🦊
+        Xcode-Log    : 💡
+        Frameworks   : 🍄

@@ -94,19 +94,19 @@ def _get(d, *keyss):
 
 class symbols:
 
-  _schemeName = _get(configData, 'symbols.use')
-  _scheme = _get(configData, 'symbols', _schemeName)
+  _use = _get(configData, 'symbol.use')
+  _scheme = _get(configData, 'symbol.schemes', _use)
 
-  sessionSymbols = _get(_scheme, 'session')
-  if not isinstance(sessionSymbols, dict):
-    logger.warn('fail to load [symbols.sessionSymbols] fallback to default')
-    sessionSymbols = {}
+  sessions = _get(_scheme, 'sessions')
+  if not isinstance(sessions, dict):
+    logger.warn('fail to load [symbols.sessions], fallback to default')
+    sessions = {}
 
   unloaded = _get(_scheme, 'unloaded')
   if isinstance(unloaded, str) and unloaded.strip() != '':
     unloaded = unloaded[0]
   else:
-    logger.warn('fail to load [symbols.unloaded] fallback to default')
+    logger.warn('fail to load [symbols.unloaded], fallback to default')
     unloaded = '·'
 
   sessionDefault = _get(_scheme, 'sessionDefault')
