@@ -144,6 +144,8 @@ class FZFFormatter:
       lines.append(self._liveSessionLine(session))
 
       for window in session.windows:
+        if self.layoutLevel >=4:
+          lines.append('')
         lines.append(self._windowLine(session, window))
 
     if self.snapshot.deadSessionCount == 0:
