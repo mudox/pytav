@@ -13,13 +13,13 @@ logger = logging.getLogger(__name__)
 def enable():
   line = f'{datetime.now()} | enable\n'
   with settings.paths.update.open('a') as file:
-    file.write(line)
+    file.write(line, flush=True)
 
 
 def disable():
   line = f'{datetime.now()} | {time()}\n'
   with settings.paths.update.open('a') as file:
-    file.write(line)
+    file.write(line, flush=True)
 
 
 def isEnabled() -> '2-tuple: (bool, explain)':
