@@ -5,14 +5,14 @@ from . import screen, settings
 
 # TODO!: make colors configurable
 
-_colors = {
-    'sessionLineLiveSessionName': '\033[32m',
-    'windowLineWindowName': '\033[34m',
-    'windowLineSessionName': '\033[38;5;242m',
-    'unloadedBar': '\033[38;5;20m',
-    'deadSessionName': '\033[38;5;242m',
-    'deadSessionLineRight': '\033[38;5;242m',
-}
+# _colors = {
+    # 'sessionLineLiveSessionName': '\033[32m',
+    # 'windowLineWindowName': '\033[34m',
+    # 'windowLineSessionName': '\033[38;5;242m',
+    # 'unloadedBar': '\033[38;5;20m',
+    # 'deadSessionName': '\033[38;5;242m',
+    # 'deadSessionLineRight': '\033[38;5;242m',
+# }
 
 # TODO: 2 hard corded magic numbers
 _minGap = 6
@@ -69,7 +69,7 @@ class FZFFormatter:
     self.fzfFeed = self._fzfLines()
 
   def _unloadedBar(self):
-    color = _colors['unloadedBar']
+    color = settings.colors.unloadedBar
     symbol = settings.symbols.unloaded
     if ord(symbol) > 0x10000:
       symbolPart = f'  {symbol}   '
@@ -137,7 +137,7 @@ class FZFFormatter:
     windowSymbol = '· '
 
     # part1
-    color1 = _colors['windowLineWindowName']
+    color1 = settings.colors.windowLineWindowName
     part1 = screen.sgr(window.name, color1)
     part1 = screen.left(part1, self._part1Width)
 
@@ -145,7 +145,7 @@ class FZFFormatter:
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
     # part2
-    color2 = _colors['windowLineSessionName']
+    color2 = settings.colors.windowLineSessionName
     part2 = f'{session.name}:{window.index}'
     part2 = screen.sgr(part2, color2)
     part2 = screen.right(part2, self._part2Width)
@@ -165,21 +165,21 @@ class FZFFormatter:
     hiddenPrefix = f'{session.name:{self._part1Width}}'
 
     # session symbol if any
-    symbol = settings.symbols.sessionSymbols.get(
+    symbol = settings.symbols.sessions.get(
         session.name,
         settings.symbols.sessionDefault
     )
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
     # the only part: session name
-    color1 = _colors['deadSessionName']
+    color1 = settings.colors.deadSessionName
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self._part1Width)
 
     # gap
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
-    color2 = _colors['deadSessionLineRight']
+    color2 = settings.colors.deadSessionLineRight
     part2 = screen.sgr('[Load The Session]', color2)
     part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
 
@@ -188,13 +188,13 @@ class FZFFormatter:
   def _liveSessionLine(self, session):
     hiddenPrefix = f'{session.id:{self._part1Width}}'
 
-    symbol = settings.symbols.sessionSymbols.get(
+    symbol = settings.symbols.sessions.get(
         session.name,
         settings.symbols.sessionDefault
     )
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
-    color1 = _colors['sessionLineLiveSessionName']
+    color1 = settings.colors.sessionLineLiveSessionName
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self._part1Width)
 

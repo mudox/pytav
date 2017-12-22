@@ -6,8 +6,8 @@ from pathlib import Path
 
 from ruamel.yaml import YAML
 
+from .screen import color2sgr, sgrHide
 from .tmux.agent import getServerPID
-from .screen import sgrHide
 
 logger = logging.getLogger(__name__)
 
@@ -115,3 +115,22 @@ class symbols:
   else:
     logger.warn('fail to load [symbols.sessionDefault] fallback to default')
     sessionDefault = sgrHide('·')
+
+
+class colors:
+  pass
+
+
+_use = _get(configData, 'color.use')
+_scheme = _get(configData, 'color.schemes', _use)
+if not isinstance(_scheme, dict):
+  logger.warn('fail to load [colors], fallback to all no color mode')
+  _scheme = {}
+
+_use = _get(defaultConfigData, 'color.use')
+_default = _get(defaultConfigData, 'color.schemes', _use)
+
+for name in _default:
+  color = _scheme.get(name, 'white')
+  color = color2sgr(color)
+  setattr(colors, name, color)

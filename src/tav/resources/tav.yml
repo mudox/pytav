@@ -45,3 +45,20 @@ symbol:
         Tav-Project  : 🦊
         Xcode-Log    : 💡
         Frameworks   : 🍄
+
+# The structure is similar above, DO NOT change the keys.
+color:
+  use: basic
+  schemes:
+    basic:
+      # value here can be one of:
+      # 1. balck, red, green, blue, yellow, magenta, cyan, white.
+      # 2. number from 0 - 255 if your terminal support 256 colors.
+      # 3. comma separated RGB group (e.g. `8, 5 244`).
+      # 4. web css color form (e.g. `#F9E01C`, `#fff`).
+      sessionLineLiveSessionName : green
+      windowLineWindowName       : blue
+      windowLineSessionName      : 242
+      unloadedBar                : 20
+      deadSessionName            : 242
+      deadSessionLineRight       : 242
