@@ -4,8 +4,8 @@
 from tav import tmux
 
 
-def test_listAllWindows():
-  assert tmux.listAllWindows() != ''
+def test_dumpInfo():
+  assert tmux.dumpInfo() != ''
 
 def test_run():
   pass

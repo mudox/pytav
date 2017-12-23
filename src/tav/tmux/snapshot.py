@@ -29,7 +29,7 @@ class Snapshot:
     # scan live sessions
     #
 
-    infoTuples = tmux.listAllWindows()
+    infoTuples = tmux.dumpInfo()
 
     # get tmux server id
 
