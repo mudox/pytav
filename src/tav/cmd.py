@@ -28,6 +28,12 @@ class Command:
     core.update()
     core.start_ui(oneshot=True)
 
+  def attach(self, args):
+    settings.action = 'attach'
+
+    core.update()
+    tmux.switchTo(settings.tmux.finderWindowTarget)
+
   def serve(self, args):
     settings.action = 'serve'
 
@@ -92,6 +98,13 @@ class Command:
         help='create a new snapshot tmux session window layout.'
     )
     act_snapshot.set_defaults(func=self.snapshot)
+
+    # action `attach`
+    act_attach = subparsers.add_parser(
+        'attach', aliases=['a', 'at'],
+        help='update backing data, and switch to Tav finder window'
+    )
+    act_attach.set_defaults(func=self.attach)
 
     # action `hook`
     act_hook = subparsers.add_parser(
