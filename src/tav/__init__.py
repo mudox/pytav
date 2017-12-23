@@ -41,7 +41,8 @@ def _initLogging():
 
   # WARNING: must be put after `jaclog.configure`
   settings = import_module('tav.settings')
-  settings.tmux.logTTY = Path(tty)
+  if tty is not None:
+    settings.tmux.logTTY = Path(tty)
 
 
 _initLogging()
