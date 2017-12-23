@@ -66,14 +66,14 @@ class FZFFormatter:
     self.layoutLevel = settings.fzf.layoutLevel
     ttyHeight = self.snapshot.ttyHeight
     if self.layoutLevel == 'auto':
-      logger.debug(f'terminal height: {ttyHeight}')
+      logger.debug(f'terminal height:  [{ttyHeight}]')
 
       for lvl in range(5):
         height = self._height(level=lvl)
         logger.debug(f'height at level {lvl}: {height}')
         if height > ttyHeight:
           self.layoutLevel = max(0, lvl - 1)
-          logger.debug('done')
+          logger.debug('break\n')
           break
       else:
         self.layoutLevel = 4
@@ -82,7 +82,7 @@ class FZFFormatter:
     self.fzfFeed = self._fzfLines()
 
     logger.debug(textwrap.dedent(f'''\
-        final layout level: [{self.layoutLevel}]
+        final layout level:  [{self.layoutLevel}]
         final screen height: {len(self.fzfFeed.splitlines()) + (2 * settings.fzf.yMargin) + 4}
         estimated height:    {self._height(self.layoutLevel)}\
     '''))
@@ -128,14 +128,22 @@ class FZFFormatter:
       return height
 
   def _unloadedBar(self):
-    color = settings.colors.unloadedBar
     symbol = settings.symbols.unloaded
-    if ord(symbol) > 0x10000:
+    symbolCode = ord(symbol)
+
+    symbolColor = settings.colors.unloadedBarSymbol
+    symbol = screen.sgr(symbol, symbolColor)
+
+    # adjust alignment for emoji symbols
+    if symbolCode > 0x10000:
       symbolPart = f'  {symbol}   '
     else:
       symbolPart = f'  {symbol}  '
-    body = f' ──────{symbolPart}────── '.center(self.fzfWidth)
-    line = f'{"<nop>":{self._part1Width}}\t{screen.sgr(body, color)}'
+
+    barColor = settings.colors.unloadedBar
+    wing = screen.sgr('──────', barColor)
+    line = screen.center(f'{wing}{symbolPart}{wing}', self.fzfWidth)
+    line = f'{"<nop>":{self._part1Width}}\t{screen.sgr(line, barColor)}'
     return line
 
   def _fzfHeaderLines(self):
@@ -202,7 +210,9 @@ class FZFFormatter:
     hiddenPrefix = f'{window.id:{self._part1Width}}'
 
     # window symbol
-    windowSymbol = '· '
+    windowSymbol = settings.symbols.windowDefault
+    windowSymbol = screen.sgr(windowSymbol, settings.colors.windowSymbol)
+    windowSymbol = screen.left(windowSymbol, _windowSymbolWidth)
 
     # part1
     color1 = settings.colors.windowLineWindowName
@@ -237,10 +247,12 @@ class FZFFormatter:
         session.name,
         settings.symbols.sessionDefault
     )
+    symbolColor = settings.colors.deadSessionSymbol
+    symbol = screen.sgr(symbol, symbolColor)
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
     # the only part: session name
-    color1 = settings.colors.deadSessionName
+    color1 = settings.colors.deadSessionLineLeft
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self._part1Width)
 
@@ -248,7 +260,8 @@ class FZFFormatter:
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
     color2 = settings.colors.deadSessionLineRight
-    part2 = screen.sgr('[Load The Session]', color2)
+    # part2 = screen.sgr('', color2)
+    part2 = screen.sgr('load ', color2)
     part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
 
     return f'{hiddenPrefix}\t{symbol}{part1}{gap}{part2}'
@@ -260,9 +273,11 @@ class FZFFormatter:
         session.name,
         settings.symbols.sessionDefault
     )
+    symbolColor = settings.colors.liveSessionSymbol
+    symbol = screen.sgr(symbol, symbolColor)
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
-    color1 = settings.colors.sessionLineLiveSessionName
+    color1 = settings.colors.liveSessionLineLeft
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self._part1Width)
 

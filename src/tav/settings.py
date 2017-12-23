@@ -92,7 +92,7 @@ class fzf:
 
   layoutLevel = _get(configData, 'layoutLevel')
   if layoutLevel not in (0, 1, 2, 3, 4, 'auto'):
-    logger.warn(f'invalid `layoutLevel` settings ({layoutLevel}), fallback to `auto`')
+    logger.info(f'invalid `layoutLevel` settings ({layoutLevel}), fallback to `auto`')
     layoutLevel = 'auto'
 
   yMargin = 2
@@ -109,22 +109,32 @@ class symbols:
 
   sessions = _get(_scheme, 'sessions')
   if not isinstance(sessions, dict):
-    logger.warn('fail to load [symbols.sessions], fallback to default')
+    logger.info('[symbols.sessions], fallback to default')
     sessions = {}
 
+  # unloaded
   unloaded = _get(_scheme, 'unloaded')
   if isinstance(unloaded, str) and unloaded.strip() != '':
     unloaded = unloaded[0]
   else:
-    logger.warn('fail to load [symbols.unloaded], fallback to default')
+    logger.info('[symbols.unloaded], fallback to default')
     unloaded = '·'
 
+  # sessionDefault
   sessionDefault = _get(_scheme, 'sessionDefault')
   if isinstance(sessionDefault, str) and sessionDefault.strip() != '':
     sessionDefault = sessionDefault[0]
   else:
-    logger.warn('fail to load [symbols.sessionDefault] fallback to default')
+    logger.info('[symbols.sessionDefault] fallback to default')
     sessionDefault = sgrHide('·')
+
+  # windowDefault
+  windowDefault = _get(_scheme, 'windowDefault')
+  if isinstance(windowDefault, str) and windowDefault.strip() != '':
+    windowDefault = windowDefault[0]
+  else:
+    logger.info('[symbols.windowDefault] fallback to default')
+    windowDefault = '·'
 
 #
 # settings.colors
@@ -138,7 +148,7 @@ class colors:
 _use = _get(configData, 'color.use')
 _scheme = _get(configData, 'color.schemes', _use)
 if not isinstance(_scheme, dict):
-  logger.warn('fail to load [colors], fallback to all no color mode')
+  logger.info('[colors], fallback to all no color mode')
   _scheme = {}
 
 _use = _get(defaultConfigData, 'color.use')
