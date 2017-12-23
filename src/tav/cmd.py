@@ -43,13 +43,13 @@ class Command:
   def hook(self, args):
     settings.action = 'hook'
 
-    if args.hookEnabled is None:  # perform hook update
+    if args.hookOption is None:  # perform hook update
 
       # must specify event type or arbitrary reason
       if args.event is None:
         msg = 'must specify either the trigger event type or [-d|-e] option\n\n'
         msg += self.parser.format_usage()
-        logger.warn(msg)
+        print(msg)
         return
 
       settings.hookEvent = args.event
@@ -59,10 +59,15 @@ class Command:
 
     else:
 
-      if args.hookEnabled:
+      if args.hookOption == 'enable':
         tmux.hook.enable()
-      else:
+      elif args.hookOption == 'disable':
         tmux.hook.disable()
+      elif args.hookOption == 'print':
+        line = 'hook: ' + ('enabled' if tmux.hook.isEnabled() else 'disabled')
+        print(line)
+      else:
+        raise ValueError(f'Invalid argument parsing result, args.hookOption = `{args.hookOption}`')
 
   #
   # CLI interface
@@ -114,18 +119,27 @@ class Command:
         '''
     )
 
-    # hook {-d | -e}
+    # hook {-d | -e | -p}
     group = act_hook.add_mutually_exclusive_group()
     group.add_argument(
         '-d, --disable',
-        dest='hookEnabled',
-        action='store_false',
+        dest='hookOption',
+        action='store_const',
+        const='disable',
         help='disable background updating triggered by tmux hooks'
     )
     group.add_argument(
         '-e, --enable',
-        dest='hookEnabled',
-        action='store_true',
+        dest='hookOption',
+        action='store_const',
+        const='enable',
+        help='enable background updating'
+    )
+    group.add_argument(
+        '-p, --print',
+        dest='hookOption',
+        action='store_const',
+        const='print',
         help='enable background updating'
     )
     group.add_argument(
@@ -139,7 +153,7 @@ class Command:
             'after-enabled'
         ],
         help='event type that triggers the hook')
-    act_hook.set_defaults(func=self.hook, hookEnabled=None)
+    act_hook.set_defaults(func=self.hook, hookOption=None)
 
     # action `oneshot`
     act_oneshot = subparsers.add_parser(
