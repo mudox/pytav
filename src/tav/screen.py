@@ -30,15 +30,21 @@ def color2sgr(color):
 
     # Hex digits
     if color.startswith('#'):
-      if len(color) == 4:
-        r = int(color[1] * 2, base=16)
-        g = int(color[2] * 2, base=16)
-        b = int(color[3] * 2, base=16)
-      elif len(color) == 7:
-        r = int(color[1:3], base=16)
-        g = int(color[3:5], base=16)
-        b = int(color[5:7], base=16)
-      return f'\x1b[38;2;{r};{g};{b}m'
+      try:
+        if len(color) == 4:
+          r = int(color[1] * 2, base=16)
+          g = int(color[2] * 2, base=16)
+          b = int(color[3] * 2, base=16)
+          return f'\x1b[38;2;{r};{g};{b}m'
+        elif len(color) == 7:
+          r = int(color[1:3], base=16)
+          g = int(color[3:5], base=16)
+          b = int(color[5:7], base=16)
+          return f'\x1b[38;2;{r};{g};{b}m'
+        else:
+          pass
+      except BaseException:
+        pass
 
     # 'red`, `green` ...
     if color in _colorMapping_:
