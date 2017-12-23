@@ -9,6 +9,7 @@ import shutil
 
 import subprocess as sp
 
+from . import screen
 from . import settings, tmux
 from .fzf import FZFFormatter
 
@@ -155,8 +156,9 @@ def start_ui(oneshot):
       # show creating message
       #
 
-      # TODO: make the color in setting or even configurable
-      text = f'\033[33mCreating session [{tag}] ...\033[0m'
+      color = settings.colors.message
+      text = f'Creating session [{tag}] ...'
+      text = screen.sgr(text, color)
       tmux.showMessageCentered(text)
 
       #
@@ -176,7 +178,9 @@ def start_ui(oneshot):
 
       if proc.returncode != 0:
         logger.error(f'fail to create session [{tag}]: {process.stderr.decode()}')
-        text = f'\x1b[31mCreating session [{tag}] FAILED!\x1b[0m'
+        color = settings.colors.error
+        text = f'Creating session [{tag}] FAILED!'
+        text = screen.sgr(text, color)
         tmux.showMessageCentered(text)
         update()
         sleep(1)

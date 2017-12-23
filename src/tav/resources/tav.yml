@@ -75,10 +75,10 @@ color:
   schemes:
 
     mudox:
-      # value here can be one of:
+      # Value here can be one of:
       # 1. balck, red, green, blue, yellow, magenta, cyan, white.
       # 2. number from 0 - 255 if your terminal support 256 colors.
-      # 3. comma separated RGB group (e.g. `8, 5 244`).
+      # 3. comma separated RGB group (e.g. `8, 5 244`), if your terminal support true color.
       # 4. web css color form (e.g. `#F9E01C`, `#fff`).
       liveSessionLineLeft   : 198
       liveSessionSymbol     : white
@@ -94,6 +94,9 @@ color:
       deadSessionLineLeft   : 64
       deadSessionSymbol     : 242
 
+      message               : yellow
+      error                 : red
+
     simple:
       liveSessionLineLeft   : green
       liveSessionSymbol     : white
@@ -108,3 +111,6 @@ color:
       deadSessionLineRight  : 242
       deadSessionLineLeft   : 242
       deadSessionSymbol     : red
+
+      message               : yellow
+      error                 : red
