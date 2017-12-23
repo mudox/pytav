@@ -210,7 +210,7 @@ class FZFFormatter:
     windowSymbol = screen.left(windowSymbol, _windowSymbolWidth)
 
     # part1
-    color1 = settings.colors.windowLineWindowName
+    color1 = settings.colors.windowLineLeft
     part1 = screen.sgr(window.name, color1)
     part1 = screen.left(part1, self._part1Width)
 
@@ -218,7 +218,7 @@ class FZFFormatter:
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
     # part2
-    color2 = settings.colors.windowLineSessionName
+    color2 = settings.colors.windowLineRight
     part2 = f'{session.name}:{window.index}'
     part2 = screen.sgr(part2, color2)
     part2 = screen.right(part2, self._part2Width)

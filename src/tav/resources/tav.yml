@@ -70,7 +70,7 @@ symbol:
 # WARNING: do not change the keys.
 color:
 
-  use: mudox
+  use: hugo
 
   schemes:
 
@@ -80,11 +80,13 @@ color:
       # 2. number from 0 - 255 if your terminal support 256 colors.
       # 3. comma separated RGB group (e.g. `8, 5 244`), if your terminal support true color.
       # 4. web css color form (e.g. `#F9E01C`, `#fff`).
+      background            : black
+
       liveSessionLineLeft   : 198
       liveSessionSymbol     : white
 
-      windowLineSessionName : 242
-      windowLineWindowName  : 39
+      windowLineRight       : 242
+      windowLineLeft        : 39
       windowSymbol          : 242
 
       unloadedBar           : 58
@@ -98,11 +100,13 @@ color:
       error                 : red
 
     simple:
+      background            : black
+
       liveSessionLineLeft   : green
       liveSessionSymbol     : white
 
-      windowLineSessionName : 242
-      windowLineWindowName  : blue
+      windowLineRight       : 242
+      windowLineLeft        : blue
       windowSymbol          : 242
 
       unloadedBar           : 242
@@ -113,4 +117,24 @@ color:
       deadSessionSymbol     : red
 
       message               : yellow
+      error                 : red
+
+    hugo:
+      background            : '#0A1922'
+
+      liveSessionLineLeft   : '#FF4088'
+      liveSessionSymbol     : white
+
+      windowLineRight       : '#0594CB'
+      windowLineLeft        : '#EBB951'
+      windowSymbol          : '#33BA91'
+
+      unloadedBar           : 242
+      unloadedBarSymbol     : white
+
+      deadSessionLineRight  : 242
+      deadSessionLineLeft   : '#33BA91'
+      deadSessionSymbol     : white
+
+      message               : blue
       error                 : red
