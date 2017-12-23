@@ -9,5 +9,4 @@ def test_tmux_serverPID():
 
 
 def test_logTTY():
-  assert settings.tmux.logTTY is not None
   assert settings.tmux.logTTY.exists()
