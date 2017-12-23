@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import shutil
+import logging
+import textwrap
+
+from libtmux import Server
 
 from . import screen, settings
+
+logger = logging.getLogger(__name__)
 
 # TODO: 2 hard corded magic numbers
 _minYMargin = 2
@@ -62,17 +67,27 @@ class FZFFormatter:
     # determine height
     self.layoutLevel = settings.fzf.layoutLevel
     if self.layoutLevel == 'auto':
-      _, tHeight = shutil.get_terminal_size()
-      for lvl in range(4):
+      tHeight = int(Server().sessions[0].get('session_height'))
+      logger.debug(f'terminal height: {tHeight}')
+
+      for lvl in range(5):
         height = self._height(level=lvl)
+        logger.debug(f'height at level {lvl}: {height}')
         if height > tHeight:
           self.layoutLevel = max(0, lvl - 1)
+          logger.debug('done')
           break
       else:
         self.layoutLevel = 4
 
     self.fzfHeader = self._fzfHeaderLines()
     self.fzfFeed = self._fzfLines()
+
+    logger.debug(textwrap.dedent(f'''\
+        final layout level: [{self.layoutLevel}]
+        final screen height: {len(self.fzfFeed.splitlines()) + (2 * settings.fzf.yMargin) + 4}
+        estimated height:    {self._height(self.layoutLevel)}\
+    '''))
 
   def _height(self, level):
     """
@@ -85,10 +100,10 @@ class FZFFormatter:
     assert level in range(5)
 
     # level 0
-    fzfHeader = 4 + 1 # 1st line be empty line
+    fzfHeader = 3 + 1  # 1st line must be empty line
     bareUnloadedBar = 1
     height =                             \
-        _minYMargin * 2 +                \
+        settings.fzf.yMargin * 2 +       \
         fzfHeader +                      \
         self.snapshot.windowCount +      \
         self.snapshot.liveSessionCount + \
