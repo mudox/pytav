@@ -9,6 +9,7 @@ is_tmux_interface_prepared() {
 }
 
 create_session() {
+  tmux kill-session -t "${session_name}" &>/dev/null
 
   # tty size
   if [[ -n "$TMUX" ]]; then
@@ -70,7 +71,6 @@ create_session() {
 }
 
 if [[ ${kill} == 'kill' ]]; then
-  tmux kill-session -t "${session_name}" &>/dev/null
   create_session
 else
   if ! is_tmux_interface_prepared; then
