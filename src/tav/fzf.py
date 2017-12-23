@@ -9,7 +9,6 @@ from . import screen, settings
 logger = logging.getLogger(__name__)
 
 # TODO: 2 hard corded magic numbers
-_minYMargin = 2
 _minGap = 6
 _minWidth = 46
 

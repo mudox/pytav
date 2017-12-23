@@ -12,6 +12,26 @@ from .tmux.agent import getServerPID
 logger = logging.getLogger(__name__)
 
 
+def _get(d, *keyss):
+  if d is None:
+    return None
+
+  if keyss is None:
+    return None
+
+  for keys in keyss:
+    if keys is None:
+      return None
+
+    keys = keys.split('.')
+    for key in keys:
+      d = d.get(key, None)
+      if d is None:
+        return None
+
+  return d
+
+
 #
 # settings.tmux
 #
@@ -68,34 +88,20 @@ configData = _yaml.load(paths.config)
 defaultConfigData = _yaml.load(paths.defaultConfig)
 
 
-def _get(d, *keyss):
-  if d is None:
-    return None
-
-  if keyss is None:
-    return None
-
-  for keys in keyss:
-    if keys is None:
-      return None
-
-    keys = keys.split('.')
-    for key in keys:
-      d = d.get(key, None)
-      if d is None:
-        return None
-
-  return d
-
-
 class fzf:
 
+  # fzf.layoutLevel
   layoutLevel = _get(configData, 'layoutLevel')
   if layoutLevel not in (0, 1, 2, 3, 4, 'auto'):
-    logger.info(f'invalid `layoutLevel` settings ({layoutLevel}), fallback to `auto`')
+    logger.warning(f'invalid `layoutLevel` settings ({layoutLevel}), fallback to `auto`')
     layoutLevel = 'auto'
 
-  yMargin = 2
+  # fzf.yMargin
+  yMargin = _get(configData, 'yMargin')
+  if not (isinstance(yMargin, int) and yMargin > 0):
+    logger.warning(f'[ui.yMargin] fallback to `{yMargin}`')
+    yMargin = _get(defaultConfigData, 'yMargin')
+
 
 #
 # settings.symbols
@@ -109,7 +115,7 @@ class symbols:
 
   sessions = _get(_scheme, 'sessions')
   if not isinstance(sessions, dict):
-    logger.info('[symbols.sessions], fallback to default')
+    logger.warning('[symbols.sessions], fallback to default')
     sessions = {}
 
   # unloaded
@@ -117,7 +123,7 @@ class symbols:
   if isinstance(unloaded, str) and unloaded.strip() != '':
     unloaded = unloaded[0]
   else:
-    logger.info('[symbols.unloaded], fallback to default')
+    logger.warning('[symbols.unloaded], fallback to default')
     unloaded = '·'
 
   # sessionDefault
@@ -125,7 +131,7 @@ class symbols:
   if isinstance(sessionDefault, str) and sessionDefault.strip() != '':
     sessionDefault = sessionDefault[0]
   else:
-    logger.info('[symbols.sessionDefault] fallback to default')
+    logger.warning('[symbols.sessionDefault] fallback to default')
     sessionDefault = sgrHide('·')
 
   # windowDefault
@@ -133,7 +139,7 @@ class symbols:
   if isinstance(windowDefault, str) and windowDefault.strip() != '':
     windowDefault = windowDefault[0]
   else:
-    logger.info('[symbols.windowDefault] fallback to default')
+    logger.warning('[symbols.windowDefault] fallback to default')
     windowDefault = '·'
 
 #

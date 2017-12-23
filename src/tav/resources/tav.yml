@@ -4,6 +4,9 @@ version: 1
 # The smaller the number, the more compact the layout
 layoutLevel: auto
 
+# top and bottom margin of the finder UI, defaults to 2
+yMargin: 2
+
 symbol:
 
   # The value MUST be one of the names of symbol schemes listed below.
