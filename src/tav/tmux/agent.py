@@ -147,18 +147,6 @@ def refreshFinderWindow():
   _run(cmdstr)
 
 
-def respawnFinderWindow():
-  # TODO: unused
-
-  cmdstr = f'''
-    tmux respawn-window -k -t '{settings.tmux.finderWindowTarget}'
-  '''
-
-  hook.disable()
-  _run(cmdstr)
-  hook.enable()
-
-
 def switchTo(target):
   # quote for sessions id e.g. '$5'
   # avoid shell parsing on it
