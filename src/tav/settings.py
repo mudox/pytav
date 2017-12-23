@@ -37,7 +37,7 @@ def _get(d, *keyss):
 #
 
 
-class tmux:
+class tmux:  # {{{
 
   tavSessionName = 'Tav'
 
@@ -49,13 +49,14 @@ class tmux:
   maxDisableUpdateInterval = 10  # 10s
 
   serverPID = str(getServerPID())
+# }}}
 
 
 #
 # settings.paths
 #
 
-class paths:
+class paths:  # {{{
   # installDir directory
   installDir = Path(__file__).parent
   scriptsDir = installDir / 'scripts'
@@ -80,6 +81,7 @@ class paths:
   update = dataDir / 'update'
 
   sessions = dataDir / 'sessions'
+# }}}
 
 
 # config data
@@ -88,7 +90,12 @@ configData = _yaml.load(paths.config)
 defaultConfigData = _yaml.load(paths.defaultConfig)
 
 
-class fzf:
+#
+# settings.fzf
+#
+
+
+class fzf:  # {{{
 
   # fzf.layoutLevel
   layoutLevel = _get(configData, 'layoutLevel')
@@ -113,13 +120,14 @@ class fzf:
   if not (isinstance(minWidth, int) and minWidth > defaultMinWidth):
     minWidth = defaultMinWidth
     logger.warning(f'[ui.minWidth] fallback to `{minWidth}`')
+# }}}
 
 #
 # settings.symbols
 #
 
 
-class symbols:
+class symbols:  # {{{
 
   _use = _get(configData, 'symbol.use')
   _scheme = _get(configData, 'symbol.schemes', _use)
@@ -152,13 +160,14 @@ class symbols:
   else:
     logger.warning('[symbols.windowDefault] fallback to default')
     windowDefault = '·'
+# }}}
 
 #
 # settings.colors
 #
 
 
-class colors:
+class colors:  # {{{
   pass
 
 
@@ -173,5 +182,14 @@ _default = _get(defaultConfigData, 'color.schemes', _use)
 
 for name in _default:
   color = _scheme.get(name, 'white')
-  color = color2sgr(color)
-  setattr(colors, name, color)
+
+  # validate
+  sgr = color2sgr(color)
+  if sgr is None:
+    color = 'white'
+
+  if name == 'background':
+    setattr(colors, name, color)
+  else:
+    setattr(colors, name, sgr)
+# }}}
