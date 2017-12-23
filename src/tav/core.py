@@ -4,9 +4,10 @@
 import json
 import logging
 import shlex
-import shutil
-import subprocess
 from time import sleep
+import shutil
+
+import subprocess as sp
 
 from . import settings, tmux
 from .fzf import FZFFormatter
@@ -50,7 +51,8 @@ def start_ui(oneshot):
   '''
 
   if not settings.paths.serveFile.exists():
-    logger.warn('server file ({settings.paths.serveFile}) does not exists, update first')
+    logger.warn(
+        'server file ({settings.paths.serveFile}) does not exists, update first')
     update()
 
   with settings.paths.serveFile.open() as file:
@@ -60,10 +62,10 @@ def start_ui(oneshot):
   # center fzf ui
   #
 
-  t_width, t_height = shutil.get_terminal_size()
+  tWidth, _ = shutil.get_terminal_size()
   width = info['fzf']['width']
 
-  h_margin = int((t_width - width) / 2) - 3
+  hMargin = int((tWidth - width) / 2) - 3
 
   #
   # compose fzf command line
@@ -83,7 +85,7 @@ def start_ui(oneshot):
     --height=100%   # fullscreen mode
 
     # center interface in the terminal screen
-    --margin={settings.fzf.yMargin},{h_margin}
+    --margin={settings.fzf.yMargin},{hMargin}
 
     --header='{info["fzf"]["header"]}'
     --inline-info
@@ -109,14 +111,14 @@ def start_ui(oneshot):
 
   lines = info['fzf']['lines']
 
-  process = subprocess.run(
+  process = sp.run(
       cmd,
       input=lines.encode(),
-      stdout=subprocess.PIPE
+      stdout=sp.PIPE
   )
 
   if process.returncode != 0:
-    # TODO!: alert error, wait for a key to continue
+    logger.error(f'fzf command failed')
     return
 
   selectedLine = process.stdout.decode().strip()
@@ -151,6 +153,7 @@ def start_ui(oneshot):
       # show creating message
       #
 
+      # TODO: make the color in setting or even configurable
       text = f'\033[33mCreating session [{tag}] ...\033[0m'
       tmux.showMessageCentered(text)
 
@@ -160,19 +163,26 @@ def start_ui(oneshot):
 
       logger.info(f'load session [{tag}]')
 
-      tmux.hook.disable()                        # disable hook updating
+      tmux.hook.disable()                            # disable hook updating
 
       path = settings.paths.sessions / tag           # create session
-      subprocess.run(
+      proc = sp.run(
           str(path),
-          stdout=subprocess.DEVNULL
+          stdout=sp.DEVNULL,
+          stderr=sp.PIPE
       )
 
-      update()                                       # update snapshot
-
-      sleep(1)                                       # warming
-
-      tmux.switchTo(tag)
+      if proc.returncode != 0:
+        logger.error(f'fail to create session [{tag}]: {process.stderr.decode()}')
+        text = f'\x1b[31mCreating session [{tag}] FAILED!\x1b[0m'
+        tmux.showMessageCentered(text)
+        update()
+        sleep(1)
+        return
+      else:
+        update()
+        sleep(1)
+        tmux.switchTo(tag)
 
     finally:
       tmux.hook.enable()
