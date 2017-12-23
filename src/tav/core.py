@@ -105,6 +105,8 @@ def start_ui(oneshot):
     # prevent ctrl-z suspend fzf
     cmd.append('--bind=ctrl-z:unix-line-discard')
 
+    cmd.append('--bind=ctrl-t:top')
+
   #
   # show fzf interface, get user selection
   #

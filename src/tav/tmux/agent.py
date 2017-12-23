@@ -141,7 +141,7 @@ def dumpInfo():
 
 def refreshFinderWindow():
   cmdstr = f'''
-    tmux send-keys -t {settings.tmux.finderWindowTarget} C-u C-m
+    tmux send-keys -t {settings.tmux.finderWindowTarget} C-u C-t C-m
   '''
 
   _run(cmdstr)
