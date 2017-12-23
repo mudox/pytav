@@ -18,8 +18,11 @@ symbol:
       # symbol shown in the center of the unloaded bar
       unloaded:  
 
-      # can be empty
+      # can be empty, default to empty symbol
       sessionDefault:
+
+      # can be empty, defaults to `·`
+      windowDefault  :  
 
       sessions:
         # Add, change whatever session names (CASE-SENSITIVE) you like and their
@@ -40,7 +43,9 @@ symbol:
     # https://github.com/ryanoasis/nerd-fonts
     emoji:
       unloaded: 🌔
-      sessionDefault:  🐠
+      #sessionDefault:  🐠
+      sessionDefault :
+      windowDefault  :  
       sessions:
         Console      : 🐬
         Update       : 🎉
@@ -50,19 +55,48 @@ symbol:
         Xcode-Log    : 💡
         Frameworks   : 🍄
 
-# The structure is similar above, DO NOT change the keys.
+# The structure is similar to above
+# WARNING: DO NOT change the keys.
 color:
-  use: basic
+  use: simple
   schemes:
-    basic:
+
+    mudox:
       # value here can be one of:
       # 1. balck, red, green, blue, yellow, magenta, cyan, white.
       # 2. number from 0 - 255 if your terminal support 256 colors.
       # 3. comma separated RGB group (e.g. `8, 5 244`).
       # 4. web css color form (e.g. `#F9E01C`, `#fff`).
-      sessionLineLiveSessionName : green
-      windowLineWindowName       : blue
-      windowLineSessionName      : 242
-      unloadedBar                : 20
-      deadSessionName            : 242
-      deadSessionLineRight       : 242
+      liveSessionLineLeft   : 198
+      liveSessionSymbol     : white
+
+      windowLineSessionName : 242
+      windowLineWindowName  : 32
+      windowSymbol          : 242
+
+      unloadedBar           : 58
+      unloadedBarSymbol     : white
+
+      deadSessionLineRight  : 242
+      deadSessionLineLeft   : 94
+      deadSessionSymbol     : 242
+
+    simple:
+      # value here can be one of:
+      # 1. balck, red, green, blue, yellow, magenta, cyan, white.
+      # 2. number from 0 - 255 if your terminal support 256 colors.
+      # 3. comma separated RGB group (e.g. `8, 5 244`).
+      # 4. web css color form (e.g. `#F9E01C`, `#fff`).
+      liveSessionLineLeft   : green
+      liveSessionSymbol     : white
+
+      windowLineSessionName : 242
+      windowLineWindowName  : blue
+      windowSymbol          : 242
+
+      unloadedBar           : 242
+      unloadedBarSymbol     : white
+
+      deadSessionLineRight  : 242
+      deadSessionLineLeft   : 242
+      deadSessionSymbol     : red
