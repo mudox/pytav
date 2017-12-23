@@ -26,7 +26,7 @@ class Command:
     settings.action = 'oneshot'
 
     core.update()
-    core.start_ui(oneshot=True)
+    core.show(oneshot=True)
 
   def attach(self, args):
     settings.action = 'attach'
@@ -38,7 +38,7 @@ class Command:
     settings.action = 'serve'
 
     while True:
-      core.start_ui(oneshot=False)
+      core.show(oneshot=False)
 
   def hook(self, args):
     settings.action = 'hook'

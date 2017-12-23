@@ -4,13 +4,11 @@
 import json
 import logging
 import shlex
-from time import sleep
 import shutil
-
 import subprocess as sp
+from time import sleep
 
-from . import screen
-from . import settings, tmux
+from . import screen, settings, tmux
 from .fzf import FZFFormatter
 
 logger = logging.getLogger(__name__)
@@ -46,18 +44,26 @@ def update():
     json.dump(info, file)
 
 
-def start_ui(oneshot):
+def show(oneshot):
   '''
   compose fzf command line, show it centered in current terimnal secreen.
   '''
 
   if not settings.paths.serveFile.exists():
     logger.warn(
-        'server file ({settings.paths.serveFile}) does not exists, update first')
+        'serve file ({settings.paths.serveFile}) does not exists, update first')
     update()
 
   with settings.paths.serveFile.open() as file:
     info = json.load(file)
+
+  # window background
+  cmdstr = f"""
+    tmux select-pane -P bg={settings.colors.background}
+  """
+  p = sp.run(cmdstr, shell=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
+  if p.returncode != 0:
+    logger.error(f'error setting finder window background color:\n{p.stderr.decode()}')
 
   #
   # center fzf ui
