@@ -8,10 +8,6 @@ from . import screen, settings
 
 logger = logging.getLogger(__name__)
 
-# TODO: 2 hard corded magic numbers
-_minGap = 6
-_minWidth = 46
-
 _fzfLeftMargin = 2
 _sessionSymbolWidth = 4
 _windowSymbolWidth = 2
@@ -56,9 +52,9 @@ class FZFFormatter:
         self._part1Width +    \
         self._part2Width      \
 
-    withMinGap = withoutGap + _minGap
+    withMinGap = withoutGap + settings.fzf.minGap
 
-    self.fzfWidth = max(_minWidth, withMinGap)
+    self.fzfWidth = max(settings.fzf.minWidth, withMinGap)
     self._gapWidth = self.fzfWidth - withoutGap
 
     # determine height

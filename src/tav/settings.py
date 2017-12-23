@@ -93,15 +93,26 @@ class fzf:
   # fzf.layoutLevel
   layoutLevel = _get(configData, 'layoutLevel')
   if layoutLevel not in (0, 1, 2, 3, 4, 'auto'):
-    logger.warning(f'invalid `layoutLevel` settings ({layoutLevel}), fallback to `auto`')
     layoutLevel = 'auto'
+    logger.warning(f'invalid `layoutLevel` settings ({layoutLevel}), fallback to `{layoutLevel}`')
 
   # fzf.yMargin
   yMargin = _get(configData, 'yMargin')
   if not (isinstance(yMargin, int) and yMargin > 0):
-    logger.warning(f'[ui.yMargin] fallback to `{yMargin}`')
     yMargin = _get(defaultConfigData, 'yMargin')
+    logger.warning(f'[ui.yMargin] fallback to `{yMargin}`')
 
+  minGap = _get(configData, 'minGap')
+  defaultMinGap = _get(defaultConfigData, 'minGap')
+  if not (isinstance(minGap, int) and minGap > defaultMinGap):
+    minGap = defaultMinGap
+    logger.warning(f'[ui.minGap] fallback to `{minGap}`')
+
+  minWidth = _get(configData, 'minWidth')
+  defaultMinWidth = _get(defaultConfigData, 'minWidth')
+  if not (isinstance(minWidth, int) and minWidth > defaultMinWidth):
+    minWidth = defaultMinWidth
+    logger.warning(f'[ui.minWidth] fallback to `{minWidth}`')
 
 #
 # settings.symbols

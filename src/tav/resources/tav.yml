@@ -4,8 +4,16 @@ version: 1
 # The smaller the number, the more compact the layout
 layoutLevel: auto
 
-# top and bottom margin of the finder UI, defaults to 2
+# Top and bottom margin of the finder UI, defaults to 2
 yMargin: 2
+
+# Mininum spaces between left part and right part of the ui layout
+# WARNING: must be >= 4
+minGap: 4
+
+# Minimum width of the entire fzf interface
+# WARNING: must be >= 40
+minWidth: 46
 
 symbol:
 
@@ -25,7 +33,7 @@ symbol:
       sessionDefault:
 
       # can be empty, defaults to `·`
-      windowDefault  :  
+      #windowDefault  :  
 
       sessions:
         # Add, change whatever session names (CASE-SENSITIVE) you like and their
@@ -59,9 +67,11 @@ symbol:
         Frameworks   : 🍄
 
 # The structure is similar to above
-# WARNING: DO NOT change the keys.
+# WARNING: do not change the keys.
 color:
-  use: simple
+
+  use: mudox
+
   schemes:
 
     mudox:
@@ -74,22 +84,17 @@ color:
       liveSessionSymbol     : white
 
       windowLineSessionName : 242
-      windowLineWindowName  : 32
+      windowLineWindowName  : 39
       windowSymbol          : 242
 
       unloadedBar           : 58
       unloadedBarSymbol     : white
 
       deadSessionLineRight  : 242
-      deadSessionLineLeft   : 94
+      deadSessionLineLeft   : 64
       deadSessionSymbol     : 242
 
     simple:
-      # value here can be one of:
-      # 1. balck, red, green, blue, yellow, magenta, cyan, white.
-      # 2. number from 0 - 255 if your terminal support 256 colors.
-      # 3. comma separated RGB group (e.g. `8, 5 244`).
-      # 4. web css color form (e.g. `#F9E01C`, `#fff`).
       liveSessionLineLeft   : green
       liveSessionSymbol     : white
 
