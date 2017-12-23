@@ -11,16 +11,28 @@ class Snapshot:
 
   def __init__(self):
     '''
-      take a snapshot, provides following atrributes
-      - allSessions
-      - liveSessions
-      - deadSessions
-      - sessionNameMaxWidth
-      - windowNameMaxWidth
-      - serverPID
-      - windowCount
-      - liveSessionCount
-      - deadSessionCount
+      Take a snapshot, provides following atrributes
+
+      + Tmux model objects
+        - allSessions
+        - liveSessions
+        - deadSessions
+
+      + Width statistics
+        - sessionNameMaxWidth
+        - windowNameMaxWidth
+
+      + Tmux server info
+        - serverPID
+
+      + Counts
+        - windowCount
+        - liveSessionCount
+        - deadSessionCount
+
+      + Current tty size
+        - ttyWidth
+        - ttyHeight
     '''
     self.allSessions = []  # list of tmux.Session objects
     self.serverPID = settings.tmux.serverPID
@@ -30,16 +42,21 @@ class Snapshot:
     #
 
     infoTuples = tmux.dumpInfo()
+    self.ttyWidth= int(infoTuples[0][5])
+    self.ttyHeight= int(infoTuples[0][6])
 
     # get tmux server id
 
     self.liveSessions = []
+
     # filter out tav session
     infoTuples = list(filter(lambda x: x[1] != settings.tmux.tavSessionName, infoTuples))
-    groups = groupby(infoTuples, lambda x: (x[0], x[1]))
+
+    # group by sessions ID
+    groups = groupby(infoTuples, lambda x: x[:2])
     for (sid, sname), value in groups:
       session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
-      for _, _, wid, wname, windex in value:
+      for _, _, wid, wname, windex, *_ in value:
         session.windows.append(tmux.Window(wid, wname, windex))
 
       self.liveSessions.append(session)

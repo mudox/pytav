@@ -4,8 +4,6 @@
 import logging
 import textwrap
 
-from libtmux import Server
-
 from . import screen, settings
 
 logger = logging.getLogger(__name__)
@@ -66,14 +64,14 @@ class FZFFormatter:
 
     # determine height
     self.layoutLevel = settings.fzf.layoutLevel
+    ttyHeight = self.snapshot.ttyHeight
     if self.layoutLevel == 'auto':
-      tHeight = int(Server().sessions[0].get('session_height'))
-      logger.debug(f'terminal height: {tHeight}')
+      logger.debug(f'terminal height: {ttyHeight}')
 
       for lvl in range(5):
         height = self._height(level=lvl)
         logger.debug(f'height at level {lvl}: {height}')
-        if height > tHeight:
+        if height > ttyHeight:
           self.layoutLevel = max(0, lvl - 1)
           logger.debug('done')
           break

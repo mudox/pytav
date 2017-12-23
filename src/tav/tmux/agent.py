@@ -113,17 +113,20 @@ def getLogTTY():
     return None
 
 
-def listAllWindows():
+def dumpInfo():
   '''
-  return tuple of (sid, sname, wid, wname)
+  return tuples about tmux snapshot
   '''
 
   format = [
-      '#{session_id}',
-      '#{session_name}',
-      '#{window_id}',
-      '#{window_name}',
-      '#{window_index}',
+      '#{session_id}',       # 0
+      '#{session_name}',     # 1
+
+      '#{window_id}',        # 2
+      '#{window_name}',      # 3
+      '#{window_index}',     # 4
+      '#{window_width}',     # 5
+      '#{window_height}',    # 6
   ]
   format = ':'.join(format)
 
