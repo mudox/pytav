@@ -13,19 +13,19 @@ logger = logging.getLogger(__name__)
 
 def enable():
   line = f'{datetime.now()} | enable\n'
-  with cfg.paths.update.open('a') as file:
+  with cfg.paths.updateFile.open('a') as file:
     file.write(line)
 
 
 def disable():
   line = f'{datetime.now()} | {time()}\n'
-  with cfg.paths.update.open('a') as file:
+  with cfg.paths.updateFile.open('a') as file:
     file.write(line)
 
 
 def isEnabled() -> '2-tuple: (bool, explain)':
   if not cfg.paths.updateFile.exists():
-    return True, f'update file ({cfg.paths.update}) does not exists'
+    return True, f'update file ({cfg.paths.updateFile}) does not exists'
 
   lines = cfg.paths.updateFile.read_text().strip().splitlines()
   lastLine = lines[-1]

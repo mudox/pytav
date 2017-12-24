@@ -17,7 +17,7 @@ minWidth: 46
 
 symbol:
 
-  # The value MUST be one of the names of symbol schemes listed below.
+  # The value MUST be one of the keys of symbol schemes listed below.
   use: nerd
 
   schemes:
@@ -51,7 +51,6 @@ symbol:
     # You can add more schemes below ...
 
     # There is an another symbol scheme named `emoji` using emoji's.
-    # https://github.com/ryanoasis/nerd-fonts
     emoji:
       unloaded: 🌔
       #sessionDefault:  🐠

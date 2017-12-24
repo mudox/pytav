@@ -132,17 +132,17 @@ def show(oneshot):
 
   lines = info['fzf']['lines']
 
-  process = sp.run(
+  p = sp.run(
       cmd,
       input=lines.encode(),
       stdout=sp.PIPE
   )
 
-  if process.returncode != 0:
-    logger.error(f'fzf command failed')
+  if p.returncode != 0:
+    logger.error('fzf command failed')
     return
 
-  selectedLine = process.stdout.decode().strip()
+  selectedLine = p.stdout.decode().strip()
   tag = selectedLine.split('\t')[0].strip()
 
   #
@@ -187,15 +187,15 @@ def show(oneshot):
 
       tmux.hook.disable()                            # disable hook updating
 
-      path = cfg.paths.sessions / tag           # create session
-      proc = sp.run(
+      path = cfg.paths.sessionsDir / tag           # create session
+      p = sp.run(
           str(path),
           stdout=sp.DEVNULL,
           stderr=sp.PIPE
       )
 
-      if proc.returncode != 0:
-        logger.error(f'fail to create session [{tag}]: {process.stderr.decode()}')
+      if p.returncode != 0:
+        logger.error(f'fail to create session [{tag}]: {p.stderr.decode()}')
         color = cfg.colors.error
         text = f'Creating session [{tag}] FAILED!'
         text = screen.sgr(text, color)
