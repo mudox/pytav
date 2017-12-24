@@ -14,6 +14,11 @@ from .fzf import FZFFormatter
 logger = logging.getLogger(__name__)
 
 
+def checkCreateUI(force=False):
+  if force or not tmux.isTavSessionReady():
+    tmux.createTavSession()
+
+
 def update():
   '''
   steps:
