@@ -4,7 +4,8 @@
 import argparse
 import logging
 
-from . import core, settings, tmux
+from . import core, tmux
+from .settings import cfg
 from .diagnose import diagnose
 
 __version__ = '2.2.3'
@@ -37,7 +38,7 @@ class Command:
 
     core.update()
     core.makeTavSession()
-    tmux.switchTo(settings.tmux.finderWindowTarget)
+    tmux.switchTo(cfg.tmux.finderWindowTarget)
 
   def actionServe(self, args):
 
@@ -55,7 +56,7 @@ class Command:
         print(msg)
         return
 
-      settings.hookEvent = args.event
+      cfg.hookEvent = args.event
 
       core.makeTavSession()
       tmux.hook.run()

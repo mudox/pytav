@@ -4,7 +4,8 @@
 import logging
 import textwrap
 
-from . import screen, settings
+from . import screen
+from .settings import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -52,13 +53,13 @@ class FZFFormatter:
         self._part1Width +    \
         self._part2Width      \
 
-    withMinGap = withoutGap + settings.fzf.minGap
+    withMinGap = withoutGap + cfg.fzf.minGap
 
-    self.fzfWidth = max(settings.fzf.minWidth, withMinGap)
+    self.fzfWidth = max(cfg.fzf.minWidth, withMinGap)
     self._gapWidth = self.fzfWidth - withoutGap
 
     # determine height
-    self.layoutLevel = settings.fzf.layoutLevel
+    self.layoutLevel = cfg.fzf.layoutLevel
     ttyHeight = self.snapshot.ttyHeight
     if self.layoutLevel == 'auto':
       logger.debug(f'terminal height:  [{ttyHeight}]')
@@ -78,7 +79,7 @@ class FZFFormatter:
 
     logger.debug(textwrap.dedent(f'''\
         final layout level:  [{self.layoutLevel}]
-        final screen height: {len(self.fzfFeed.splitlines()) + (2 * settings.fzf.yMargin) + 4}
+        final screen height: {len(self.fzfFeed.splitlines()) + (2 * cfg.fzf.yMargin) + 4}
         estimated height:    {self._height(self.layoutLevel)}\
     '''))
 
@@ -96,7 +97,7 @@ class FZFFormatter:
     fzfHeader = 3 + 1  # 1st line must be empty line
     bareUnloadedBar = 1
     height =                             \
-        settings.fzf.yMargin * 2 +       \
+        cfg.fzf.yMargin * 2 +       \
         fzfHeader +                      \
         self.snapshot.windowCount +      \
         self.snapshot.liveSessionCount + \
@@ -123,10 +124,10 @@ class FZFFormatter:
       return height
 
   def _unloadedBar(self):
-    symbol = settings.symbols.unloaded
+    symbol = cfg.symbols.unloaded
     symbolCode = ord(symbol)
 
-    symbolColor = settings.colors.unloadedBarSymbol
+    symbolColor = cfg.colors.unloadedBarSymbol
     symbol = screen.sgr(symbol, symbolColor)
 
     # adjust alignment for emoji symbols
@@ -135,7 +136,7 @@ class FZFFormatter:
     else:
       symbolPart = f'  {symbol}  '
 
-    barColor = settings.colors.unloadedBar
+    barColor = cfg.colors.unloadedBar
     wing = screen.sgr('──────', barColor)
     line = screen.center(f'{wing}{symbolPart}{wing}', self.fzfWidth)
     line = f'{"<nop>":{self._part1Width}}\t{screen.sgr(line, barColor)}'
@@ -161,7 +162,7 @@ class FZFFormatter:
 
     for idx, session in enumerate(self.snapshot.liveSessions):
       # filter out tav interface session
-      if session.name == settings.tmux.tavSessionName:
+      if session.name == cfg.tmux.tavSessionName:
         continue
 
       if self.layoutLevel >= 2 and idx > 0:
@@ -205,12 +206,12 @@ class FZFFormatter:
     hiddenPrefix = f'{window.id:{self._part1Width}}'
 
     # window symbol
-    windowSymbol = settings.symbols.windowDefault
-    windowSymbol = screen.sgr(windowSymbol, settings.colors.windowSymbol)
+    windowSymbol = cfg.symbols.windowDefault
+    windowSymbol = screen.sgr(windowSymbol, cfg.colors.windowSymbol)
     windowSymbol = screen.left(windowSymbol, _windowSymbolWidth)
 
     # part1
-    color1 = settings.colors.windowLineLeft
+    color1 = cfg.colors.windowLineLeft
     part1 = screen.sgr(window.name, color1)
     part1 = screen.left(part1, self._part1Width)
 
@@ -218,7 +219,7 @@ class FZFFormatter:
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
     # part2
-    color2 = settings.colors.windowLineRight
+    color2 = cfg.colors.windowLineRight
     part2 = f'{session.name}:{window.index}'
     part2 = screen.sgr(part2, color2)
     part2 = screen.right(part2, self._part2Width)
@@ -238,23 +239,23 @@ class FZFFormatter:
     hiddenPrefix = f'{session.name:{self._part1Width}}'
 
     # session symbol if any
-    symbol = settings.symbols.sessions.get(
+    symbol = cfg.symbols.sessions.get(
         session.name,
-        settings.symbols.sessionDefault
+        cfg.symbols.sessionDefault
     )
-    symbolColor = settings.colors.deadSessionSymbol
+    symbolColor = cfg.colors.deadSessionSymbol
     symbol = screen.sgr(symbol, symbolColor)
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
     # the only part: session name
-    color1 = settings.colors.deadSessionLineLeft
+    color1 = cfg.colors.deadSessionLineLeft
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self._part1Width)
 
     # gap
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
-    color2 = settings.colors.deadSessionLineRight
+    color2 = cfg.colors.deadSessionLineRight
     # part2 = screen.sgr('', color2)
     part2 = screen.sgr('load ', color2)
     part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
@@ -264,15 +265,15 @@ class FZFFormatter:
   def _liveSessionLine(self, session):
     hiddenPrefix = f'{session.id:{self._part1Width}}'
 
-    symbol = settings.symbols.sessions.get(
+    symbol = cfg.symbols.sessions.get(
         session.name,
-        settings.symbols.sessionDefault
+        cfg.symbols.sessionDefault
     )
-    symbolColor = settings.colors.liveSessionSymbol
+    symbolColor = cfg.colors.liveSessionSymbol
     symbol = screen.sgr(symbol, symbolColor)
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
-    color1 = settings.colors.liveSessionLineLeft
+    color1 = cfg.colors.liveSessionLineLeft
     part1 = screen.sgr(session.name, color1)
     part1 = screen.left(part1, self._part1Width)
 

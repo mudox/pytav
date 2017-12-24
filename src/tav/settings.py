@@ -2,194 +2,248 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import subprocess as sp
 from pathlib import Path
 
 from ruamel.yaml import YAML
 
 from .screen import color2sgr, sgrHide
-from .tmux.agent import getServerPID
 
 logger = logging.getLogger(__name__)
 
 
-def _get(d, *keyss):
+cmdstr = '''
+  tmux list-sessions -F '#{pid}'
+'''
+p = sp.run(cmdstr, shell=True, stdout=sp.PIPE, stderr=sp.PIPE)
+if p.returncode == 0:
+  _serverPID = p.stdout.decode().strip().splitlines()[0]
+else:
+  raise RuntimeError('no tmux server')
+
+
+def _get(d, *paths):
+  """ Query into configuration dictionary, return None on any error
+  usag:
+    _get(d, 'k1.2.k3.k4', 2, 'name')
+  """
   if d is None:
     return None
 
-  if keyss is None:
+  if paths is None:
     return None
 
-  for keys in keyss:
-    if keys is None:
+  for path in paths:
+    if path is None:
       return None
 
-    keys = keys.split('.')
-    for key in keys:
-      d = d.get(key, None)
-      if d is None:
-        return None
+    path = path.split('.')
+    for key in path:
+      try:
+        i = int(key)
+        if i in d:
+          return d[i]
+        else:
+          return None
+
+      except BaseException:
+        d = d.get(key, None)
+        if d is None:
+          return None
 
   return d
 
 
-#
-# settings.tmux
-#
-
-
-class tmux:  # {{{
-
-  tavSessionName = 'Tav'
-
-  finderWindowName = 'Finder'
-  finderWindowTarget = f'{tavSessionName}:{finderWindowName}'
-
-  logWindowTarget = f'{tavSessionName}:Log'
-
-  maxDisableUpdateInterval = 10  # 10s
-
-  serverPID = str(getServerPID())
-# }}}
-
-
-#
-# settings.paths
-#
-
-class paths:  # {{{
-  # installDir directory
-  installDir = Path(__file__).parent
-  scriptsDir = installDir / 'scripts'
-  resourcesDir = installDir / 'resources'
-
-  # configuration directory
-  configDir = Path('~/.config/tav').expanduser()
-  configDir.mkdir(parents=True, exist_ok=True)
-  config = configDir / 'tav.yml'
-  defaultConfig = resourcesDir / 'tav.yml'
-  if not config.exists():
-    config.write_text(defaultConfig.read_text())
-
-  # data directory
-  dataDir = Path('~/.local/share/tav').expanduser()
-  dataDir.mkdir(parents=True, exist_ok=True)
-
-  serveDir = dataDir / 'servers'
-  serveDir.mkdir(parents=True, exist_ok=True)
-  serveFile = serveDir / tmux.serverPID
-
-  update = dataDir / 'update'
-
-  sessions = dataDir / 'sessions'
-# }}}
-
-
-# config data
-_yaml = YAML()
-configData = _yaml.load(paths.config)
-defaultConfigData = _yaml.load(paths.defaultConfig)
-
-
-#
-# settings.fzf
-#
-
-
-class fzf:  # {{{
-
-  # fzf.layoutLevel
-  layoutLevel = _get(configData, 'layoutLevel')
-  if layoutLevel not in (0, 1, 2, 3, 4, 'auto'):
-    layoutLevel = 'auto'
-    logger.warning(f'invalid `layoutLevel` settings ({layoutLevel}), fallback to `{layoutLevel}`')
-
-  # fzf.yMargin
-  yMargin = _get(configData, 'yMargin')
-  if not (isinstance(yMargin, int) and yMargin > 0):
-    yMargin = _get(defaultConfigData, 'yMargin')
-    logger.warning(f'[ui.yMargin] fallback to `{yMargin}`')
-
-  minGap = _get(configData, 'minGap')
-  defaultMinGap = _get(defaultConfigData, 'minGap')
-  if not (isinstance(minGap, int) and minGap >= defaultMinGap):
-    minGap = defaultMinGap
-    logger.warning(f'[ui.minGap] fallback to `{minGap}`')
-
-  minWidth = _get(configData, 'minWidth')
-  defaultMinWidth = _get(defaultConfigData, 'minWidth')
-  if not (isinstance(minWidth, int) and minWidth >= defaultMinWidth):
-    minWidth = defaultMinWidth
-    logger.warning(f'[ui.minWidth] fallback to `{minWidth}`')
-# }}}
-
-#
-# settings.symbols
-#
-
-
-class symbols:  # {{{
-
-  _use = _get(configData, 'symbol.use')
-  _scheme = _get(configData, 'symbol.schemes', _use)
-
-  sessions = _get(_scheme, 'sessions')
-  if not isinstance(sessions, dict):
-    logger.warning('[symbols.sessions], fallback to default')
-    sessions = {}
-
-  # unloaded
-  unloaded = _get(_scheme, 'unloaded')
-  if isinstance(unloaded, str) and unloaded.strip() != '':
-    unloaded = unloaded[0]
-  else:
-    logger.warning('[symbols.unloaded], fallback to default')
-    unloaded = '·'
-
-  # sessionDefault
-  sessionDefault = _get(_scheme, 'sessionDefault')
-  if isinstance(sessionDefault, str) and sessionDefault.strip() != '':
-    sessionDefault = sessionDefault[0]
-  else:
-    logger.warning('[symbols.sessionDefault] fallback to default')
-    sessionDefault = sgrHide('·')
-
-  # windowDefault
-  windowDefault = _get(_scheme, 'windowDefault')
-  if isinstance(windowDefault, str) and windowDefault.strip() != '':
-    windowDefault = windowDefault[0]
-  else:
-    logger.warning('[symbols.windowDefault] fallback to default')
-    windowDefault = '·'
-# }}}
-
-#
-# settings.colors
-#
-
-
-class colors:  # {{{
+class _Section:
   pass
 
 
-_use = _get(configData, 'color.use')
-_scheme = _get(configData, 'color.schemes', _use)
-if not isinstance(_scheme, dict):
-  logger.info('[colors], fallback to all no color mode')
-  _scheme = {}
+class _Settings:
 
-_use = _get(defaultConfigData, 'color.use')
-_default = _get(defaultConfigData, 'color.schemes', _use)
+  def __init__(self):
+    self._initPaths()
 
-for name in _default:
-  color = _scheme.get(name, 'white')
+    yaml = YAML()
+    self.userConfig = yaml.load(self.paths.userConfig)
+    self.defaultConfig = yaml.load(self.paths.defaultConfig)
 
-  # validate
-  sgr = color2sgr(color)
-  if sgr is None:
-    color = 'white'
+    self._initTmux()
+    self._initFZF()
+    self._initSymbols()
+    self._initColors()
 
-  if name == 'background':
-    setattr(colors, name, color)
-  else:
-    setattr(colors, name, sgr)
-# }}}
+  def _valueAt(self, *paths):
+    u = _get(self.userConfig, *paths)
+    d = _get(self.defaultConfig, *paths)
+    return u, d
+
+  def _initPaths(self):
+
+    s = _Section()
+    self.paths = s
+
+    # installDir directory
+    s.installDir = Path(__file__).parent
+    s.scriptsDir = s.installDir / 'scripts'
+    s.resourcesDir = s.installDir / 'resources'
+
+    # configuration directory
+    s.userConfigDir = Path('~/.config/tav').expanduser()
+    s.userConfigDir.mkdir(parents=True, exist_ok=True)
+
+    s.userConfig = s.userConfigDir / 'tav.yml'
+    s.defaultConfig = s.resourcesDir / 'tav.yml'
+
+    if not s.userConfig.exists():
+      s.userConfig.write_text(s.defaultConfig.read_text())
+
+    # data directory
+    s.dataDir = Path('~/.local/share/tav').expanduser()
+    s.dataDir.mkdir(parents=True, exist_ok=True)
+
+    s.serveDir = s.dataDir / 'servers'
+    s.serveDir.mkdir(parents=True, exist_ok=True)
+    s.serveFile = s.serveDir / _serverPID
+
+    s.updateFile = s.dataDir / 'update'
+    s.sessionsDir = s.dataDir / 'sessions'
+
+  def _initTmux(self):
+
+    s = _Section()
+    self.tmux = s
+
+    s.tavSessionName = 'Tav'
+
+    s.finderWindowName = 'Finder'
+    s.finderWindowTarget = f'{s.tavSessionName}:{s.finderWindowName}'
+
+    s.logWindowName = 'Log'
+    s.logWindowTarget = f'{s.tavSessionName}:{s.logWindowName}'
+
+    s.maxDisableUpdateInterval = 10  # 10s
+
+    s.serverPID = _serverPID
+
+  def _initFZF(self):
+    s = _Section()
+    self.fzf = s
+
+    # layoutLevel
+    v, d = self._valueAt('layoutLevel')
+    if v in (0, 1, 2, 3, 4, 'auto'):
+      s.layoutLevel = v
+    else:
+      s.layoutLevel = d
+      logger.warning(f'invalid [layoutLevel] setting ({v}), fallback to `{d}`')
+
+    # yMargin
+    v, d = self._valueAt('yMargin')
+    if isinstance(v, int) and v > 0:
+      s.yMargin = v
+    else:
+      s.yMargin = d
+      logger.warning(f'invalid [yMargin] setting ({v}), fallback to `{d}`')
+
+    # minGap
+    v, d = self._valueAt('minGap')
+    if isinstance(v, int) and v >= d:
+      s.minGap = v
+    else:
+      s.minGap = d
+      logger.warning(f'invalid [minGap] setting ({v}), fallback to `{d}`')
+
+    # minWidth
+    v, d = self._valueAt('minWidth')
+    if isinstance(v, int) and v >= d:
+      s.minWidth = v
+    else:
+      s.minWidth = d
+      logger.warning(f'invalid [minWidth] setting ({v}), fallback to `{d}`')
+
+  def _initSymbols(self):
+    s = _Section()
+    self.symbols = s
+
+    # sessions dict
+    use = _get(self.userConfig, 'symbol.use')
+    scheme = _get(self.userConfig, 'symbol.schemes', use)
+
+    v = _get(scheme, 'sessions')
+    if isinstance(v, dict):
+      s.sessions = v
+    else:
+      logger.warning(
+          'invalid [symbols.sessions] settings ({v}), fallback to empty dict')
+      s.sessions = {}
+
+    invalidNames = []
+    for name in s.sessions:
+      v = s.sessions[name]
+      if isinstance(v, str):
+        s.sessions[name] = v[0]
+      else:
+        logger.warning(
+            'ignore invalid sessoin symbol setting ({c}) for session name `{name}`')
+        invalidNames.append(name)
+
+    for name in invalidNames:
+      del s.sessions[name]
+
+    # unloaded
+    v = _get(scheme, 'v')
+    d = '·'
+    if isinstance(v, str) and v.strip() != '':
+      s.unloaded = v[0]
+    else:
+      logger.warning(
+          'invalid [symbols.unloaded] setting ({v}), fallback to default')
+      s.unloaded = d
+
+    # sessionDefault
+    v = _get(scheme, 'v')
+    d = sgrHide('·')
+    if isinstance(v, str) and v.strip() != '':
+      s.sessionDefault = v[0]
+    else:
+      logger.warning(
+          'invalid [symbols.sessionDefault] setting ({v}), fallback to default')
+      s.sessionDefault = d
+
+    # windowDefault
+    v = _get(scheme, 'v')
+    d = '·'
+    if isinstance(v, str) and v.strip() != '':
+      s.windowDefault = v[0]
+    else:
+      logger.warning(
+          'invalid [symbols.windowDefault] setting ({v}), fallback to default')
+      s.windowDefault = d
+
+  def _initColors(self):
+    s = _Section()
+    self.colors = s
+
+    use = _get(self.userConfig, 'color.use')
+    scheme = _get(self.userConfig, 'color.schemes', use)
+    defaultScheme = _get(self.defaultConfig, 'color.schemes.default')
+
+    if not isinstance(scheme, dict):
+      logger.info(
+          f'invalid [colors] type ({type(scheme)}), fall back to default scheme')
+      scheme = defaultScheme
+
+    for name in defaultScheme:
+      color = scheme.get(name, 'white')
+
+      code = color2sgr(color)
+      if code is None:
+        color = 'white'
+
+      if name == 'background':
+        setattr(s, name, color)
+      else:
+        setattr(s, name, code)
+
+
+cfg = _Settings()

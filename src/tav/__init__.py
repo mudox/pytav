@@ -11,7 +11,7 @@ from jaclog import jaclog
 
 def _initLogging():
   # get logging tty if any
-  # TODO!: use file read and parse to get the log winder target, DO NOT import settings
+  # TODO!: use file to read and parse to get the log winder target, DO NOT import settings
   cmdstr = f'''
     tmux list-panes -t "Tav:Log" -F '#{{pane_tty}}'
   '''
@@ -37,9 +37,8 @@ def _initLogging():
     logger.warning(ttyLog)
 
   # WARNING: must be put after `jaclog.configure`
-  settings = import_module('tav.settings')
+  cfg = import_module('tav.settings').cfg
   if tty is not None:
-    settings.tmux.logTTY = Path(tty)
-
+    cfg.tmux.logTTY = Path(tty)
 
 _initLogging()

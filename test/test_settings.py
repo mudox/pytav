@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from tav import settings
+from tav.settings import cfg
 
 
 def test_tmux_serverPID():
-  assert settings.tmux.serverPID is not None
+  assert cfg.tmux.serverPID is not None

@@ -5,28 +5,29 @@ import logging
 from datetime import datetime
 from time import time
 
-from .. import core, settings, tmux
+from .. import core, tmux
+from .. settings import cfg
 
 logger = logging.getLogger(__name__)
 
 
 def enable():
   line = f'{datetime.now()} | enable\n'
-  with settings.paths.update.open('a') as file:
+  with cfg.paths.update.open('a') as file:
     file.write(line)
 
 
 def disable():
   line = f'{datetime.now()} | {time()}\n'
-  with settings.paths.update.open('a') as file:
+  with cfg.paths.update.open('a') as file:
     file.write(line)
 
 
 def isEnabled() -> '2-tuple: (bool, explain)':
-  if not settings.paths.update.exists():
-    return True, f'update file ({settings.paths.update}) does not exists'
+  if not cfg.paths.updateFile.exists():
+    return True, f'update file ({cfg.paths.update}) does not exists'
 
-  lines = settings.paths.update.read_text().strip().splitlines()
+  lines = cfg.paths.updateFile.read_text().strip().splitlines()
   lastLine = lines[-1]
   flag = lastLine.split('|')[1].strip()
 
@@ -35,7 +36,7 @@ def isEnabled() -> '2-tuple: (bool, explain)':
   else:
     disabledTime = float(flag)
     timeElapsed = time() - disabledTime
-    if timeElapsed > settings.tmux.maxDisableUpdateInterval:
+    if timeElapsed > cfg.tmux.maxDisableUpdateInterval:
       return True, 'time overdue'
     else:
       return False, 'within interval'

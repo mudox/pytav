@@ -4,7 +4,8 @@
 from functools import reduce
 from itertools import groupby
 
-from .. import settings, tmux
+from .. import tmux
+from ..settings import cfg
 
 
 class Snapshot:
@@ -35,22 +36,25 @@ class Snapshot:
         - ttyHeight
     '''
     self.allSessions = []  # list of tmux.Session objects
-    self.serverPID = settings.tmux.serverPID
+    self.serverPID = cfg.tmux.serverPID
 
     #
     # scan live sessions
     #
 
     infoTuples = tmux.dumpInfo()
-    self.ttyWidth= int(infoTuples[0][5])
-    self.ttyHeight= int(infoTuples[0][6])
+    self.ttyWidth = int(infoTuples[0][5])
+    self.ttyHeight = int(infoTuples[0][6])
 
     # get tmux server id
 
     self.liveSessions = []
 
     # filter out tav session
-    infoTuples = list(filter(lambda x: x[1] != settings.tmux.tavSessionName, infoTuples))
+    infoTuples = list(
+        filter(
+            lambda x: x[1] != cfg.tmux.tavSessionName,
+            infoTuples))
 
     # group by sessions ID
     groups = groupby(infoTuples, lambda x: x[:2])
@@ -79,7 +83,7 @@ class Snapshot:
 
     snames = [
         x.stem
-        for x in settings.paths.sessions.glob('*')
+        for x in cfg.paths.sessionsDir.glob('*')
         if not x.stem.startswith('.')
     ]
 

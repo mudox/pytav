@@ -8,8 +8,9 @@ import shutil
 import subprocess as sp
 from time import sleep
 
-from . import screen, settings, tmux
+from . import screen, tmux
 from .fzf import FZFFormatter
+from .settings import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ def update():
       }
   }
 
-  with settings.paths.serveFile.open('w') as file:
+  with cfg.paths.serveFile.open('w') as file:
     json.dump(info, file)
 
 
@@ -60,17 +61,17 @@ def show(oneshot):
   compose fzf command line, show it centered in current terimnal secreen.
   '''
 
-  if not settings.paths.serveFile.exists():
+  if not cfg.paths.serveFile.exists():
     logger.warn(
-        'serve file ({settings.paths.serveFile}) does not exists, update first')
+        'serve file ({cfg.paths.serveFile}) does not exists, update first')
     update()
 
-  with settings.paths.serveFile.open() as file:
+  with cfg.paths.serveFile.open() as file:
     info = json.load(file)
 
   # window background
   cmdstr = f"""
-    tmux select-pane -P bg={settings.colors.background}
+    tmux select-pane -P bg={cfg.colors.background}
   """
   p = sp.run(cmdstr, shell=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
   if p.returncode != 0:
@@ -103,7 +104,7 @@ def show(oneshot):
     --height=100%   # fullscreen mode
 
     # center interface in the terminal screen
-    --margin={settings.fzf.yMargin},{hMargin}
+    --margin={cfg.fzf.yMargin},{hMargin}
 
     --header='{info["fzf"]["header"]}'
     --inline-info
@@ -173,7 +174,7 @@ def show(oneshot):
       # show creating message
       #
 
-      color = settings.colors.message
+      color = cfg.colors.message
       text = f'Creating session [{tag}] ...'
       text = screen.sgr(text, color)
       tmux.showMessageCentered(text)
@@ -186,7 +187,7 @@ def show(oneshot):
 
       tmux.hook.disable()                            # disable hook updating
 
-      path = settings.paths.sessions / tag           # create session
+      path = cfg.paths.sessions / tag           # create session
       proc = sp.run(
           str(path),
           stdout=sp.DEVNULL,
@@ -195,7 +196,7 @@ def show(oneshot):
 
       if proc.returncode != 0:
         logger.error(f'fail to create session [{tag}]: {process.stderr.decode()}')
-        color = settings.colors.error
+        color = cfg.colors.error
         text = f'Creating session [{tag}] FAILED!'
         text = screen.sgr(text, color)
         tmux.showMessageCentered(text)

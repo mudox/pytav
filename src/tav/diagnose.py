@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from . import fzf, settings, tmux
+from . import fzf, tmux
 
 
 def diagnose(args):

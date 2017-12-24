@@ -9,7 +9,7 @@ from functools import reduce
 from os import environ
 from shutil import get_terminal_size
 
-from .. import settings
+from ..settings import cfg
 from ..screen import screenWidth
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ def prepareTmuxInterface(force):
   Check the availability of tav tmux session and windows, create them if not.
   """
 
-  cmd = settings.paths.scriptsDir / 'prepare-tmux-interface.sh'
+  cmd = cfg.paths.scriptsDir / 'prepare-tmux-interface.sh'
   sp.call([str(cmd), force and 'kill' or 'nokill'])
 
 
@@ -82,7 +82,7 @@ def getServerPID():
 
 def getLogTTY():
   cmdstr = f'''
-    tmux list-panes -t {settings.tmux.logWindowTarget} -F '#{{pane_tty}}'
+    tmux list-panes -t {cfg.tmux.logWindowTarget} -F '#{{pane_tty}}'
   '''
 
   out = _getStdout(cmdstr)
@@ -120,7 +120,7 @@ def dumpInfo():
 
 def refreshFinderWindow():
   cmdstr = f'''
-    tmux send-keys -t {settings.tmux.finderWindowTarget} C-u C-t C-m
+    tmux send-keys -t {cfg.tmux.finderWindowTarget} C-u C-t C-m
   '''
 
   _run(cmdstr)
@@ -181,11 +181,11 @@ def getSessionTTYSize():
 
 
 def isTavSessionReady():
-  finderReady = _check(f'tmux list-panes -t {settings.tmux.finderWindowTarget}')
+  finderReady = _check(f'tmux list-panes -t {cfg.tmux.finderWindowTarget}')
   if not finderReady:
     logger.warning('finder window is not ready')
 
-  logReady = _check(f'tmux list-panes -t {settings.tmux.logWindowTarget}')
+  logReady = _check(f'tmux list-panes -t {cfg.tmux.logWindowTarget}')
   if not logReady:
     logger.warning('log window is not realdy')
 
@@ -195,11 +195,11 @@ def isTavSessionReady():
 def createTavSession():
   # TODO!!: disable hook update
 
-  sessionName = settings.tmux.tavSessionName
-  finderName = settings.tmux.finderWindowName
-  finderTarget = settings.tmux.finderWindowTarget
-  logName = settings.tmux.logWindowName
-  logTarget = settings.tmux.logWindowTarget
+  sessionName = cfg.tmux.tavSessionName
+  finderName = cfg.tmux.finderWindowName
+  finderTarget = cfg.tmux.finderWindowTarget
+  logName = cfg.tmux.logWindowName
+  logTarget = cfg.tmux.logWindowTarget
 
   width, height = getSessionTTYSize()
 
