@@ -183,3 +183,20 @@ def showCursor(flag):
     _system('tput cnorm')
   else:
     _system('tput civis')
+
+
+def getSessionTTYSize():
+  if 'TMUX' in environ and len(environ['TMUX']) > 0:
+    # inside of tmux
+    w = _getStdout(
+        r'tmux list-clients -t . -F "#{client_width}"'
+    ).splitlines()[0]
+    h = _getStdout(
+        r'tmux list-clients -t . -F "#{client_height}"'
+    ).splitlines()[0]
+  else:
+    # outside of tmux
+    w, h = shutil.get_terminal_size()
+
+  return w, h
+
