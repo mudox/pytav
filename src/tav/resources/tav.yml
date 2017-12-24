@@ -18,7 +18,7 @@ minWidth: 46
 symbol:
 
   # The value MUST be one of the keys of symbol schemes listed below.
-  use: nerd
+  use: emoji
 
   schemes:
 
