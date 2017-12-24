@@ -1,17 +1,17 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import logging
 import subprocess as sp
 from importlib import import_module
-from os.path import basename
 from pathlib import Path
-from sys import argv
 
 from jaclog import jaclog
 
 
 def _initLogging():
   # get logging tty if any
+  # TODO!: use file read and parse to get the log winder target, DO NOT import settings
   cmdstr = f'''
     tmux list-panes -t "Tav:Log" -F '#{{pane_tty}}'
   '''
@@ -20,9 +20,9 @@ def _initLogging():
   ttyLog = None
   p = sp.run(cmdstr, shell=True, stdout=sp.PIPE, stderr=sp.PIPE)
   if p.returncode != 0:
-    ttyLog = 'error searching logging tty: {p.stderr.decode()}'
+    ttyLog = f'error searching logging tty: {p.stderr.decode()}'
   else:
-    tty = p.stdout.decode().strip()
+    tty = p.stdout.decode().strip().splitlines()[0]
 
   jaclog.configure(
       appName='tav',
@@ -34,7 +34,7 @@ def _initLogging():
 
   # log tty searching error if any
   if ttyLog is not None:
-    logger.warn(ttyLog)
+    logger.warning(ttyLog)
 
   # WARNING: must be put after `jaclog.configure`
   settings = import_module('tav.settings')
