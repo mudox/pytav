@@ -18,7 +18,7 @@ minWidth: 46
 symbol:
 
   # The value MUST be one of the names of symbol schemes listed below.
-  use: emoji
+  use: nerd
 
   schemes:
 
@@ -83,7 +83,7 @@ color:
       background            : '#0A1922'
 
       liveSessionLineLeft   : '#FF4088'
-      liveSessionSymbol     : white
+      liveSessionSymbol     : '#fff'
 
       windowLineRight       : '#0594CB'
       windowLineLeft        : '#EBB951'
@@ -94,7 +94,7 @@ color:
 
       deadSessionLineRight  : 242
       deadSessionLineLeft   : '#33BA91'
-      deadSessionSymbol     : white
+      deadSessionSymbol     : '#888'
 
       message               : blue
       error                 : red

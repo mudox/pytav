@@ -2,15 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import re
 import shutil
 import subprocess as sp
 from functools import reduce
 from os import environ
 from shutil import get_terminal_size
 
-from ..settings import cfg
 from ..screen import screenWidth
+from ..settings import cfg
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +26,7 @@ def _system(cmdstr):
 def _getStdout(cmdstr):
   p = _run(cmdstr, stdoutArg=sp.PIPE)
   return p.returncode == 0 and p.stdout.decode() or None
+
 
 def _run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
   """Execute the command line using `subprocess.run`.

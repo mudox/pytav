@@ -174,7 +174,7 @@ class _Settings:
       s.sessions = v
     else:
       logger.warning(
-          'invalid [symbols.sessions] settings ({v}), fallback to empty dict')
+          f'invalid [symbols.sessions] settings ({v}), fallback to empty dict')
       s.sessions = {}
 
     invalidNames = []
@@ -184,40 +184,40 @@ class _Settings:
         s.sessions[name] = v[0]
       else:
         logger.warning(
-            'ignore invalid sessoin symbol setting ({c}) for session name `{name}`')
+            f'ignore invalid sessoin symbol setting ({c}) for session name `{name}`')
         invalidNames.append(name)
 
     for name in invalidNames:
       del s.sessions[name]
 
     # unloaded
-    v = _get(scheme, 'v')
+    v = _get(scheme, 'unloaded')
     d = '·'
     if isinstance(v, str) and v.strip() != '':
       s.unloaded = v[0]
     else:
       logger.warning(
-          'invalid [symbols.unloaded] setting ({v}), fallback to default')
+          f'invalid [symbols.unloaded] setting ({v}), fallback to default')
       s.unloaded = d
 
     # sessionDefault
-    v = _get(scheme, 'v')
+    v = _get(scheme, 'sessionDefault')
     d = sgrHide('·')
     if isinstance(v, str) and v.strip() != '':
       s.sessionDefault = v[0]
     else:
       logger.warning(
-          'invalid [symbols.sessionDefault] setting ({v}), fallback to default')
+          f'invalid [symbols.sessionDefault] setting ({v}), fallback to default')
       s.sessionDefault = d
 
     # windowDefault
-    v = _get(scheme, 'v')
+    v = _get(scheme, 'windowDefault')
     d = '·'
     if isinstance(v, str) and v.strip() != '':
       s.windowDefault = v[0]
     else:
       logger.warning(
-          'invalid [symbols.windowDefault] setting ({v}), fallback to default')
+          f'invalid [symbols.windowDefault] setting ({v}), fallback to default')
       s.windowDefault = d
 
   def _initColors(self):
