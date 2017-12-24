@@ -280,7 +280,8 @@ class FZFFormatter:
     # gap
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
-    part2 = screen.sgrHide('[S]')
+    color = screen.color2sgr(cfg.colors.background)
+    part2 = screen.sgr('[S]', color)
     part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
 
     return f'{hiddenPrefix}\t{symbol}{part1}{gap}{part2}'
