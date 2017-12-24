@@ -4,7 +4,8 @@
 import argparse
 import logging
 
-from . import core, settings, tests, tmux
+from . import core, settings, tmux
+from .diagnose import diagnose
 
 __version__ = '2.2.3'
 
@@ -17,36 +18,33 @@ logger = logging.getLogger(__name__)
 
 class Command:
 
-  def checkCreate(self, args):
-    settings.action = 'check'
+  def actionCC(self, args):
 
-    core.checkCreateUI(args.force)
+    if args.print:
+      if tmux.isTavSessionReady():
+        print('Tav session is ready')
+      else:
+        print('Tav session is NOT ready')
 
-  def snapshot(self, args):
-    settings.action = 'snapshot'
+    core.makeTavSession(args.force)
 
-    core.update()
-
-  def oneshot(self, args):
-    settings.action = 'oneshot'
+  def actionOneshot(self, args):
 
     core.update()
     core.show(oneshot=True)
 
-  def attach(self, args):
-    settings.action = 'attach'
+  def actionAttach(self, args):
 
     core.update()
+    core.makeTavSession()
     tmux.switchTo(settings.tmux.finderWindowTarget)
 
-  def serve(self, args):
-    settings.action = 'serve'
+  def actionServe(self, args):
 
     while True:
       core.show(oneshot=False)
 
-  def hook(self, args):
-    settings.action = 'hook'
+  def actionHook(self, args):
 
     if args.hookOption is None:  # perform hook update
 
@@ -59,7 +57,7 @@ class Command:
 
       settings.hookEvent = args.event
 
-      tmux.prepareTmuxInterface(force=False)
+      core.makeTavSession()
       tmux.hook.run()
 
     else:
