@@ -109,19 +109,15 @@ class _Settings:
     s.sessionsDir = s.dataDir / 'sessions'
 
   def _initTmux(self):
-
     s = _Section()
     self.tmux = s
 
     s.tavSessionName = 'Tav'
-
-    s.finderWindowName = 'Finder'
-    s.finderWindowTarget = f'{s.tavSessionName}:{s.finderWindowName}'
+    s.tavWindowName = 'Finder'
+    s.tavWindowTarget = f'{s.tavSessionName}:{s.tavWindowName}'
 
     s.logWindowName = 'Log'
     s.logWindowTarget = f'{s.tavSessionName}:{s.logWindowName}'
-
-    s.maxDisableUpdateInterval = 10  # 10s
 
     s.serverPID = _serverPID
 

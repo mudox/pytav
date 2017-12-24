@@ -51,9 +51,10 @@ def _run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
 
   p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdoutArg)
 
-  text = p.stderr.decode()
+  text = p.stderr.decode().strip()
   if p.returncode != 0:
-    logger.error(f'fail to execute:\n{text}\nerror code: {p.returncode})')
+    logger.error(f'fail to execute:\n{text}')
+    logger.error(f'error code: {p.returncode}')
   else:
     logger.debug(f'succeed to execute:\n{text}')
 
@@ -120,7 +121,7 @@ def dumpInfo():
 
 def refreshFinderWindow():
   cmdstr = f'''
-    tmux send-keys -t {cfg.tmux.finderWindowTarget} C-u C-t C-m
+    tmux send-keys -t {cfg.tmux.tavWindowTarget} C-u C-t C-m
   '''
 
   _run(cmdstr)
