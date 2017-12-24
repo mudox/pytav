@@ -14,9 +14,15 @@ from .fzf import FZFFormatter
 logger = logging.getLogger(__name__)
 
 
-def checkCreateUI(force=False):
-  if force or not tmux.isTavSessionReady():
+def makeTavSession(force=False):
+  if force:
+    logger.info('forcedly recreate Tav session')
     tmux.createTavSession()
+  elif not tmux.isTavSessionReady():
+    logger.info('tav session not ready, (re)create it')
+    tmux.createTavSession()
+  else:
+    logger.info('tav session is okay, skip creation')
 
 
 def update():
