@@ -2,57 +2,33 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import re
+import shutil
 import subprocess as sp
 from functools import reduce
 from os import environ
-from shlex import split as xsplit
 from shutil import get_terminal_size
 
-from . import hook
 from .. import settings
 from ..screen import screenWidth
 
 logger = logging.getLogger(__name__)
 
 
+def _check(cmdstr):
+  return _run(cmdstr).returncode == 0
+
+
 def _system(cmdstr):
-  """Execute the command line using `subprocess.run`, left the stdout unchanged
-  to controlling terminal.
-
-  The stdout is left unchanged (link to controlling tty).
-  The stderr is captured.
-
-  Check the return code, log out content captured from stderr if is not 0.
-
-  Args:
-    cmstr (str): Command line string to run like in shell which can contain comments.
-  """
-
+  # left unchanged (connect to controlling terminal)
   _run(cmdstr, stdoutArg=None)
 
 
 def _getStdout(cmdstr):
-  """Execute the command line using `subprocess.run`, return the content of
-  stdout.
-
-  The stdout is captured
-  The stderr is captured.
-
-  Check the return code, log out content captured from stderr if is not 0.
-
-  Args:
-    cmstr (str): Command line string to run like in shell which can contain comments.
-
-  Returns:
-    The captured stdout content if run successfully, `None` otherwise.
-  """
-
   p = _run(cmdstr, stdoutArg=sp.PIPE)
-
   return p.returncode == 0 and p.stdout.decode() or None
 
-
-def _run(cmdstr, stdoutArg=sp.DEVNULL):
+def _run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
   """Execute the command line using `subprocess.run`.
 
   The stdout's redirection is controlled by the argument `stdoutArg`, which is
@@ -70,13 +46,16 @@ def _run(cmdstr, stdoutArg=sp.DEVNULL):
     The process object returned from `subprocess.run`.
   """
 
-  logger.debug(f'cmd: {cmdstr.strip()}')
+  # logger.debug(f'cmd: {cmdstr.strip()}')
+  cmdstr = f'set -x\n{cmdstr}'
 
   p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdoutArg)
 
+  text = p.stderr.decode()
   if p.returncode != 0:
-    msg = p.stderr.decode()
-    logger.error(f'error: {msg}')
+    logger.error(f'fail to execute:\n{text}\nerror code: {p.returncode})')
+  else:
+    logger.debug(f'succeed to execute:\n{text}')
 
   return p
 
