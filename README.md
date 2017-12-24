@@ -2,7 +2,8 @@
 
 A tmux `choose-tree`replacemet powered by fzf.
 
-
+![screenshopt emoji](https://github.com/mudox/tav/blob/master/assets/images/emoji.png)
+![screenshopt nerd](https://github.com/mudox/tav/blob/master/assets/images/nerd.png)
 
 ## Getting Started
 
