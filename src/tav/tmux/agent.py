@@ -179,3 +179,14 @@ def getSessionTTYSize():
 
   return w, h
 
+
+def isTavSessionReady():
+  finderReady = _check(f'tmux list-panes -t {settings.tmux.finderWindowTarget}')
+  if not finderReady:
+    logger.warning('finder window is not ready')
+
+  logReady = _check(f'tmux list-panes -t {settings.tmux.logWindowTarget}')
+  if not logReady:
+    logger.warning('log window is not realdy')
+
+  return finderReady and logReady
