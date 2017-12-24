@@ -111,13 +111,13 @@ class fzf:  # {{{
 
   minGap = _get(configData, 'minGap')
   defaultMinGap = _get(defaultConfigData, 'minGap')
-  if not (isinstance(minGap, int) and minGap > defaultMinGap):
+  if not (isinstance(minGap, int) and minGap >= defaultMinGap):
     minGap = defaultMinGap
     logger.warning(f'[ui.minGap] fallback to `{minGap}`')
 
   minWidth = _get(configData, 'minWidth')
   defaultMinWidth = _get(defaultConfigData, 'minWidth')
-  if not (isinstance(minWidth, int) and minWidth > defaultMinWidth):
+  if not (isinstance(minWidth, int) and minWidth >= defaultMinWidth):
     minWidth = defaultMinWidth
     logger.warning(f'[ui.minWidth] fallback to `{minWidth}`')
 # }}}
