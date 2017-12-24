@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 class Command:
 
   def actionCC(self, args):
-
     if args.print:
       if tmux.isTavSessionReady():
         print('Tav session is ready')
@@ -30,23 +29,20 @@ class Command:
     core.makeTavSession(args.force)
 
   def actionOneshot(self, args):
-
     core.update()
     core.show(oneshot=True)
 
   def actionAttach(self, args):
-
     core.update()
     core.makeTavSession()
+    tmux.refreshFinderWindow()
     tmux.switchTo(cfg.tmux.finderWindowTarget)
 
   def actionServe(self, args):
-
     while True:
       core.show(oneshot=False)
 
   def actionHook(self, args):
-
     if args.hookOption is None:  # perform hook update
 
       # must specify event type or arbitrary reason
