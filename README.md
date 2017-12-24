@@ -17,4 +17,3 @@ TBD
 - [tmux](https://github.com/tmux/tmux)
 - [fzf](https://github.com/junegunn/fzf)
 -  Python 3.6+
-
