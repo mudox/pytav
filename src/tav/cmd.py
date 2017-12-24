@@ -85,7 +85,7 @@ class Command:
         description='An tmux `choose-tree` replacement powered by fzf action.'
     )
     # defaults to update and choose once
-    self.parser.set_defaults(func=self.oneshot)
+    self.parser.set_defaults(func=self.actionOneshot)
 
     self.parser.add_argument(
         '--version',
@@ -102,19 +102,12 @@ class Command:
         description='without any action is equivalent to `oneshot`'
     )
 
-    # action `snapshot`
-    act_snapshot = subparsers.add_parser(
-        'snapshot', aliases=['snp'],
-        help='create a new snapshot tmux session window layout.'
-    )
-    act_snapshot.set_defaults(func=self.snapshot)
-
     # action `attach`
     act_attach = subparsers.add_parser(
         'attach', aliases=['a', 'at'],
         help='update backing data, and switch to Tav finder window'
     )
-    act_attach.set_defaults(func=self.attach)
+    act_attach.set_defaults(func=self.actionAttach)
 
     # action `hook`
     act_hook = subparsers.add_parser(
@@ -158,35 +151,36 @@ class Command:
             'after-enabled'
         ],
         help='event type that triggers the hook')
-    act_hook.set_defaults(func=self.hook, hookOption=None)
+    act_hook.set_defaults(func=self.actionHook, hookOption=None)
 
     # action `oneshot`
     act_oneshot = subparsers.add_parser(
-        'oneshot', aliases=['o', 'os'],
+        'oneshot',
         help='''
         make a new snapshot and show the fzf interface, close after choose and
         switch. this is the DEFAULT action
         '''
     )
-    act_oneshot.set_defaults(func=self.oneshot)
+    act_oneshot.set_defaults(func=self.actionOneshot)
 
-    # action: `test`
+    # action: `diagnose`
     act_oneshot = subparsers.add_parser(
-        'test', aliases=['t', 'te'],
+        'diagnose', aliases=['d', 'dia'],
+        help='dump diagnose infomation'
     )
-    act_oneshot.set_defaults(func=tests.test)
+    act_oneshot.set_defaults(func=diagnose)
 
     # action `serve`
     act_serve = subparsers.add_parser(
         'serve', aliases=['srv'],
         help='show the fzf inteface, remain after choose and switch.'
     )
-    act_serve.set_defaults(func=self.serve)
+    act_serve.set_defaults(func=self.actionServe)
 
     # action `cc`
     act_cc = subparsers.add_parser(
         'cc',
-        help='check and create the Tav session if needed'
+        help='check and create the Tav session if needed, or create it no matter if it is already ready'
     )
     act_cc.add_argument(
         '-f', '--force',
@@ -198,7 +192,7 @@ class Command:
         action='store_true',
         help='print checking result'
     )
-    act_cc.set_defaults(func=self.checkCreate)
+    act_cc.set_defaults(func=self.actionCC)
 
   def run(self):
 
