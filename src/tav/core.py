@@ -18,12 +18,14 @@ logger = logging.getLogger(__name__)
 def makeTavSession(force=False):
   if force:
     logger.info('forcedly recreate Tav session')
-    tmux.createTavSession()
-  elif not tmux.isTavSessionReady():
-    logger.info('tav session not ready, (re)create it')
-    tmux.createTavSession()
+    tmux.tavSession.create()
   else:
-    logger.info('tav session is okay, skip creation')
+    ready, msg = tmux.tavSession.isReady()
+    if not ready:
+      logger.warning('tav session not ready ({msg}), recreate it')
+      tmux.tavSession.create()
+    else:
+      logger.info('tav session is ready, skip creation')
 
 
 def update():

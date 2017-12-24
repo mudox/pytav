@@ -21,10 +21,11 @@ class Command:
 
   def actionCC(self, args):
     if args.print:
-      if tmux.isTavSessionReady():
+      ready, msg = tmux.isTavSessionReady()
+      if ready:
         print('Tav session is ready')
       else:
-        print('Tav session is NOT ready')
+        print(f'Tav session is NOT ready: {msg}')
 
     core.makeTavSession(args.force)
 
@@ -36,7 +37,7 @@ class Command:
     core.update()
     core.makeTavSession()
     tmux.refreshFinderWindow()
-    tmux.switchTo(cfg.tmux.finderWindowTarget)
+    tmux.switchTo(cfg.tmux.tavWindowTarget)
 
   def actionServe(self, args):
     while True:
