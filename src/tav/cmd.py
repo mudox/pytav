@@ -17,6 +17,11 @@ logger = logging.getLogger(__name__)
 
 class Command:
 
+  def checkCreate(self, args):
+    settings.action = 'check'
+
+    core.checkCreateUI(args.force)
+
   def snapshot(self, args):
     settings.action = 'snapshot'
 
@@ -177,6 +182,23 @@ class Command:
         help='show the fzf inteface, remain after choose and switch.'
     )
     act_serve.set_defaults(func=self.serve)
+
+    # action `cc`
+    act_cc = subparsers.add_parser(
+        'cc',
+        help='check and create the Tav session if needed'
+    )
+    act_cc.add_argument(
+        '-f', '--force',
+        action='store_true',
+        help='force recreating the session'
+    )
+    act_cc.add_argument(
+        '-p', '--print',
+        action='store_true',
+        help='print checking result'
+    )
+    act_cc.set_defaults(func=self.checkCreate)
 
   def run(self):
 
