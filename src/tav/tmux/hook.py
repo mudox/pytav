@@ -12,17 +12,22 @@ _events = [
     'window-linked',
     'window-renamed',
     'window-unlinked',
+    'session-created',
     'session-renamed',
+    'session-closed',
 ]
 
-_expect = [f'{event} -> run-shell "tav hook {event}"' for event in _events]
+_expect = [
+    f'{event} -> run-shell "curl http://localhost:10086/event/{event}"'
+    for event in _events
+]
 
 
 def enable():
   logger.info('enable hooking')
   cmds = [
       f'''
-      tmux set-hook -g {event} "run-shell 'tav hook {event}'"
+      tmux set-hook -g {event} "run-shell 'curl http://localhost:10086/event/{event}'"
       ''' for event in _events
   ]
   cmds = '\n'.join(cmds)
@@ -54,4 +59,3 @@ def isEnabled():
 def run():
   core.update()
   tmux.refreshTavWindow()
-
