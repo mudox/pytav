@@ -5,8 +5,8 @@ import argparse
 import logging
 
 from . import core, tmux
-from .settings import cfg
 from .diagnose import diagnose
+from .settings import cfg
 
 __version__ = '2.2.4'
 
@@ -40,7 +40,9 @@ class Command:
     core.makeTavSession()
     tmux.switchTo(cfg.tmux.tavWindowTarget)
 
-  def actionServe(self, args):
+  def actionServer(self, args):
+    core.startServer()
+
   def actionInterface(self, args):
     while True:
       core.show(oneshot=False)
@@ -168,9 +170,13 @@ class Command:
     )
     act_oneshot.set_defaults(func=diagnose)
 
-    # action `serve`
+    # action `server`
     act_serve = subparsers.add_parser(
-        'serve', aliases=['srv'],
+        'server', aliases=['s', 'srv'],
+        help='server mode'
+    )
+    act_serve.set_defaults(func=self.actionServer)
+
     # action `interface`
     act_runloop = subparsers.add_parser(
         'interface', aliases=['i'],

@@ -14,6 +14,9 @@ from .settings import cfg
 
 logger = logging.getLogger(__name__)
 
+def startServer():
+  # TODO!!!: start server instance
+  pass
 
 def makeTavSession(force=False):
   if force:
