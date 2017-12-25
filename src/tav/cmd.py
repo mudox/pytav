@@ -8,7 +8,7 @@ from . import core, tmux
 from .settings import cfg
 from .diagnose import diagnose
 
-__version__ = '2.2.3'
+__version__ = '2.2.4'
 
 logger = logging.getLogger(__name__)
 

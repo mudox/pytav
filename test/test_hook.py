@@ -4,10 +4,10 @@
 from tav.tmux.hook import *
 
 
-def test():
-
-  # enable()
-  # assert isEnabled()
-
+def test_hook_suppression():
   disable()
   assert not isEnabled()
+
+  enable()
+  assert isEnabled()
+
