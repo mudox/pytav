@@ -2,52 +2,56 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from datetime import datetime
-from time import time
 
 from .. import core, tmux
-from .. settings import cfg
+from .agent import _getStdout, _run
 
 logger = logging.getLogger(__name__)
 
+_events = [
+    'window-linked',
+    'window-renamed',
+    'window-unlinked',
+    'session-renamed',
+]
+
+_expect = [f'{event} -> run-shell "tav hook {event}"' for event in _events]
+
 
 def enable():
-  line = f'{datetime.now()} | enable\n'
-  with cfg.paths.updateFile.open('a') as file:
-    file.write(line)
+  logger.info('enable hooking')
+  cmds = [
+      f'''
+      tmux set-hook -g {event} "run-shell 'tav hook {event}'"
+      ''' for event in _events
+  ]
+  cmds = '\n'.join(cmds)
+  _run(cmds)
 
 
 def disable():
-  line = f'{datetime.now()} | {time()}\n'
-  with cfg.paths.updateFile.open('a') as file:
-    file.write(line)
+  logger.info('disable hooking')
+  cmds = [f'tmux set-hook -gu {event}' for event in _events]
+  cmds = '\n'.join(cmds)
+  _run(cmds)
 
 
-def isEnabled() -> '2-tuple: (bool, explain)':
-  if not cfg.paths.updateFile.exists():
-    return True, f'update file ({cfg.paths.updateFile}) does not exists'
-
-  lines = cfg.paths.updateFile.read_text().strip().splitlines()
-  lastLine = lines[-1]
-  flag = lastLine.split('|')[1].strip()
-
-  if flag == 'enable':
-    return True, 'enalbed explicitly'
+def isEnabled():
+  out = _getStdout('tmux show-hooks -g')
+  if out is None:
+    return False
   else:
-    disabledTime = float(flag)
-    timeElapsed = time() - disabledTime
-    if timeElapsed > cfg.tmux.maxDisableUpdateInterval:
-      return True, 'time overdue'
-    else:
-      return False, 'within interval'
+    out = out.strip().splitlines()
+
+  print(out)
+  for line in _expect:
+    if line not in out:
+      print(line)
+      return False
+  else:
+    return True
 
 
 def run():
-  enabled, why = isEnabled()
-  if not enabled:
-    logger.warn(f'o: skip [{why}]')
-    return
-  else:
-    core.update()
-    # tmux.respawnFinderWindow()
-    tmux.refreshFinderWindow()
+  core.update()
+  tmux.refreshFinderWindow()
