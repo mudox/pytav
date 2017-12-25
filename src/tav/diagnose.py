@@ -29,9 +29,3 @@ def _formatter():
   snap = tmux.Snapshot()
   formatter = fzf.FZFFormatter(snap, testMode=True)
   print(formatter.fzfFeed)
-
-
-def _prepare_tmux_interface():
-  _title('\nTest [prepare tmux interface] ...')
-  tmux.prepareTmuxInterface(force=False)
-  tmux.prepareTmuxInterface(force=True)
