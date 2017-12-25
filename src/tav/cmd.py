@@ -172,14 +172,14 @@ class Command:
 
     # action `server`
     act_serve = subparsers.add_parser(
-        'server', aliases=['s', 'srv'],
+        'server',
         help='server mode'
     )
     act_serve.set_defaults(func=self.actionServer)
 
     # action `interface`
     act_runloop = subparsers.add_parser(
-        'interface', aliases=['i'],
+        'interface',
         help='show the fzf inteface, remain after choose and switch.'
     )
     act_runloop.set_defaults(func=self.actionInterface)
