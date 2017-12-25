@@ -60,9 +60,10 @@ def create():
     # if it fails, the window is not affected
     # there may be some clue left
     tmux send-keys -t {finderTarget} 'tav serve' c-m
-
     # hide status bar, make it full screen like
     tmux set -t "{finderTarget}" status off
+
+    sleep 1
   """
   _run(cmdstr)
 
