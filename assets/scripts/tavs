@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+action=$1
+
+case $action in
+  start )
+    echo 'start tav server'
+    ;;
+  stop )
+    echo 'stop tav server'
+    ;;
+  restart )
+    echo 'restart tav server'
+    ;;
+esac

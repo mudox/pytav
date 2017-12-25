@@ -41,6 +41,7 @@ setup(
     scripts=[
       'src/tav/scripts/tav-attach',
       'src/tav/scripts/tav-cc',
+      'assets/scripts/tavs',
       ],
     entry_points={
         "console_scripts": ['tav = tav.cmd:run']
