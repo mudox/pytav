@@ -2,8 +2,13 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
+
+from . import hook
 from ..settings import cfg
 from .agent import _getStdout, _run, getSessionTTYSize
+
+logger = logging.getLogger(__name__)
 
 
 def isReady():
@@ -25,7 +30,11 @@ def isReady():
 
 
 def create():
-  # TODO!!: disable hook update
+
+  if hook.isEnabled():
+    hook.disable()
+  else:
+    logger.warning('hook is already disabled')
 
   sessionName = cfg.tmux.tavSessionName
   finderName = cfg.tmux.tavWindowName
@@ -117,3 +126,5 @@ def create():
     tmux select-pane -t "{logTarget}.1" -d
   """
   _run(cmdstr)
+
+  hook.disable()
