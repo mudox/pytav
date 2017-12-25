@@ -38,6 +38,10 @@ setup(
         '': ['scripts/*', 'resources/*'],
     },
 
+    scripts=[
+      'src/tav/scripts/tav-attach',
+      'src/tav/scripts/tav-cc',
+      ],
     entry_points={
         "console_scripts": ['tav = tav.cmd:run']
     }
