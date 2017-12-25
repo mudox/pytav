@@ -41,6 +41,7 @@ class Command:
     tmux.switchTo(cfg.tmux.tavWindowTarget)
 
   def actionServe(self, args):
+  def actionInterface(self, args):
     while True:
       core.show(oneshot=False)
 
@@ -170,9 +171,12 @@ class Command:
     # action `serve`
     act_serve = subparsers.add_parser(
         'serve', aliases=['srv'],
+    # action `interface`
+    act_runloop = subparsers.add_parser(
+        'interface', aliases=['i'],
         help='show the fzf inteface, remain after choose and switch.'
     )
-    act_serve.set_defaults(func=self.actionServe)
+    act_runloop.set_defaults(func=self.actionInterface)
 
     # action `cc`
     act_cc = subparsers.add_parser(
