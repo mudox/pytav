@@ -69,7 +69,7 @@ symbol:
 # WARNING: do not change the keys.
 color:
 
-  use: cool
+  use: hugo
 
   schemes:
 

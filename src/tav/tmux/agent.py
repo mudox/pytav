@@ -110,7 +110,7 @@ def dumpInfo():
   return [line.split(':') for line in lines]
 
 
-def refreshFinderWindow():
+def refreshTavWindow():
   cmdstr = f'''
     tmux send-keys -t {cfg.tmux.tavWindowTarget} C-u C-t C-m
   '''

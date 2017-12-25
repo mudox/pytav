@@ -43,7 +43,6 @@ def isEnabled():
   else:
     out = out.strip().splitlines()
 
-  print(out)
   for line in _expect:
     if line not in out:
       print(line)
@@ -54,4 +53,5 @@ def isEnabled():
 
 def run():
   core.update()
-  tmux.refreshFinderWindow()
+  tmux.refreshTavWindow()
+

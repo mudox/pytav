@@ -34,9 +34,10 @@ class Command:
     core.show(oneshot=True)
 
   def actionAttach(self, args):
+    print('[1/2] capture tmux server state ...')
     core.update()
+    print('[2/2] recreate session ...')
     core.makeTavSession()
-    tmux.refreshFinderWindow()
     tmux.switchTo(cfg.tmux.tavWindowTarget)
 
   def actionServe(self, args):
