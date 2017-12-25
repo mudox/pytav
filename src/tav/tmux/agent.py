@@ -61,15 +61,6 @@ def _run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
   return p
 
 
-def prepareTmuxInterface(force):
-  """
-  Check the availability of tav tmux session and windows, create them if not.
-  """
-
-  cmd = cfg.paths.scriptsDir / 'prepare-tmux-interface.sh'
-  sp.call([str(cmd), force and 'kill' or 'nokill'])
-
-
 def getServerPID():
   cmdstr = '''
     tmux list-sessions -F '#{pid}'
