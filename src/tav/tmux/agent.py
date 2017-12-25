@@ -179,5 +179,3 @@ def getSessionTTYSize():
     w, h = shutil.get_terminal_size()
 
   return w, h
-
-
