@@ -39,51 +39,8 @@ def create():
   sessionName = cfg.tmux.tavSessionName
   finderName = cfg.tmux.tavWindowName
   finderTarget = cfg.tmux.tavWindowTarget
-  logName = cfg.tmux.logWindowName
-  logTarget = cfg.tmux.logWindowTarget
 
   width, height = getSessionTTYSize()
-
-  cmdstr = f"""
-    set -uo pipefail
-
-    # kill first for a clean creation
-    tmux kill-session -t "{sessionName}" &>/dev/null
-
-    # create session
-    tmux new-session     \
-      -s "{sessionName}" \
-      -n "{finderName}"  \
-      -x "{width}"       \
-      -y "{height}"      \
-      -d                 \
-      sh
-
-    # if it fails, the window is not affected
-    # there may be some clue left
-    tmux send-keys -t {finderTarget} tav serve c-m
-
-    # hide status bar, make it full screen like
-    tmux set -t "{finderTarget}" status off
-
-    # log window
-    tmux new-window              \
-      -a                         \
-      -t "{sessionName}:{{end}}" \
-      -n "{logName}"             \
-      -d                         \
-      sh
-
-    # black it out
-    tmux send-keys -t "{logTarget}" '
-    tput civis
-    stty -echo
-    PS1=
-    '
-
-    # disable the window
-    tmux select-pane -t "{logTarget}.1" -d
-  """
 
   cmdstr = f"""
     # kill first for a clean creation
@@ -106,24 +63,6 @@ def create():
 
     # hide status bar, make it full screen like
     tmux set -t "{finderTarget}" status off
-
-    # log window
-    tmux new-window              \
-      -a                         \
-      -t "{sessionName}:{{end}}" \
-      -n "{logName}"             \
-      -d                         \
-      sh
-
-    # black it out
-    tmux send-keys -t "{logTarget}" '
-    tput civis
-    stty -echo
-    PS1=
-    '
-
-    # disable the window
-    tmux select-pane -t "{logTarget}.1" -d
   """
   _run(cmdstr)
 

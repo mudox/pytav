@@ -116,9 +116,6 @@ class _Settings:
     s.tavWindowName = 'Finder'
     s.tavWindowTarget = f'{s.tavSessionName}:{s.tavWindowName}'
 
-    s.logWindowName = 'Log'
-    s.logWindowTarget = f'{s.tavSessionName}:{s.logWindowName}'
-
     s.serverPID = _serverPID
 
   def _initFZF(self):
