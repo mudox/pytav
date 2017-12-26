@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def isReady():
   out = _getStdout(f'''
-      tmux list-panes -t {cfg.tmux.tavWindowTarget} -F {{ane_current_command}}
+      tmux list-panes -t {cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
   ''')
 
   if out is None:
@@ -23,7 +23,7 @@ def isReady():
   if len(out) != 1:
     return False, 'have more than 1 panes'
 
-  if out != 'Python':
+  if out[0] != 'Python':
     return False, f'invalid current pane command: {out}'
 
   return True, None
