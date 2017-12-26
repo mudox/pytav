@@ -47,7 +47,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
   error_content_type = 'text/plain'
 
   def do_GET(self):
-    logger.debug(f'GET {self.path}')
+    logger.debug(f'o:GET {self.path}')
 
     self._event() or \
         self._stop() or \
@@ -68,6 +68,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     m = re.match(r'^/event/([^/]+)$', self.path)
     if m is None:
       return False
+
     else:
       event = m.group(1)
 
@@ -75,7 +76,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       self.send_header('Content-Length', 0)
       self.end_headers()
 
-      logger.debug(f' [{datetime.now()}] {event}')
+      logger.info(f' [{datetime.now()}] {event}')
       core.onTmuxEvent(event)
 
       return True
@@ -83,5 +84,10 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
   def _stop(self):
     if self.path != '/stop/':
       return False
+
     else:
+      self.send_response(200)
+      self.send_header('Content-Length', 0)
+      self.end_headers()
+
       exit()
