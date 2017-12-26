@@ -5,14 +5,14 @@
 import logging
 
 from . import hook
-from .agent import _getStdout, _run, getSessionTTYSize
 from .. import settings as cfg
+from .agent import getStdout, run, getSessionTTYSize
 
 logger = logging.getLogger(__name__)
 
 
 def isReady():
-  out = _getStdout(f'''
+  out = getStdout(f'''
       tmux list-panes -t {cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
   ''')
 
@@ -57,14 +57,17 @@ def create():
       -d                 \
       sh
 
+    tmux select-pane -t {finderTarget} -P bg="{cfg.colors.background}"
+
     # if it fails, the window is not affected
     # there may be some clue left
     tmux send-keys -t {finderTarget} 'tav interface' c-m
+
     # hide status bar, make it full screen like
     tmux set -t "{finderTarget}" status off
 
     sleep 1
   """
-  _run(cmdstr)
+  run(cmdstr)
 
   hook.enable('after creating Tav session')
