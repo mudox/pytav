@@ -4,7 +4,7 @@ from functools import reduce
 from itertools import groupby
 
 from .. import tmux
-from ..settings import cfg
+from .. import settings as cfg
 
 
 class Snapshot:

@@ -10,9 +10,9 @@ from os.path import getmtime
 from textwrap import dedent
 from time import sleep
 
+from . import settings as cfg
 from . import screen, tmux
 from .fzf import FZFFormatter
-from .settings import Settings, cfg
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from tav.settings import cfg
+import tav.settings as cfg
 
 
 def test_tmux_serverPID():

@@ -5,8 +5,8 @@
 import logging
 
 from . import hook
-from ..settings import cfg
 from .agent import _getStdout, _run, getSessionTTYSize
+from .. import settings as cfg
 
 logger = logging.getLogger(__name__)
 

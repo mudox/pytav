@@ -4,7 +4,7 @@ import logging
 import textwrap
 
 from . import screen
-from .settings import cfg
+from . import settings as cfg
 
 logger = logging.getLogger(__name__)
 

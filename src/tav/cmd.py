@@ -5,10 +5,10 @@ import argparse
 import logging
 from contextlib import suppress
 
+from . import settings as cfg
 from . import core, tmux
 from .diagnose import diagnose
 from .server import start as startServer
-from .settings import cfg
 
 __version__ = '2.3'
 

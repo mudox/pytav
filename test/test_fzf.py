@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import tav.settings as cfg
 from tav import tmux
-from tav.settings import cfg
 from tav.fzf import FZFFormatter
 
 
