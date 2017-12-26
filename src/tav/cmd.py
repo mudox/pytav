@@ -21,15 +21,18 @@ logger = logging.getLogger(__name__)
 
 class Command:
 
-  def actionCC(self, args):
-    if args.print:
-      ready, msg = tmux.isTavSessionReady()
+  def actionSession(self, args):
+    if args.action == 'check':
+      ready, msg = tmux.tavSession.isReady()
       if ready:
         print('Tav session is ready')
       else:
         print(f'Tav session is NOT ready: {msg}')
-
-    core.makeTavSession(args.force)
+    else:
+      if args.action == 'recreate':
+        core.makeTavSession(force=True)
+      else:
+        core.makeTavSession(force=False)
 
   def actionOneshot(self, args):
     core.update()
@@ -39,7 +42,7 @@ class Command:
     print('[1/2] capture tmux server state ...')
     core.update()
     print('[2/2] recreate session ...')
-    core.makeTavSession()
+    core.makeTavSession(force=False)
     tmux.switchTo(cfg.tmux.tavWindowTarget)
 
   def actionServer(self, args):
@@ -183,23 +186,18 @@ class Command:
     act_runloop.set_defaults(func=self.actionInterface)
 
     #
-    # action `cc`
+    # action `session`
     #
 
     act_cc = subparsers.add_parser(
-        'cc',
-        help='check and create the Tav session if needed, or create it no matter if it is already ready'
+        'session',
+        help='manage the tmux tav session'
     )
-    act_cc.set_defaults(func=self.actionCC)
+    act_cc.set_defaults(func=self.actionSession)
     act_cc.add_argument(
-        '-f', '--force',
-        action='store_true',
-        help='force recreating the session'
-    )
-    act_cc.add_argument(
-        '-p', '--print',
-        action='store_true',
-        help='print checking result'
+        'action',
+        choices=('recreate', 'createIfNeeded', 'check'),
+        help='recreate or only create if the session is not available'
     )
 
   def run(self):
