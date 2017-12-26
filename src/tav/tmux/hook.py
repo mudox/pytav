@@ -3,7 +3,7 @@
 
 import logging
 
-from .agent import _getStdout, _run
+from .agent import getStdout, run
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ def enable(reason):
       ''' for eventName in _events
   ]
   cmds = '\n'.join(cmds)
-  _run(cmds)
+  run(cmds)
 
 
 def disable(reason):
@@ -39,11 +39,11 @@ def disable(reason):
 
   cmds = [f'tmux set-hook -gu {event}' for event in _events]
   cmds = '\n'.join(cmds)
-  _run(cmds)
+  run(cmds)
 
 
 def isEnabled():
-  out = _getStdout('tmux show-hooks -g')
+  out = getStdout('tmux show-hooks -g')
   if out is None:
     return False
   else:

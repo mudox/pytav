@@ -8,8 +8,8 @@ from functools import reduce
 from os import environ
 from shutil import get_terminal_size
 
-from ..screen import screenWidth
 from .. import settings as cfg
+from ..screen import screenWidth
 
 logger = logging.getLogger(__name__)
 
@@ -88,11 +88,10 @@ def dumpInfo():
 
 
 def refreshTavWindow():
-  cmdstr = f'''
+  run(f'''
+    tmux select-pane -t {cfg.tmux.tavWindowTarget} -P bg='{cfg.colors.background}'
     tmux send-keys -t {cfg.tmux.tavWindowTarget} C-u C-t C-m
-  '''
-
-  run(cmdstr)
+  ''')
 
 
 def switchTo(target):
