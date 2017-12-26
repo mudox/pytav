@@ -6,26 +6,39 @@ import logging
 import shlex
 import shutil
 import subprocess as sp
+from os.path import getmtime
+from textwrap import dedent
 from time import sleep
 
 from . import screen, tmux
 from .fzf import FZFFormatter
-from .settings import cfg
+from .settings import Settings, cfg
 
 logger = logging.getLogger(__name__)
 
-def startServer():
-  # TODO!!!: start server instance
-  pass
 
-def makeTavSession(force=False):
+# INFO: argument `event` is currently unused
+def onTmuxEvent(event):
+  # make sure the tav window is still there
+  makeTavSession(force=False)
+
+  # update interface data, if changed, refresh the UI
+  dirty = update()
+  if dirty:
+    logger.debug('interface data is dirty, refresh tav window')
+    tmux.refreshTavWindow()
+  else:
+    logger.debug('interface data is unchanged, skip tav window refreshing')
+
+
+def makeTavSession(force):
   if force:
     logger.info('forcedly recreate Tav session')
     tmux.tavSession.create()
   else:
     ready, msg = tmux.tavSession.isReady()
     if not ready:
-      logger.warning('tav session not ready ({msg}), recreate it')
+      logger.warning(f'tav session not ready ({msg}), recreate it')
       tmux.tavSession.create()
     else:
       logger.info('tav session is ready, skip creation')

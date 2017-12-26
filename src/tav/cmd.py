@@ -3,9 +3,11 @@
 
 import argparse
 import logging
+from contextlib import suppress
 
 from . import core, tmux
 from .diagnose import diagnose
+from .server import start as startServer
 from .settings import cfg
 
 __version__ = '2.2.4'
@@ -41,7 +43,8 @@ class Command:
     tmux.switchTo(cfg.tmux.tavWindowTarget)
 
   def actionServer(self, args):
-    core.startServer()
+    with suppress(KeyboardInterrupt):
+      startServer(port=32323)
 
   def actionInterface(self, args):
     while True:
@@ -49,18 +52,7 @@ class Command:
 
   def actionHook(self, args):
     if args.hookOption is None:  # perform hook update
-
-      # must specify event type or arbitrary reason
-      if args.event is None:
-        msg = 'must specify either the trigger event type or [-d|-e] option\n\n'
-        msg += self.parser.format_usage()
-        print(msg)
-        return
-
-      cfg.hookEvent = args.event
-
-      core.makeTavSession()
-      tmux.hook.run()
+      core.onTmuxEvent(args.event)
 
     else:
 
@@ -71,8 +63,6 @@ class Command:
       elif args.hookOption == 'print':
         line = 'hook: ' + ('enabled' if tmux.hook.isEnabled() else 'disabled')
         print(line)
-      else:
-        raise ValueError(f'Invalid argument parsing result, args.hookOption = `{args.hookOption}`')
 
   #
   # CLI interface
@@ -109,13 +99,17 @@ class Command:
     )
     act_attach.set_defaults(func=self.actionAttach)
 
+    #
     # action `hook`
+    #
+
     act_hook = subparsers.add_parser(
         'hook', aliases=['h', 'hk', 'ho'],
         help='''
         update snapshot and update the fzf interface in tmux window
         '''
     )
+    act_hook.set_defaults(func=self.actionHook, hookOption=None)
 
     # hook {-d | -e | -p}
     group = act_hook.add_mutually_exclusive_group()
@@ -143,17 +137,12 @@ class Command:
     group.add_argument(
         'event',
         nargs='?',
-        choices=[
-            'window-linked',
-            'window-renamed',
-            'window-unlinked',
-            'session-renamed',
-            'after-enabled'
-        ],
         help='event type that triggers the hook')
-    act_hook.set_defaults(func=self.actionHook, hookOption=None)
 
+    #
     # action `oneshot`
+    #
+
     act_oneshot = subparsers.add_parser(
         'oneshot',
         help='''
@@ -163,32 +152,45 @@ class Command:
     )
     act_oneshot.set_defaults(func=self.actionOneshot)
 
+    #
     # action: `diagnose`
+    #
+
     act_oneshot = subparsers.add_parser(
         'diagnose', aliases=['d', 'dia'],
         help='dump diagnose infomation'
     )
     act_oneshot.set_defaults(func=diagnose)
 
+    #
     # action `server`
-    act_serve = subparsers.add_parser(
+    #
+
+    act_server = subparsers.add_parser(
         'server',
         help='server mode'
     )
-    act_serve.set_defaults(func=self.actionServer)
+    act_server.set_defaults(func=self.actionServer)
 
+    #
     # action `interface`
+    #
+
     act_runloop = subparsers.add_parser(
         'interface',
         help='show the fzf inteface, remain after choose and switch.'
     )
     act_runloop.set_defaults(func=self.actionInterface)
 
+    #
     # action `cc`
+    #
+
     act_cc = subparsers.add_parser(
         'cc',
         help='check and create the Tav session if needed, or create it no matter if it is already ready'
     )
+    act_cc.set_defaults(func=self.actionCC)
     act_cc.add_argument(
         '-f', '--force',
         action='store_true',
@@ -199,7 +201,6 @@ class Command:
         action='store_true',
         help='print checking result'
     )
-    act_cc.set_defaults(func=self.actionCC)
 
   def run(self):
 
