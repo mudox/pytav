@@ -3,7 +3,6 @@
 
 import logging
 
-from .. import core, tmux
 from .agent import _getStdout, _run
 
 logger = logging.getLogger(__name__)
@@ -18,8 +17,8 @@ _events = [
 ]
 
 _expect = [
-    f'{event} -> run-shell "curl http://localhost:10086/event/{event}"'
-    for event in _events
+    f'{eventName} -> run-shell "tavs event {eventName}"'
+    for eventName in _events
 ]
 
 
@@ -28,8 +27,8 @@ def enable(reason):
 
   cmds = [
       f'''
-      tmux set-hook -g {event} "run-shell 'curl http://localhost:10086/event/{event}'"
-      ''' for event in _events
+      tmux set-hook -g {eventName} "run-shell 'tavs event {eventName}'"
+      ''' for eventName in _events
   ]
   cmds = '\n'.join(cmds)
   _run(cmds)
