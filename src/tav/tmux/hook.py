@@ -55,8 +55,3 @@ def isEnabled():
       return False
   else:
     return True
-
-
-def run():
-  core.update()
-  tmux.refreshTavWindow()
