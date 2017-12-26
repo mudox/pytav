@@ -189,10 +189,9 @@ def show(oneshot):
       #
 
       logger.info(f'load session [{tag}]')
+      tmux.hook.disable(f'before creating dead session {tag}')
 
-      tmux.hook.disable()                            # disable hook updating
-
-      path = cfg.paths.sessionsDir / tag           # create session
+      path = cfg.paths.sessionsDir / tag
       p = sp.run(
           str(path),
           stdout=sp.DEVNULL,

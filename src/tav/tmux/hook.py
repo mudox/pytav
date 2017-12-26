@@ -23,8 +23,9 @@ _expect = [
 ]
 
 
-def enable():
-  logger.info('enable hooking')
+def enable(reason):
+  logger.info(reason)
+
   cmds = [
       f'''
       tmux set-hook -g {event} "run-shell 'curl http://localhost:10086/event/{event}'"
@@ -34,8 +35,9 @@ def enable():
   _run(cmds)
 
 
-def disable():
-  logger.info('disable hooking')
+def disable(reason):
+  logger.info(reason)
+
   cmds = [f'tmux set-hook -gu {event}' for event in _events]
   cmds = '\n'.join(cmds)
   _run(cmds)

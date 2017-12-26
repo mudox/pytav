@@ -5,9 +5,9 @@ from tav.tmux.hook import *
 
 
 def test_hook_suppression():
-  disable()
+  disable('testing')
   assert not isEnabled()
 
-  enable()
+  enable('testing')
   assert isEnabled()
 

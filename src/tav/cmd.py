@@ -65,9 +65,9 @@ class Command:
     else:
 
       if args.hookOption == 'enable':
-        tmux.hook.enable()
+        tmux.hook.enable('invoked from command')
       elif args.hookOption == 'disable':
-        tmux.hook.disable()
+        tmux.hook.disable('invoked from command')
       elif args.hookOption == 'print':
         line = 'hook: ' + ('enabled' if tmux.hook.isEnabled() else 'disabled')
         print(line)

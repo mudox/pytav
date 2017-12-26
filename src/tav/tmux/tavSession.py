@@ -32,7 +32,7 @@ def isReady():
 def create():
 
   if hook.isEnabled():
-    hook.disable()
+    hook.disable('before creating Tav session')
   else:
     logger.warning('hook is already disabled')
 
@@ -67,4 +67,4 @@ def create():
   """
   _run(cmdstr)
 
-  hook.disable()
+  hook.enable('after creating Tav session')
