@@ -4,20 +4,15 @@
 import logging
 import re
 import socket
-import sys
-from contextlib import closing, suppress
+from contextlib import closing
+from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from sys import exit
 
-from jaclog.formatter import Formatter
+from . import core
+from .tmux import hook
 
-# configure logging
-rootLogger = logging.getLogger()
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(Formatter())
-rootLogger.addHandler(handler)
-rootLogger.setLevel(logging.NOTSET)
-
-logger = logging.getLogger('tav.server')
+logger = logging.getLogger(__name__)
 
 
 def getFreePort():
@@ -30,7 +25,7 @@ def start(port):
 
   try:
     server = HTTPServer(('', port), HTTPRequestHandler)
-    logger.info(f'Start server listening at localhost:{port} ...\n\n')
+    logger.info(f'listening at localhost:{port}')
 
   except OSError as e:
     if e.errno == 48:
@@ -46,41 +41,47 @@ def start(port):
 
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
+
   server_version = 'Tav/0.1'
   protocol_version = 'HTTP/1.1'  # enable persistent connection
+  error_content_type = 'text/plain'
 
   def do_GET(self):
-    m = re.match(r'^/event/([^/]+)$', self.path)
-    if m is not None:
-      self.newEvent(m.group(1))
-    else:
-      self.send_error(
-          403,
-          'Invalid API path',
-          '''
-          Currently JackServeronly support:
+    logger.debug(f'GET {self.path}')
 
-            - POST /session/ HTTP/1.1
-              Notify of a new Xcode project running session
-
-            - POST /event/   HTTP/1.1
-              Send a new event
-          '''
-      )
-      return
-
-  def newEvent(self, event):
-    self.send_response(200)
-    self.send_header('Content-Length', 0)
-    self.end_headers()
-
-    logger.debug(f'new event: {event}')
+    self._event() or \
+        self._stop() or \
+        self._invalidPath
 
   def log_message(self, format, *args):
     if args[1] != '200':
       logger.error(format % tuple(args) + '\n')
 
+  def _invalidPath(self):
+    self.send_error(403, 'invalid path')
 
-if __name__ == "__main__":
-  with suppress(KeyboardInterrupt):
-    start(10086)
+  #
+  # nodes
+  #
+
+  def _event(self):
+    m = re.match(r'^/event/([^/]+)$', self.path)
+    if m is None:
+      return False
+    else:
+      event = m.group(1)
+
+      self.send_response(200)
+      self.send_header('Content-Length', 0)
+      self.end_headers()
+
+      logger.debug(f' [{datetime.now()}] {event}')
+      core.onTmuxEvent(event)
+
+      return True
+
+  def _stop(self):
+    if self.path != '/stop/':
+      return False
+    else:
+      exit()
