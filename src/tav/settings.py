@@ -59,7 +59,7 @@ class _Section:
   pass
 
 
-class _Settings:
+class Settings:
 
   def __init__(self):
     self._initPaths()
@@ -241,4 +241,4 @@ class _Settings:
         setattr(s, name, code)
 
 
-cfg = _Settings()
+cfg = Settings()
