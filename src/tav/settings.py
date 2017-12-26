@@ -101,7 +101,6 @@ class _Settings:
     s.serveDir.mkdir(parents=True, exist_ok=True)
     s.serveFile = s.serveDir / _serverPID
 
-    s.updateFile = s.dataDir / 'update'
     s.sessionsDir = s.dataDir / 'sessions'
 
   def _initCongfig(self):
