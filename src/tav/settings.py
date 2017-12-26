@@ -4,6 +4,7 @@
 import logging
 import subprocess as sp
 from pathlib import Path
+from os.path import getmtime
 
 from ruamel.yaml import YAML
 
@@ -178,7 +179,7 @@ class _Settings:
         s.sessions[name] = v[0]
       else:
         logger.warning(
-            f'ignore invalid sessoin symbol setting ({c}) for session name `{name}`')
+            f'ignore invalid sessoin symbol setting ({v}) for session name `{name}`')
         invalidNames.append(name)
 
     for name in invalidNames:
