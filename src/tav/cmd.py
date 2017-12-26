@@ -10,7 +10,7 @@ from .diagnose import diagnose
 from .server import start as startServer
 from .settings import cfg
 
-__version__ = '2.2.4'
+__version__ = '2.3'
 
 logger = logging.getLogger(__name__)
 

@@ -10,4 +10,3 @@ def test_hook_suppression():
 
   enable('testing')
   assert isEnabled()
-
