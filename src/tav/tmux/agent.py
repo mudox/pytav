@@ -61,29 +61,6 @@ def run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
   return p
 
 
-def getServerPID():
-  cmdstr = '''
-    tmux list-sessions -F '#{pid}'
-  '''
-  out = getStdout(cmdstr)
-  if out is not None:
-    return int(out.strip().splitlines()[0])
-  else:
-    return None
-
-
-def getLogTTY():
-  cmdstr = f'''
-    tmux list-panes -t {cfg.tmux.logWindowTarget} -F '#{{pane_tty}}'
-  '''
-
-  out = getStdout(cmdstr)
-  if out is not None:
-    return out.strip()
-  else:
-    return None
-
-
 def dumpInfo():
   '''
   return tuples about tmux snapshot
