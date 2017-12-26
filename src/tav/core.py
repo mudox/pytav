@@ -34,11 +34,27 @@ def makeTavSession(force=False):
 def update():
   '''
   steps:
+  - reload config if user config file is modified since last load
   - take a new snapshot
-  - tansform (format) the snapshot info into fzf feed lines
-  - wrap all info into a dict
-  - `json.dump` the dict to disk
+  - tansform (format) the snapshot into interface model
+  - compare with old model, dump and return True is is different, else return
+    False
   '''
+
+  #
+  # user config
+  #
+
+  global cfg
+
+  mtime = getmtime(cfg.paths.userConfig)
+  if mtime != cfg.userConfigMTime:
+    logger.info('config file ({cfg.paths.userConfig}) is changed, reload')
+    cfg = Settings()
+
+  #
+  # snapshot
+  #
 
   snapshot = tmux.Snapshot()
   formatter = FZFFormatter(snapshot)
