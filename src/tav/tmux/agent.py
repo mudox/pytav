@@ -9,26 +9,26 @@ from os import environ
 from shutil import get_terminal_size
 
 from ..screen import screenWidth
-from ..settings import cfg
+from .. import settings as cfg
 
 logger = logging.getLogger(__name__)
 
 
 def _check(cmdstr):
-  return _run(cmdstr).returncode == 0
+  return run(cmdstr).returncode == 0
 
 
 def _system(cmdstr):
   # left unchanged (connect to controlling terminal)
-  _run(cmdstr, stdoutArg=None)
+  run(cmdstr, stdoutArg=None)
 
 
-def _getStdout(cmdstr):
-  p = _run(cmdstr, stdoutArg=sp.PIPE)
+def getStdout(cmdstr):
+  p = run(cmdstr, stdoutArg=sp.PIPE)
   return p.returncode == 0 and p.stdout.decode() or None
 
 
-def _run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
+def run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
   """Execute the command line using `subprocess.run`.
 
   The stdout's redirection is controlled by the argument `stdoutArg`, which is
@@ -65,7 +65,7 @@ def getServerPID():
   cmdstr = '''
     tmux list-sessions -F '#{pid}'
   '''
-  out = _getStdout(cmdstr)
+  out = getStdout(cmdstr)
   if out is not None:
     return int(out.strip().splitlines()[0])
   else:
@@ -77,7 +77,7 @@ def getLogTTY():
     tmux list-panes -t {cfg.tmux.logWindowTarget} -F '#{{pane_tty}}'
   '''
 
-  out = _getStdout(cmdstr)
+  out = getStdout(cmdstr)
   if out is not None:
     return out.strip()
   else:
@@ -105,7 +105,7 @@ def dumpInfo():
     tmux list-windows -a -F '{format}'
   '''
 
-  out = _getStdout(cmdstr)
+  out = getStdout(cmdstr)
   lines = out.strip().splitlines()
   return [line.split(':') for line in lines]
 
@@ -115,7 +115,7 @@ def refreshTavWindow():
     tmux send-keys -t {cfg.tmux.tavWindowTarget} C-u C-t C-m
   '''
 
-  _run(cmdstr)
+  run(cmdstr)
 
 
 def switchTo(target):
@@ -124,9 +124,9 @@ def switchTo(target):
   target = f"'{target}'"
 
   if 'TMUX' in environ:
-    p = _run(f'tmux switch-client -t {target}')
+    p = run(f'tmux switch-client -t {target}')
   else:
-    p = _run(f'tmux attach-session -t {target}')
+    p = run(f'tmux attach-session -t {target}')
 
   return p
 
@@ -159,10 +159,10 @@ def showCursor(flag):
 def getSessionTTYSize():
   if 'TMUX' in environ and len(environ['TMUX']) > 0:
     # inside of tmux
-    w = _getStdout(
+    w = getStdout(
         r'tmux list-clients -t . -F "#{client_width}"'
     ).splitlines()[0]
-    h = _getStdout(
+    h = getStdout(
         r'tmux list-clients -t . -F "#{client_height}"'
     ).splitlines()[0]
   else:
