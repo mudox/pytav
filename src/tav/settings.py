@@ -3,14 +3,32 @@
 
 import logging
 import subprocess as sp
-from pathlib import Path
 from os.path import getmtime
+from pathlib import Path
+from textwrap import indent
 
 from ruamel.yaml import YAML
 
-from .screen import color2sgr, sgrHide
+from .screen import color2sgr, sgr
 
 logger = logging.getLogger(__name__)
+
+
+class _Section:
+  pass
+
+
+#
+# sections
+#
+
+timestamp = None
+paths = None
+config = None
+tmux = None
+fzf = None
+symbols = None
+colors = None
 
 
 cmdstr = '''
@@ -55,190 +73,224 @@ def _get(d, *paths):
   return d
 
 
-class _Section:
-  pass
+def reload():
+  # change the calling order with discretion
+  _initPaths()
+
+  _initConfig()
+  _initTmux()
+  _initFZF()
+
+  _initColors()
+  _initSymbols()
 
 
-class Settings:
+def _valueAt(*paths):
+  u = _get(config.user, *paths)
+  d = _get(config.default, *paths)
+  return u, d
 
-  def __init__(self):
-    self._initPaths()
-    self._initCongfig()
-    self._initTmux()
-    self._initFZF()
-    self._initSymbols()
-    self._initColors()
 
-  def _valueAt(self, *paths):
-    u = _get(self.userConfig, *paths)
-    d = _get(self.defaultConfig, *paths)
-    return u, d
+def _initPaths():
+  global paths
 
-  def _initPaths(self):
+  s = _Section()
+  paths = s
 
-    s = _Section()
-    self.paths = s
+  # install
+  s.installDir = Path(__file__).parent
+  s.scriptsDir = s.installDir / 'scripts'
+  s.resourcesDir = s.installDir / 'resources'
 
-    # installDir directory
-    s.installDir = Path(__file__).parent
-    s.scriptsDir = s.installDir / 'scripts'
-    s.resourcesDir = s.installDir / 'resources'
+  # config
+  s.userConfigDir = Path('~/.config/tav').expanduser()
+  s.userConfigDir.mkdir(parents=True, exist_ok=True)
 
-    # configuration directory
-    s.userConfigDir = Path('~/.config/tav').expanduser()
-    s.userConfigDir.mkdir(parents=True, exist_ok=True)
+  s.userConfig = s.userConfigDir / 'tav.yml'
+  s.defaultConfig = s.resourcesDir / 'tav.yml'
 
-    s.userConfig = s.userConfigDir / 'tav.yml'
-    s.defaultConfig = s.resourcesDir / 'tav.yml'
+  if not s.userConfig.exists():
+    s.userConfig.write_text(s.defaultConfig.read_text())
 
-    if not s.userConfig.exists():
-      s.userConfig.write_text(s.defaultConfig.read_text())
+  # data
+  s.dataDir = Path('~/.local/share/tav').expanduser()
+  s.dataDir.mkdir(parents=True, exist_ok=True)
 
-    # data directory
-    s.dataDir = Path('~/.local/share/tav').expanduser()
-    s.dataDir.mkdir(parents=True, exist_ok=True)
+  # interface
+  s.interfaceDir = s.dataDir / 'interface'
+  s.interfaceDir.mkdir(parents=True, exist_ok=True)
+  s.interfaceFile = s.interfaceDir / _serverPID
 
-    s.interfaceDir = s.dataDir / 'interface'
-    s.interfaceDir.mkdir(parents=True, exist_ok=True)
-    s.interfaceFile = s.interfaceDir / _serverPID
+  # sessions
+  s.sessionsDir = s.dataDir / 'sessions'
 
-    s.sessionsDir = s.dataDir / 'sessions'
 
-  def _initCongfig(self):
-    yaml = YAML()
-    self.userConfig = yaml.load(self.paths.userConfig)
-    self.userConfigMTime = getmtime(self.paths.userConfig)
-    self.defaultConfig = yaml.load(self.paths.defaultConfig)
+def _initConfig():
+  global config
+  global timestamp
 
-  def _initTmux(self):
-    s = _Section()
-    self.tmux = s
+  s = _Section()
+  config = s
 
-    s.tavSessionName = 'Tav'
-    s.tavWindowName = 'Finder'
-    s.tavWindowTarget = f'{s.tavSessionName}:{s.tavWindowName}'
+  yaml = YAML()
+  try:
+    s.user = yaml.load(paths.userConfig)
+  except BaseException as error:
+    logger.error(f'''
+      error reading user config file ({paths.userConfig}):
+      {indent(str(error), '')}
+      fill with default config content
+    ''')
+    text = paths.defaultConfig.read_text()
+    paths.userConfig.write_text(text)
+    s.user = yaml.load(paths.userConfig)
 
-    s.serverPID = _serverPID
+  timestamp = getmtime(paths.userConfig)
+  s.default = yaml.load(paths.defaultConfig)
 
-  def _initFZF(self):
-    s = _Section()
-    self.fzf = s
 
-    # layoutLevel
-    v, d = self._valueAt('layoutLevel')
-    if v in (0, 1, 2, 3, 4, 'auto'):
-      s.layoutLevel = v
-    else:
-      s.layoutLevel = d
-      logger.warning(f'invalid [layoutLevel] setting ({v}), fallback to `{d}`')
+def _initTmux():
+  global tmux
 
-    # yMargin
-    v, d = self._valueAt('yMargin')
-    if isinstance(v, int) and v > 0:
-      s.yMargin = v
-    else:
-      s.yMargin = d
-      logger.warning(f'invalid [yMargin] setting ({v}), fallback to `{d}`')
+  s = _Section()
+  tmux = s
 
-    # minGap
-    v, d = self._valueAt('minGap')
-    if isinstance(v, int) and v >= d:
-      s.minGap = v
-    else:
-      s.minGap = d
-      logger.warning(f'invalid [minGap] setting ({v}), fallback to `{d}`')
+  s.tavSessionName = 'Tav'
+  s.tavWindowName = 'Finder'
+  s.tavWindowTarget = f'{s.tavSessionName}:{s.tavWindowName}'
 
-    # minWidth
-    v, d = self._valueAt('minWidth')
-    if isinstance(v, int) and v >= d:
-      s.minWidth = v
-    else:
-      s.minWidth = d
-      logger.warning(f'invalid [minWidth] setting ({v}), fallback to `{d}`')
+  s.serverPID = _serverPID
 
-  def _initSymbols(self):
-    s = _Section()
-    self.symbols = s
 
-    # sessions dict
-    use = _get(self.userConfig, 'symbol.use')
-    scheme = _get(self.userConfig, 'symbol.schemes', use)
+def _initFZF():
+  global fzf
 
-    v = _get(scheme, 'sessions')
-    if isinstance(v, dict):
-      s.sessions = v
-    else:
-      logger.warning(
-          f'invalid [symbols.sessions] settings ({v}), fallback to empty dict')
-      s.sessions = {}
+  s = _Section()
+  fzf = s
 
-    invalidNames = []
-    for name in s.sessions:
-      v = s.sessions[name]
-      if isinstance(v, str):
-        s.sessions[name] = v[0]
-      else:
-        logger.warning(
-            f'ignore invalid sessoin symbol setting ({v}) for session name `{name}`')
-        invalidNames.append(name)
+  # layoutLevel
+  v, d = _valueAt('layoutLevel')
+  if v in (0, 1, 2, 3, 4, 'auto'):
+    s.layoutLevel = v
+  else:
+    s.layoutLevel = d
+    logger.warning(f'invalid [layoutLevel] setting ({v}), fallback to `{d}`')
 
-    for name in invalidNames:
-      del s.sessions[name]
+  # yMargin
+  v, d = _valueAt('yMargin')
+  if isinstance(v, int) and v > 0:
+    s.yMargin = v
+  else:
+    s.yMargin = d
+    logger.warning(f'invalid [yMargin] setting ({v}), fallback to `{d}`')
 
-    # unloaded
-    v = _get(scheme, 'unloaded')
-    d = '·'
-    if isinstance(v, str) and v.strip() != '':
-      s.unloaded = v[0]
-    else:
-      logger.warning(
-          f'invalid [symbols.unloaded] setting ({v}), fallback to default')
-      s.unloaded = d
+  # minGap
+  v, d = _valueAt('minGap')
+  if isinstance(v, int) and v >= d:
+    s.minGap = v
+  else:
+    s.minGap = d
+    logger.warning(f'invalid [minGap] setting ({v}), fallback to `{d}`')
 
-    # sessionDefault
-    v = _get(scheme, 'sessionDefault')
-    d = sgrHide('·')
-    if isinstance(v, str) and v.strip() != '':
-      s.sessionDefault = v[0]
-    else:
-      logger.warning(
-          f'invalid [symbols.sessionDefault] setting ({v}), fallback to default')
-      s.sessionDefault = d
+  # minWidth
+  v, d = _valueAt('minWidth')
+  if isinstance(v, int) and v >= d:
+    s.minWidth = v
+  else:
+    s.minWidth = d
+    logger.warning(f'invalid [minWidth] setting ({v}), fallback to `{d}`')
 
-    # windowDefault
-    v = _get(scheme, 'windowDefault')
-    d = '·'
-    if isinstance(v, str) and v.strip() != '':
-      s.windowDefault = v[0]
+
+def _initSymbols():
+  global symbols
+
+  s = _Section()
+  symbols = s
+
+  # sessions dict
+  use = _get(config.user, 'symbol.use')
+  s.schemeName = use
+  scheme = _get(config.user, 'symbol.schemes', use)
+
+  v = _get(scheme, 'sessions')
+  if isinstance(v, dict):
+    s.sessions = v
+  else:
+    logger.warning(
+        f'invalid [symbols.sessions] settings ({v}), fallback to empty dict')
+    s.sessions = {}
+
+  invalidNames = []
+  for name in s.sessions:
+    v = s.sessions[name]
+    if isinstance(v, str):
+      s.sessions[name] = v[0]
     else:
       logger.warning(
-          f'invalid [symbols.windowDefault] setting ({v}), fallback to default')
-      s.windowDefault = d
+          f'ignore invalid sessoin symbol setting ({v}) for session name `{name}`')
+      invalidNames.append(name)
 
-  def _initColors(self):
-    s = _Section()
-    self.colors = s
+  for name in invalidNames:
+    del s.sessions[name]
 
-    use = _get(self.userConfig, 'color.use')
-    scheme = _get(self.userConfig, 'color.schemes', use)
-    defaultScheme = _get(self.defaultConfig, 'color.schemes.default')
+  # unloaded
+  v = _get(scheme, 'unloaded')
+  d = '·'
+  if isinstance(v, str) and v.strip() != '':
+    s.unloaded = v[0]
+  else:
+    logger.warning(
+        f'invalid [symbols.unloaded] setting ({v}), fallback to default')
+    s.unloaded = d
 
-    if not isinstance(scheme, dict):
-      logger.info(
-          f'invalid [colors] type ({type(scheme)}), fall back to default scheme')
-      scheme = defaultScheme
+  # sessionDefault
+  v = _get(scheme, 'sessionDefault')
+  d = sgr('·', color2sgr(colors.background))
+  if isinstance(v, str) and v.strip() != '':
+    s.sessionDefault = v[0]
+  else:
+    logger.warning(
+        f'invalid [symbols.sessionDefault] setting ({v}), fallback to default')
+    s.sessionDefault = d
 
-    for name in defaultScheme:
-      color = scheme.get(name, 'white')
-
-      code = color2sgr(color)
-      if code is None:
-        color = 'white'
-
-      if name == 'background':
-        setattr(s, name, color)
-      else:
-        setattr(s, name, code)
+  # windowDefault
+  v = _get(scheme, 'windowDefault')
+  d = '·'
+  if isinstance(v, str) and v.strip() != '':
+    s.windowDefault = v[0]
+  else:
+    logger.warning(
+        f'invalid [symbols.windowDefault] setting ({v}), fallback to default')
+    s.windowDefault = d
 
 
-cfg = Settings()
+def _initColors():
+  global colors
+
+  s = _Section()
+  colors = s
+
+  use = _get(config.user, 'color.use')
+  s.schemeName = use
+  scheme = _get(config.user, 'color.schemes', use)
+  defaultScheme = _get(config.default, 'color.schemes.default')
+
+  if not isinstance(scheme, dict):
+    logger.info(
+        f'invalid [colors] type ({type(scheme)}), fall back to default scheme')
+    scheme = defaultScheme
+
+  for name in defaultScheme:
+    color = scheme.get(name, 'white')
+
+    code = color2sgr(color)
+    if code is None:
+      color = 'white'
+
+    if name == 'background':
+      setattr(s, name, color)
+    else:
+      setattr(s, name, code)
+
+
+reload()
