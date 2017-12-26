@@ -97,9 +97,9 @@ class _Settings:
     s.dataDir = Path('~/.local/share/tav').expanduser()
     s.dataDir.mkdir(parents=True, exist_ok=True)
 
-    s.serveDir = s.dataDir / 'servers'
-    s.serveDir.mkdir(parents=True, exist_ok=True)
-    s.serveFile = s.serveDir / _serverPID
+    s.interfaceDir = s.dataDir / 'interface'
+    s.interfaceDir.mkdir(parents=True, exist_ok=True)
+    s.interfaceFile = s.interfaceDir / _serverPID
 
     s.sessionsDir = s.dataDir / 'sessions'
 
