@@ -62,11 +62,7 @@ class _Settings:
 
   def __init__(self):
     self._initPaths()
-
-    yaml = YAML()
-    self.userConfig = yaml.load(self.paths.userConfig)
-    self.defaultConfig = yaml.load(self.paths.defaultConfig)
-
+    self._initCongfig()
     self._initTmux()
     self._initFZF()
     self._initSymbols()
@@ -107,6 +103,12 @@ class _Settings:
 
     s.updateFile = s.dataDir / 'update'
     s.sessionsDir = s.dataDir / 'sessions'
+
+  def _initCongfig(self):
+    yaml = YAML()
+    self.userConfig = yaml.load(self.paths.userConfig)
+    self.userConfigMTime = getmtime(self.paths.userConfig)
+    self.defaultConfig = yaml.load(self.paths.defaultConfig)
 
   def _initTmux(self):
     s = _Section()
