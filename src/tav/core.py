@@ -7,7 +7,7 @@ import shlex
 import shutil
 import subprocess as sp
 from os.path import getmtime
-from textwrap import dedent
+from textwrap import indent
 from time import sleep
 
 from . import settings as cfg
@@ -25,10 +25,10 @@ def onTmuxEvent(event):
   # update interface data, if changed, refresh the UI
   dirty = update()
   if dirty:
-    logger.debug('interface data is dirty, refresh tav window')
+    logger.debug('o:refresh tav window')
     tmux.refreshTavWindow()
   else:
-    logger.debug('interface data is unchanged, skip tav window refreshing')
+    logger.debug('o: skip tav window refreshing')
 
 
 def makeTavSession(force):
@@ -60,10 +60,18 @@ def update():
 
   global cfg
 
-  mtime = getmtime(cfg.paths.userConfig)
-  if mtime != cfg.userConfigMTime:
-    logger.info('config file ({cfg.paths.userConfig}) is changed, reload')
-    cfg = Settings()
+  try:
+    mtime = getmtime(cfg.paths.userConfig)
+    if mtime != cfg.timestamp:
+      logger.info(f'config file ({cfg.paths.userConfig}) is changed, reload')
+      cfg.reload()
+  except BaseException as error:
+    logger.warning(f'''
+        error getting mtime of user config from {cfg.paths.userConfig}:
+        {indent(str(error), '  ')}
+        reload the config
+    ''')
+    cfg.reload()
 
   #
   # snapshot
@@ -83,6 +91,7 @@ def update():
           'width': formatter.fzfWidth,
           'header': formatter.fzfHeader,
           'lines': formatter.fzfFeed,
+          'backgroundColor': cfg.colors.background,
       }
   }
 
@@ -90,21 +99,21 @@ def update():
     with cfg.paths.interfaceFile.open() as file:
       oldInfo = json.load(file)
   except (FileNotFoundError, json.JSONDecodeError) as error:
-    logger.warning(dedent(f'''
+    logger.warning(f'''
         error reading interface data from {cfg.paths.interfaceFile}:
-        {error}
-    '''.strip()))
+        {indent(str(error), '  ')}
+    ''')
     with cfg.paths.interfaceFile.open('w') as file:
       json.dump(info, file)
     return True
 
   if info != oldInfo:
-    logger.info('interface model data is diry')
+    logger.info('o:interface model data is dirty')
     with cfg.paths.interfaceFile.open('w') as file:
       json.dump(info, file)
     return True
   else:
-    logger.info('interface model data is not changed')
+    logger.info('o:interface model data is not changed')
     return False
 
 
@@ -117,11 +126,11 @@ def show(oneshot):
     with cfg.paths.interfaceFile.open() as file:
       info = json.load(file)
   except (FileNotFoundError, json.JSONDecodeError) as error:
-    logger.warning(dedent('''
+    logger.warning('''
         error reading interface data from {cfg.paths.interfaceFile}:
-        {error}
+        {indent(str(error), '  ')}
         update it first
-        '''.strip()))
+        ''')
     update()
     with cfg.paths.interfaceFile.open() as file:
       info = json.load(file)
@@ -132,7 +141,10 @@ def show(oneshot):
   """
   p = sp.run(cmdstr, shell=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
   if p.returncode != 0:
-    logger.error(f'error setting finder window background color:\n{p.stderr.decode()}')
+    logger.error(f'''
+      error setting finder window background color:
+      {indent(p.stderr.decode(), '  ')}
+    ''')
 
   #
   # center fzf ui
