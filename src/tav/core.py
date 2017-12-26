@@ -73,8 +73,26 @@ def update():
       }
   }
 
-  with cfg.paths.serveFile.open('w') as file:
-    json.dump(info, file)
+  try:
+    with cfg.paths.interfaceFile.open() as file:
+      oldInfo = json.load(file)
+  except (FileNotFoundError, json.JSONDecodeError) as error:
+    logger.warning(dedent(f'''
+        error reading interface data from {cfg.paths.interfaceFile}:
+        {error}
+    '''.strip()))
+    with cfg.paths.interfaceFile.open('w') as file:
+      json.dump(info, file)
+    return True
+
+  if info != oldInfo:
+    logger.info('interface model data is diry')
+    with cfg.paths.interfaceFile.open('w') as file:
+      json.dump(info, file)
+    return True
+  else:
+    logger.info('interface model data is not changed')
+    return False
 
 
 def show(oneshot):
@@ -82,13 +100,18 @@ def show(oneshot):
   compose fzf command line, show it centered in current terimnal secreen.
   '''
 
-  if not cfg.paths.serveFile.exists():
-    logger.warn(
-        'serve file ({cfg.paths.serveFile}) does not exists, update first')
+  try:
+    with cfg.paths.interfaceFile.open() as file:
+      info = json.load(file)
+  except (FileNotFoundError, json.JSONDecodeError) as error:
+    logger.warning(dedent('''
+        error reading interface data from {cfg.paths.interfaceFile}:
+        {error}
+        update it first
+        '''.strip()))
     update()
-
-  with cfg.paths.serveFile.open() as file:
-    info = json.load(file)
+    with cfg.paths.interfaceFile.open() as file:
+      info = json.load(file)
 
   # window background
   cmdstr = f"""
@@ -229,5 +252,5 @@ def show(oneshot):
         tmux.switchTo(tag)
 
     finally:
-      tmux.hook.enable()
+      tmux.hook.enable(f'after creating dead session {tag}')
       tmux.showCursor(True)
