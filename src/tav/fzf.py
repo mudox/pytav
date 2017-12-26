@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import textwrap
 
 from . import screen
 from . import settings as cfg
@@ -14,6 +13,10 @@ _windowSymbolWidth = 2
 
 _loadSessionPrompt = '[Load The Session]'
 
+
+def _hideIntoBg(text):
+  bgColor = screen.color2sgr(cfg.colors.background)
+  return screen.sgr(text, bgColor)
 
 class FZFFormatter:
   """ Transfer information from `tmux.Snapshot` object into fzf source lines.
@@ -33,7 +36,7 @@ class FZFFormatter:
 
     # calculate widths
 
-    self._sessionSymbolPadding = screen.sgrHide('⋅' * _sessionSymbolWidth)
+    self._sessionSymbolPadding = _hideIntoBg('⋅' * _sessionSymbolWidth)
 
     self._part1Width = max(
         self.snapshot.windowNameMaxWidth,
@@ -76,11 +79,11 @@ class FZFFormatter:
     self.fzfHeader = self._fzfHeaderLines()
     self.fzfFeed = self._fzfLines()
 
-    logger.debug(textwrap.dedent(f'''\
+    logger.debug(f'''
         final layout level:  [{self.layoutLevel}]
         final screen height: {len(self.fzfFeed.splitlines()) + (2 * cfg.fzf.yMargin) + 4}
         estimated height:    {self._height(self.layoutLevel)}\
-    '''))
+    ''')
 
   def _height(self, level):
     """
@@ -149,7 +152,7 @@ class FZFFormatter:
         self.snapshot.deadSessionCount,
         self.snapshot.windowCount,
     )
-    lines += screen.sgrHide('\n·')
+    lines += _hideIntoBg('\n·')
     return lines
 
   def _fzfLines(self):
@@ -279,8 +282,7 @@ class FZFFormatter:
     # gap
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
-    color = screen.color2sgr(cfg.colors.background)
-    part2 = screen.sgr('[S]', color)
+    part2 = _hideIntoBg('[S]')
     part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
 
     return f'{hiddenPrefix}\t{symbol}{part1}{gap}{part2}'
