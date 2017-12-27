@@ -14,5 +14,6 @@ if len(argv) > 1:
 else:
   jaclog.configure(appName='tav', compact=True)
 
-# logging.getLogger('tav.tmux.agent').setLevel(logging.WARNING)
+logging.getLogger('tav.tmux.agent').setLevel(logging.WARNING)
+logging.getLogger('tav.shell').setLevel(logging.WARNING)
 logging.getLogger('tav.fzf').setLevel(logging.WARNING)

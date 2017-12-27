@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def isReady():
   out = shell.getStdout(f'''
-      tmux list-panes -t {cfg.tmux.tavFrontWindowTarget} -F '#{{pane_current_command}}'
+      tmux list-panes -t {cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
   ''')
 
   if out is None:
@@ -39,36 +39,41 @@ def create():
     logger.warning('hook is already disabled')
 
   sessionName = cfg.tmux.tavSessionName
-  finderName = cfg.tmux.tavFrontWindowName
-  finderTarget = cfg.tmux.tavFrontWindowTarget
+  windowName = cfg.tmux.tavWindowName
+
+  tmpSessionName = '_' * 8 + sessionName
+  tmpWindowTarget = f'{tmpSessionName}:{windowName}'
 
   width, height = getClientSize()
 
   cmdstr = f"""
     # kill first for a clean creation
-    tmux kill-session -t "{sessionName}" &>/dev/null
-
-    set -ex
+    tmux kill-session -t "{tmpSessionName}" &>/dev/null
 
     # create session
-    tmux new-session     \
-      -s "{sessionName}" \
-      -n "{finderName}"  \
-      -x "{width}"       \
-      -y "{height}"      \
-      -d                 \
+    tmux new-session        \
+      -s "{tmpSessionName}" \
+      -n "{windowName}"     \
+      -x "{width}"          \
+      -y "{height}"         \
+      -d                    \
       sh
 
-    tmux select-pane -t {finderTarget} -P bg="{cfg.colors.background}"
+    tmux select-pane -t {tmpWindowTarget} -P bg="{cfg.colors.background}"
 
     # if it fails, the window is not affected
     # there may be some clue left
-    tmux send-keys -t {finderTarget} 'tav interface' c-m
+    tmux send-keys -t {tmpWindowTarget} 'tav interface' c-m
 
     # hide status bar, make it full screen like
-    tmux set -t "{finderTarget}" status off
+    tmux set -t "{tmpWindowTarget}" status off
 
     sleep 1
+
+    # start moving
+    # tmux switch-client -t {tmpWindowTarget}
+    tmux kill-session -t '{sessionName}'
+    tmux rename-session -t '{tmpSessionName}' '{sessionName}'
   """
   shell.run(cmdstr)
 
@@ -77,7 +82,7 @@ def create():
 
 def getFrontWindowTTY():
   output = shell.getStdout(
-      f'tmux list-panes -t {cfg.tmux.tavFrontWindowTarget} -F "#{{pane_tty}}"'
+      f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"'
   )
 
   if output is None:

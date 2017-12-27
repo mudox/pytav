@@ -42,8 +42,8 @@ def dumpInfo():
 
 def refreshTavWindow():
   shell.run(f'''
-    tmux select-pane -t {cfg.tmux.tavFrontWindowTarget} -P bg='{cfg.colors.background}'
-    tmux send-keys -t {cfg.tmux.tavFrontWindowTarget} C-u C-t C-m
+    tmux select-pane -t {cfg.tmux.tavWindowTarget} -P bg='{cfg.colors.background}'
+    tmux send-keys -t {cfg.tmux.tavWindowTarget} C-u C-t C-m
   ''')
 
 
@@ -58,31 +58,6 @@ def switchTo(target):
     p = shell.run(f'tmux attach-session -t {target}')
 
   return p
-
-
-def showMessageCentered(text):
-  # clear screen & hide cursor
-  shell.system('clear; tput civis')
-
-  ttyWidth, ttyHeight = get_terminal_size()
-
-  lines = text.splitlines()
-  textHeight = len(lines)
-  textWidth = reduce(max, [screenWidth(line) for line in lines])
-
-  x = int((ttyWidth - textWidth) / 2)
-  y = int((ttyHeight - textHeight) / 2)
-
-  shell.system(f'tput cup {y} {x}')
-
-  print(text, end=None)
-
-
-def showCursor(flag):
-  if flag:
-    shell.system('tput cnorm')
-  else:
-    shell.system('tput civis')
 
 
 def getClientSize():

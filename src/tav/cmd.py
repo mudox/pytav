@@ -6,7 +6,7 @@ import logging
 from contextlib import suppress
 
 from . import settings as cfg
-from . import core, tmux
+from . import core, tmux, ui
 from .diagnose import diagnose
 from .server import start as startServer
 
@@ -36,14 +36,14 @@ class Command:
 
   def actionOneshot(self, args):
     core.update()
-    core.show(oneshot=True)
+    ui.show(oneshot=True)
 
   def actionAttach(self, args):
     print('[1/2] capture tmux server state ...')
     core.update()
     print('[2/2] recreate session ...')
     core.makeTavSession(force=False)
-    tmux.switchTo(cfg.tmux.tavFrontWindowTarget)
+    tmux.switchTo(cfg.tmux.tavWindowTarget)
 
   def actionServer(self, args):
     with suppress(KeyboardInterrupt):
@@ -51,7 +51,7 @@ class Command:
 
   def actionInterface(self, args):
     while True:
-      core.show(oneshot=False)
+      ui.show(oneshot=False)
 
   def actionHook(self, args):
     if args.hookOption is None:  # perform hook update
