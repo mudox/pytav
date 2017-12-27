@@ -80,26 +80,9 @@ def create():
   hook.enable('after creating Tav session')
 
 
-def getFrontWindowTTY():
+def getTavWindowTTY():
   output = shell.getStdout(
       f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"'
-  )
-
-  if output is None:
-    return None
-
-  lines = output.strip().splitlines()
-  if len(lines) != 1:
-    logger.warning(f'expecting 1 line, got {len(lines)}:\n{indent(lines, "  ")}')
-    if len(lines) == 0:
-      return None
-
-  return lines[0]
-
-
-def getBackWindowTTY():
-  output = shell.getStdout(
-      f'tmux list-panes {cfg.tmux.tavBackWindowTarget} -F "#{{pane_tty}}"'
   )
 
   if output is None:
