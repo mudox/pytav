@@ -3,16 +3,18 @@
 
 
 import logging
+from textwrap import indent
 
 from . import hook
 from .. import settings as cfg
-from .agent import getStdout, run, getSessionTTYSize
+from .. import shell
+from .agent import getSessionTTYSize
 
 logger = logging.getLogger(__name__)
 
 
 def isReady():
-  out = getStdout(f'''
+  out = shell.getStdout(f'''
       tmux list-panes -t {cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
   ''')
 
@@ -68,6 +70,40 @@ def create():
 
     sleep 1
   """
-  run(cmdstr)
+  shell.run(cmdstr)
 
   hook.enable('after creating Tav session')
+
+
+def getFrontWindowTTY():
+  output = shell.getStdout(
+      f'tmux list-panes {cfg.tmux.tavFrontWindowTarget} -F "#{{pane_tty}}"'
+  )
+
+  if output is None:
+    return None
+
+  lines = output.strip().splitlines()
+  if len(lines) != 1:
+    logger.warning(f'expecting 1 line, got {len(lines)}:\n{indent(lines, "  ")}')
+    if len(lines) == 0:
+      return None
+
+  return lines[0]
+
+
+def getBackWindowTTY():
+  output = shell.getStdout(
+      f'tmux list-panes {cfg.tmux.tavBackWindowTarget} -F "#{{pane_tty}}"'
+  )
+
+  if output is None:
+    return None
+
+  lines = output.strip().splitlines()
+  if len(lines) != 1:
+    logger.warning(f'expecting 1 line, got {len(lines)}:\n{indent(lines, "  ")}')
+    if len(lines) == 0:
+      return None
+
+  return lines[0]
