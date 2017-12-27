@@ -43,7 +43,7 @@ class Command:
     core.update()
     print('[2/2] recreate session ...')
     core.makeTavSession(force=False)
-    tmux.switchTo(cfg.tmux.tavWindowTarget)
+    tmux.switchTo(cfg.tmux.tavFrontWindowTarget)
 
   def actionServer(self, args):
     with suppress(KeyboardInterrupt):

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def isReady():
   out = shell.getStdout(f'''
-      tmux list-panes -t {cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
+      tmux list-panes -t {cfg.tmux.tavFrontWindowTarget} -F '#{{pane_current_command}}'
   ''')
 
   if out is None:
@@ -39,8 +39,8 @@ def create():
     logger.warning('hook is already disabled')
 
   sessionName = cfg.tmux.tavSessionName
-  finderName = cfg.tmux.tavWindowName
-  finderTarget = cfg.tmux.tavWindowTarget
+  finderName = cfg.tmux.tavFrontWindowName
+  finderTarget = cfg.tmux.tavFrontWindowTarget
 
   width, height = getSessionTTYSize()
 

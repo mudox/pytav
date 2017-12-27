@@ -42,8 +42,8 @@ def dumpInfo():
 
 def refreshTavWindow():
   shell.run(f'''
-    tmux select-pane -t {cfg.tmux.tavWindowTarget} -P bg='{cfg.colors.background}'
-    tmux send-keys -t {cfg.tmux.tavWindowTarget} C-u C-t C-m
+    tmux select-pane -t {cfg.tmux.tavFrontWindowTarget} -P bg='{cfg.colors.background}'
+    tmux send-keys -t {cfg.tmux.tavFrontWindowTarget} C-u C-t C-m
   ''')
 
 
