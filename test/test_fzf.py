@@ -5,7 +5,7 @@ from tav import tmux
 from tav.fzf import FZFFormatter
 
 
-def test_fzf_feed():
+def test_layout():
   snapshot = tmux.Snapshot()
   formatter = FZFFormatter(snapshot)
   feed = formatter.fzfFeed

@@ -3,5 +3,5 @@
 from tav import core
 
 
-def test_nothing():
+def test():
   assert True
