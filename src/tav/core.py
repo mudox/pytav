@@ -11,7 +11,7 @@ from textwrap import indent
 from time import sleep
 
 from . import settings as cfg
-from . import screen, tmux
+from . import screen, shell, tmux
 from .fzf import FZFFormatter
 
 logger = logging.getLogger(__name__)
@@ -140,10 +140,7 @@ def show(oneshot):
   #
 
   if not oneshot:
-    cmdstr = f"""
-      tmux select-pane -P bg={cfg.colors.background}
-    """
-    run(cmdstr)
+    shell.run(f'tmux select-pane -P bg={cfg.colors.background}')
 
   #
   # center fzf ui

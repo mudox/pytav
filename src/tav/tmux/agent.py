@@ -3,65 +3,15 @@
 
 import logging
 import shutil
-import subprocess as sp
 from functools import reduce
 from os import environ
 from shutil import get_terminal_size
-from textwrap import indent
 
 from .. import settings as cfg
+from .. import shell
 from ..screen import screenWidth
 
 logger = logging.getLogger(__name__)
-
-
-def check(cmdstr):
-  return run(cmdstr).returncode == 0
-
-
-def system(cmdstr):
-  # left unchanged (connect to controlling terminal)
-  run(cmdstr, stdout=None)
-
-
-def getStdout(cmdstr):
-  p = run(cmdstr, stdout=sp.PIPE)
-  return p.returncode == 0 and p.stdout.decode() or None
-
-
-def run(cmdstr, stdout=sp.DEVNULL, trace=True):
-  """Execute the command line using `subprocess.run`.
-
-  The stdout's redirection is controlled by the argument `stdout`, which is
-    `DEVNULL` by defaults.
-  The stderr is captured.
-
-  Check the return code, log out content captured from stderr if is not 0.
-
-  Args:
-    cmstr (str): Command line string to run like in shell which can contain
-      comments.
-    stdout (number of file object): Control the redireciton of the stdout.
-
-  Returns:
-    The process object returned from `subprocess.run`.
-  """
-
-  # logger.debug(f'cmd: {cmdstr.strip()}')
-  cmdstr = f'set -x\n{cmdstr}'
-
-  p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdout)
-
-  text = p.stderr.decode().strip()
-  if p.returncode != 0:
-    logger.error(f'''
-        failed with error code: {p.returncode}
-        {indent(text, '  ')}
-    ''')
-  else:
-    logger.debug(f'succeed to execute:\n{text}')
-
-  return p
 
 
 def dumpInfo():
@@ -85,13 +35,13 @@ def dumpInfo():
     tmux list-windows -a -F '{format}'
   '''
 
-  out = getStdout(cmdstr)
+  out = shell.getStdout(cmdstr)
   lines = out.strip().splitlines()
   return [line.split(':') for line in lines]
 
 
 def refreshTavWindow():
-  run(f'''
+  shell.run(f'''
     tmux select-pane -t {cfg.tmux.tavWindowTarget} -P bg='{cfg.colors.background}'
     tmux send-keys -t {cfg.tmux.tavWindowTarget} C-u C-t C-m
   ''')
@@ -103,16 +53,16 @@ def switchTo(target):
   target = f"'{target}'"
 
   if 'TMUX' in environ:
-    p = run(f'tmux switch-client -t {target}')
+    p = shell.run(f'tmux switch-client -t {target}')
   else:
-    p = run(f'tmux attach-session -t {target}')
+    p = shell.run(f'tmux attach-session -t {target}')
 
   return p
 
 
 def showMessageCentered(text):
   # clear screen & hide cursor
-  system('clear; tput civis')
+  shell.system('clear; tput civis')
 
   ttyWidth, ttyHeight = get_terminal_size()
 
@@ -123,25 +73,25 @@ def showMessageCentered(text):
   x = int((ttyWidth - textWidth) / 2)
   y = int((ttyHeight - textHeight) / 2)
 
-  system(f'tput cup {y} {x}')
+  shell.system(f'tput cup {y} {x}')
 
   print(text, end=None)
 
 
 def showCursor(flag):
   if flag:
-    system('tput cnorm')
+    shell.system('tput cnorm')
   else:
-    system('tput civis')
+    shell.system('tput civis')
 
 
 def getSessionTTYSize():
   if 'TMUX' in environ and len(environ['TMUX']) > 0:
     # inside of tmux
-    w = getStdout(
+    w = shell.getStdout(
         r'tmux list-clients -t . -F "#{client_width}"'
     ).splitlines()[0]
-    h = getStdout(
+    h = shell.getStdout(
         r'tmux list-clients -t . -F "#{client_height}"'
     ).splitlines()[0]
   else:
