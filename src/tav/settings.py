@@ -157,11 +157,11 @@ def _initTmux():
 
   s.tavSessionName = 'Tav'
 
-  s.tavFrontWindowName = 'Font'
+  s.tavFrontWindowName = 'Front'
   s.tavFrontWindowTarget = f'{s.tavSessionName}:{s.tavFrontWindowName}'
 
   s.tavBackWindowName = 'Back'
-  s.tavFrontWindowTarget = f'{s.tavSessionName}:{s.tavBackWindowName}'
+  s.tavBackWindowTarget = f'{s.tavSessionName}:{s.tavBackWindowName}'
 
   s.serverPID = _serverPID
 
@@ -249,7 +249,7 @@ def _initSymbols():
 
   # sessionDefault
   v = _get(scheme, 'sessionDefault')
-  d = sgr('·', color2sgr(colors.background))
+  d = None
   if isinstance(v, str) and v.strip() != '':
     s.sessionDefault = v[0]
   else:

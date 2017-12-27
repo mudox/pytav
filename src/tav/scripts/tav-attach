@@ -3,5 +3,3 @@ set -euo pipefail
 
 tav-cc &>/dev/null
 tmux switch-client -t "Tav:Front"
-
-

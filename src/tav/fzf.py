@@ -245,8 +245,11 @@ class FZFFormatter:
         session.name,
         cfg.symbols.sessionDefault
     )
-    symbolColor = cfg.colors.deadSessionSymbol
-    symbol = screen.sgr(symbol, symbolColor)
+    if symbol is None:
+      symbol = _hideIntoBg('·')
+    else:
+      symbolColor = cfg.colors.deadSessionSymbol
+      symbol = screen.sgr(symbol, symbolColor)
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
     # the only part: session name
@@ -271,8 +274,11 @@ class FZFFormatter:
         session.name,
         cfg.symbols.sessionDefault
     )
-    symbolColor = cfg.colors.liveSessionSymbol
-    symbol = screen.sgr(symbol, symbolColor)
+    if symbol is None:
+      symbol = _hideIntoBg('·')
+    else:
+      symbolColor = cfg.colors.liveSessionSymbol
+      symbol = screen.sgr(symbol, symbolColor)
     symbol = screen.left(symbol, _sessionSymbolWidth)
 
     color1 = cfg.colors.liveSessionLineLeft
