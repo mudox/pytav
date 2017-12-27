@@ -5,6 +5,9 @@ action=$1
 # FIXME!!!: magic port number
 address='http:/localhost:32323'
 case $action in
+  attach )
+    curl "${address}/attach/"
+    ;;
   start )
     echo 'start tav server'
     tav server
@@ -22,5 +25,8 @@ case $action in
     event=${2:-'null'}
     echo "send ${event} to server"
     curl "${address}/event/${event}"
+    ;;
+  * )
+    echo 'unreconized argument'
     ;;
 esac

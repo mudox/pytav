@@ -9,8 +9,8 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from sys import exit
 
-from . import core
-from .tmux import hook
+from . import settings as cfg
+from . import core, tmux
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +49,15 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
   def do_GET(self):
     logger.debug(f'o:GET {self.path}')
 
-    self._event() or \
-        self._stop() or \
-        self._invalidPath
+    for route in [
+        self._attach,
+        self._event,
+        self._stop,
+    ]:
+      if route():
+        return
+
+    self._invalidPath()
 
   def log_message(self, format, *args):
     if args[1] != '200':
@@ -91,3 +97,16 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       self.end_headers()
 
       exit()
+
+  def _attach(self):
+    if self.path != '/attach/':
+      return False
+
+    else:
+      self.send_response(200)
+      self.send_header('Content-Length', 0)
+      self.end_headers()
+
+      core.update()
+      core.makeTavSession(force=False)
+      tmux.switchTo(cfg.tmux.tavWindowTarget)
