@@ -11,6 +11,7 @@ from sys import exit
 
 from . import settings as cfg
 from . import core, tmux
+from .tmux.tavSession import showHeadLine
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +86,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       logger.info(f' [{datetime.now()}] {event}')
       core.onTmuxEvent(event)
 
+      showHeadLine(event)
+
       return True
 
   def _stop(self):
@@ -110,3 +113,5 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       core.update()
       core.makeTavSession(force=False)
       tmux.switchTo(cfg.tmux.tavWindowTarget)
+
+      return True

@@ -64,6 +64,7 @@ def getClientSize():
 
   if lines is not None:
     w, h = lines[0].split('x')
+    w, h = int(w), int(h)
   else:
     w, h = shutil.get_terminal_size()
 

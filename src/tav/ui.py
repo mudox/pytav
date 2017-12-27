@@ -175,15 +175,6 @@ def show(oneshot):
       tmux.showCursor(True)
 
 
-def showHeadLine(line):
-  w, h = tmux.getClientSize()
-  x = (w - screen.sgrWidth(line)) / 2
-  y = 2
-
-  shell.system(f'tput cup 2 1; tput el; tput cup {y} {x}')
-  print(line, end=None)
-
-
 def showMessageCentered(text):
   # clear screen & hide cursor
   shell.system('clear; tput civis')

@@ -7,7 +7,7 @@ from textwrap import indent
 
 from . import hook
 from .. import settings as cfg
-from .. import shell
+from .. import screen, shell
 from .agent import getClientSize
 
 logger = logging.getLogger(__name__)
@@ -77,15 +77,52 @@ def create():
   """
   shell.run(cmdstr)
 
+  showHeadLine('Tav (v3.1) by Mudox')
+
   hook.enable('after creating Tav session')
 
 
+# ISSUE!!: no use
+def showHeadLine(line):
+  tty = getTavWindowTTY()
+  if tty is None:
+    return
+
+  w, _ = getClientSize()
+  logger.debug(f'w: {w}')
+  w0 = screen.screenWidth(line)
+  logger.debug(f'w0: {w0}')
+  x = (w - w0) / 2
+  logger.debug(f'x: {x}')
+  x = int(x) + cfg.fzf.hOffset
+  logger.debug(f'x: {x}')
+
+  cmdstr = f'''
+  {{
+    tput sc
+    tput cup 1 1
+    tput el
+    tput cup 1 {x}
+    echo "{line}"
+    tput rc
+  }} >> {tty}
+  '''
+
+  shell.run(cmdstr)
+
+
 def getTavWindowTTY():
+  ready, explain = isReady()
+  if not ready:
+    logger.warning(f'failed: {explain}')
+    return None
+
   output = shell.getStdout(
       f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"'
   )
 
   if output is None:
+    logger.error('o:failed')
     return None
 
   lines = output.strip().splitlines()
