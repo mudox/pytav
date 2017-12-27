@@ -3,13 +3,10 @@
 
 import logging
 import shutil
-from functools import reduce
 from os import environ
-from shutil import get_terminal_size
 
 from .. import settings as cfg
 from .. import shell
-from ..screen import screenWidth
 
 logger = logging.getLogger(__name__)
 
@@ -61,14 +58,13 @@ def switchTo(target):
 
 
 def getClientSize():
-  # FIXME!!!: handle mutiple command situation
-  if 'TMUX' in environ and len(environ['TMUX']) > 0:
-    lines = shell.getStdout(
-        f'tmux list-clients -F "#{{client_width}}x#{{client_height}}"'
-    ).strip().splitlines()
+  lines = shell.getStdout(
+      f'tmux list-sessions -F "#{{session_width}}x#{{session_height}}"'
+  ).strip().splitlines()
+
+  if lines is not None:
     w, h = lines[0].split('x')
   else:
-    # outside of tmux
     w, h = shutil.get_terminal_size()
 
   return w, h
