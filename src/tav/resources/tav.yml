@@ -4,9 +4,6 @@ version: 1
 # The smaller the number, the more compact the layout
 layoutLevel: auto
 
-# Top and bottom margin of the finder UI, defaults to 2
-yMargin: 2
-
 # Mininum spaces between left part and right part of the ui layout
 # WARNING: must be >= 4
 minGap: 4

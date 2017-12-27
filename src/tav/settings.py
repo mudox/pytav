@@ -180,13 +180,8 @@ def _initFZF():
     s.layoutLevel = d
     logger.warning(f'invalid [layoutLevel] setting ({v}), fallback to `{d}`')
 
-  # yMargin
-  v, d = _valueAt('yMargin')
-  if isinstance(v, int) and v > 0:
-    s.yMargin = v
-  else:
-    s.yMargin = d
-    logger.warning(f'invalid [yMargin] setting ({v}), fallback to `{d}`')
+  s.topMargin = 3
+  s.bottomMargin = 2
 
   # minGap
   v, d = _valueAt('minGap')

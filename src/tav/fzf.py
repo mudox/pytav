@@ -2,8 +2,8 @@
 
 import logging
 
-from . import screen
 from . import settings as cfg
+from . import screen
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +17,7 @@ _loadSessionPrompt = '[Load The Session]'
 def _hideIntoBg(text):
   bgColor = screen.color2sgr(cfg.colors.background)
   return screen.sgr(text, bgColor)
+
 
 class FZFFormatter:
   """ Transfer information from `tmux.Snapshot` object into fzf source lines.
@@ -81,7 +82,7 @@ class FZFFormatter:
 
     logger.debug(f'''
         final layout level:  [{self.layoutLevel}]
-        final screen height: {len(self.fzfFeed.splitlines()) + (2 * cfg.fzf.yMargin) + 4}
+        final screen height: {len(self.fzfFeed.splitlines()) + 5 + 4}
         estimated height:    {self._height(self.layoutLevel)}\
     ''')
 
@@ -96,11 +97,12 @@ class FZFFormatter:
     assert level in range(5)
 
     # level 0
-    fzfHeader = 3 + 1  # 1st line must be empty line
+    margin = cfg.fzf.topMargin + cfg.fzf.bottomMargin
+    header = 3 + 1  # 1st line must be empty line
     bareUnloadedBar = 1
     height =                             \
-        cfg.fzf.yMargin * 2 +       \
-        fzfHeader +                      \
+        margin +                         \
+        header +                         \
         self.snapshot.windowCount +      \
         self.snapshot.liveSessionCount + \
         bareUnloadedBar +                \

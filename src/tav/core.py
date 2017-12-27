@@ -169,7 +169,7 @@ def show(oneshot):
     --height=100%   # fullscreen mode
 
     # center interface in the terminal screen
-    --margin={cfg.fzf.yMargin},{hMargin}
+    --margin={cfg.fzf.topMargin},{hMargin},{cfg.fzf.bottomMargin},{hMargin}
 
     --header='{info["fzf"]["header"]}'
     --inline-info
