@@ -8,7 +8,7 @@ from textwrap import indent
 from . import hook
 from .. import settings as cfg
 from .. import shell
-from .agent import getSessionTTYSize
+from .agent import getClientSize
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ def create():
   finderName = cfg.tmux.tavFrontWindowName
   finderTarget = cfg.tmux.tavFrontWindowTarget
 
-  width, height = getSessionTTYSize()
+  width, height = getClientSize()
 
   cmdstr = f"""
     # kill first for a clean creation

@@ -85,15 +85,13 @@ def showCursor(flag):
     shell.system('tput civis')
 
 
-def getSessionTTYSize():
+def getClientSize():
+  # FIXME!!!: handle mutiple command situation
   if 'TMUX' in environ and len(environ['TMUX']) > 0:
-    # inside of tmux
-    w = shell.getStdout(
-        r'tmux list-clients -t . -F "#{client_width}"'
-    ).splitlines()[0]
-    h = shell.getStdout(
-        r'tmux list-clients -t . -F "#{client_height}"'
-    ).splitlines()[0]
+    lines = shell.getStdout(
+        f'tmux list-clients -F "#{{client_width}}x#{{client_height}}"'
+    ).strip().splitlines()
+    w, h = lines[0].split('x')
   else:
     # outside of tmux
     w, h = shutil.get_terminal_size()
