@@ -157,7 +157,7 @@ def _initTmux():
 
   s.tavSessionName = 'Tav'
 
-  s.tavWindowName = 'Front'
+  s.tavWindowName = 'Main'
   s.tavWindowTarget = f'{s.tavSessionName}:{s.tavWindowName}'
 
   s.serverPID = _serverPID
