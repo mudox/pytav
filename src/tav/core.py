@@ -184,7 +184,7 @@ def show(oneshot):
 
     # prevent keys to abort fzf
     for key in ('esc', 'ctrl-c', 'ctrl-g', 'ctrl-q'):
-      cmd.append(f'--bind={key}:unix-line-discard+execute(tmux switch-client -l)')
+      cmd.append(f'--bind={key}:unix-line-discard')
 
     # prevent ctrl-z suspend fzf
     cmd.append('--bind=ctrl-z:unix-line-discard')
