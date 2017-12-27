@@ -16,7 +16,7 @@ def test_layout():
   for lvl in range(5):
     cfg.fzf.layoutLevel = lvl
     formatter = FZFFormatter(snapshot)
-    lineCount = len(formatter.fzfFeed.splitlines())
+    lineCount = len(formatter.fzfFeed.strip().splitlines())
     height = formatter._height(lvl)
-    height -= (3 + 1 + cfg.fzf.yMargin * 2)
-    assert lineCount == height + 1  # ISSUE!: dont't known how there is a 1 line difference
+    lineCount += 3 + 4 + 2
+    assert lineCount == height
