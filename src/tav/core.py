@@ -135,16 +135,15 @@ def show(oneshot):
     with cfg.paths.interfaceFile.open() as file:
       info = json.load(file)
 
+  #
   # window background
-  cmdstr = f"""
-    tmux select-pane -P bg={cfg.colors.background}
-  """
-  p = sp.run(cmdstr, shell=True, stdout=sp.DEVNULL, stderr=sp.PIPE)
-  if p.returncode != 0:
-    logger.error(f'''
-      error setting finder window background color:
-      {indent(p.stderr.decode(), '  ')}
-    ''')
+  #
+
+  if not oneshot:
+    cmdstr = f"""
+      tmux select-pane -P bg={cfg.colors.background}
+    """
+    run(cmdstr)
 
   #
   # center fzf ui

@@ -18,7 +18,7 @@ minWidth: 46
 symbol:
 
   # The value MUST be one of the keys of symbol schemes listed below.
-  use: emoji
+  use: nerd
 
   schemes:
 
@@ -79,7 +79,7 @@ color:
       # 2. number from 0 - 255 if your terminal support 256 colors.
       # 3. comma separated RGB group (e.g. `8, 5 244`), if your terminal support true color.
       # 4. web css color form (e.g. `#F9E01C`, `#fff`).
-      background            : '#0A1922'
+      background            : '#0A1920'
 
       liveSessionSymbol     : '#fff'
       liveSessionLineLeft   : '#FF4088'

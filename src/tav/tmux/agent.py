@@ -7,6 +7,7 @@ import subprocess as sp
 from functools import reduce
 from os import environ
 from shutil import get_terminal_size
+from textwrap import indent
 
 from .. import settings as cfg
 from ..screen import screenWidth
@@ -14,24 +15,24 @@ from ..screen import screenWidth
 logger = logging.getLogger(__name__)
 
 
-def _check(cmdstr):
+def check(cmdstr):
   return run(cmdstr).returncode == 0
 
 
-def _system(cmdstr):
+def system(cmdstr):
   # left unchanged (connect to controlling terminal)
-  run(cmdstr, stdoutArg=None)
+  run(cmdstr, stdout=None)
 
 
 def getStdout(cmdstr):
-  p = run(cmdstr, stdoutArg=sp.PIPE)
+  p = run(cmdstr, stdout=sp.PIPE)
   return p.returncode == 0 and p.stdout.decode() or None
 
 
-def run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
+def run(cmdstr, stdout=sp.DEVNULL, trace=True):
   """Execute the command line using `subprocess.run`.
 
-  The stdout's redirection is controlled by the argument `stdoutArg`, which is
+  The stdout's redirection is controlled by the argument `stdout`, which is
     `DEVNULL` by defaults.
   The stderr is captured.
 
@@ -40,7 +41,7 @@ def run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
   Args:
     cmstr (str): Command line string to run like in shell which can contain
       comments.
-    stdoutArg (number of file object): Control the redireciton of the stdout.
+    stdout (number of file object): Control the redireciton of the stdout.
 
   Returns:
     The process object returned from `subprocess.run`.
@@ -49,12 +50,14 @@ def run(cmdstr, stdoutArg=sp.DEVNULL, trace=True):
   # logger.debug(f'cmd: {cmdstr.strip()}')
   cmdstr = f'set -x\n{cmdstr}'
 
-  p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdoutArg)
+  p = sp.run(cmdstr, shell=True, stderr=sp.PIPE, stdout=stdout)
 
   text = p.stderr.decode().strip()
   if p.returncode != 0:
-    logger.error(f'fail to execute:\n{text}')
-    logger.error(f'error code: {p.returncode}')
+    logger.error(f'''
+        failed with error code: {p.returncode}
+        {indent(text, '  ')}
+    ''')
   else:
     logger.debug(f'succeed to execute:\n{text}')
 
@@ -109,7 +112,7 @@ def switchTo(target):
 
 def showMessageCentered(text):
   # clear screen & hide cursor
-  _system('clear; tput civis')
+  system('clear; tput civis')
 
   ttyWidth, ttyHeight = get_terminal_size()
 
@@ -120,16 +123,16 @@ def showMessageCentered(text):
   x = int((ttyWidth - textWidth) / 2)
   y = int((ttyHeight - textHeight) / 2)
 
-  _system(f'tput cup {y} {x}')
+  system(f'tput cup {y} {x}')
 
   print(text, end=None)
 
 
 def showCursor(flag):
   if flag:
-    _system('tput cnorm')
+    system('tput cnorm')
   else:
-    _system('tput civis')
+    system('tput civis')
 
 
 def getSessionTTYSize():
