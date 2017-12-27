@@ -35,12 +35,10 @@ setup(
     ],
 
     package_data={
-        '': ['scripts/*', 'resources/*'],
+        '': ['resources/*'],
     },
 
     scripts=[
-      'src/tav/scripts/tav-attach',
-      'src/tav/scripts/tav-cc',
       'assets/scripts/tavs',
       ],
     entry_points={
