@@ -47,7 +47,7 @@ def show(oneshot):
   tWidth, _ = shutil.get_terminal_size()
   width = info['fzf']['width']
 
-  hMargin = int((tWidth - width) / 2) - 3
+  hMargin = int((tWidth - width) / 2) + cfg.fzf.hOffset
 
   #
   # compose fzf command line

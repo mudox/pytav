@@ -179,6 +179,7 @@ def _initFZF():
 
   s.topMargin = 3
   s.bottomMargin = 2
+  s.hOffset = -3
 
   # minGap
   v, d = _valueAt('minGap')
