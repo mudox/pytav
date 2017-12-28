@@ -5,13 +5,15 @@ import logging
 import re
 import socket
 from contextlib import closing
-from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from sys import exit
 
+import daemon
+
+from jaclog import jaclog
+
 from . import settings as cfg
 from . import core, tmux
-from .tmux.tavSession import showHeadLine
 
 logger = logging.getLogger(__name__)
 
@@ -23,22 +25,30 @@ def getFreePort():
 
 
 def start(port):
+  global logger
 
-  try:
-    server = HTTPServer(('', port), HTTPRequestHandler)
-    logger.info(f'listening at localhost:{port}')
+  logger.debug('spawn daemon')
 
-  except OSError as e:
-    if e.errno == 48:
-      alternatePort = getFreePort()
-      logger.warning(f'Port {port} is occupied, try using port {alternatePort}')
-      logger.flush()
-      server = HTTPServer(('', alternatePort), HTTPRequestHandler)
-      logger.info(f'Start server listening at localhost:{alternatePort} ...\n\n')
-    else:
-      raise
+  with daemon.DaemonContext():
 
-  server.serve_forever()
+    jaclog.configure(appName='tav', fileName='server.log', printSessionLine=False)
+    logger = logging.getLogger(__name__)
+
+    try:
+      server = HTTPServer(('', port), HTTPRequestHandler)
+      logger.info(f'listening at localhost:{port}')
+
+    except OSError as e:
+      if e.errno == 48:
+        alternatePort = getFreePort()
+        logger.warning(f'Port {port} is occupied, try using port {alternatePort}')
+        logger.flush()
+        server = HTTPServer(('', alternatePort), HTTPRequestHandler)
+        logger.info(f'Start server listening at localhost:{alternatePort} ...\n\n')
+      else:
+        raise
+
+    server.serve_forever()
 
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
