@@ -5,7 +5,6 @@ import argparse
 import logging
 from contextlib import suppress
 
-from . import settings as cfg
 from . import core, tmux, ui
 from .diagnose import diagnose
 from .server import start as startServer
@@ -20,19 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class Command:
-
-  def actionSession(self, args):
-    if args.action == 'check':
-      ready, msg = tmux.tavSession.isReady()
-      if ready:
-        print('Tav session is ready')
-      else:
-        print(f'Tav session is NOT ready: {msg}')
-    else:
-      if args.action == 'recreate':
-        core.makeTavSession(force=True)
-      else:
-        core.makeTavSession(force=False)
 
   def actionOneshot(self, args):
     core.update()
@@ -170,21 +156,6 @@ class Command:
         help='show the fzf inteface, remain after choose and switch.'
     )
     act_runloop.set_defaults(func=self.actionInterface)
-
-    #
-    # action `session`
-    #
-
-    act_cc = subparsers.add_parser(
-        'session',
-        help='manage the tmux tav session'
-    )
-    act_cc.set_defaults(func=self.actionSession)
-    act_cc.add_argument(
-        'action',
-        choices=('recreate', 'createIfNeeded', 'check'),
-        help='recreate or only create if the session is not available'
-    )
 
   def run(self):
 
