@@ -11,8 +11,6 @@ from tav.tmux import hook
 def test_update():
   hook.disable('test_upate')
 
-  old = cfg.paths.interfaceFile.stat().st_mtime
-
   name = f'_tav_test_{random.randrange(20000)}_'
 
   cmdstr = f'''
@@ -20,22 +18,15 @@ def test_update():
   '''
   system(cmdstr)
 
-  assert core.update() is True
-  new = cfg.paths.interfaceFile.stat().st_mtime
-  assert new > old
-  old == new
-
-  assert core.update() is False
+  assert core.updateModel() is True
+  assert core.updateModel() is False
 
   cmdstr = f'''
     tmux kill-session -t {name}
   '''
   system(cmdstr)
 
-  assert core.update() is True
-  new = cfg.paths.interfaceFile.stat().st_mtime
-  assert new > old
-
-  assert core.update() is False
+  assert core.updateModel() is True
+  assert core.updateModel() is False
 
   hook.enable('after test_upate')

@@ -15,7 +15,7 @@ minWidth: 46
 symbol:
 
   # The value MUST be one of the keys of symbol schemes listed below.
-  use: nerd
+  use: emoji
 
   schemes:
 
@@ -27,10 +27,10 @@ symbol:
       unloaded:  
 
       # can be empty, default to empty symbol
-      sessionDefault:
+      sessionDefault :  
 
       # can be empty, defaults to `·`
-      #windowDefault  :  
+      windowDefault  :  
 
       sessions:
         # Add, change whatever session names (CASE-SENSITIVE) you like and their
@@ -50,8 +50,7 @@ symbol:
     # There is an another symbol scheme named `emoji` using emoji's.
     emoji:
       unloaded: 🌔
-      #sessionDefault:  🐠
-      sessionDefault :
+      sessionDefault :  🐠
       windowDefault  :  
       sessions:
         Console      : 🐬
