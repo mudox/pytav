@@ -116,11 +116,6 @@ def _initPaths():
   s.dataDir = Path('~/.local/share/tav').expanduser()
   s.dataDir.mkdir(parents=True, exist_ok=True)
 
-  # interface
-  s.interfaceDir = s.dataDir / 'interface'
-  s.interfaceDir.mkdir(parents=True, exist_ok=True)
-  s.interfaceFile = s.interfaceDir / _serverPID
-
   # sessions
   s.sessionsDir = s.dataDir / 'sessions'
 
