@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def isReady():
   out = shell.getStdout(f'''
-      tmux list-panes -t {cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
+      tmux list-panes -t ={cfg.tmux.tavFrontWindowTarget} -F '#{{pane_current_command}}'
   ''')
 
   if out is None:
@@ -38,45 +38,59 @@ def create():
   else:
     logger.warning('hook is already disabled')
 
-  sessionName = cfg.tmux.tavSessionName
-  windowName = cfg.tmux.tavWindowName
+  sname = cfg.tmux.tavSessionName
 
-  tmpSessionName = '_' * 8 + sessionName
-  tmpWindowTarget = f'{tmpSessionName}:{windowName}'
+  fname = cfg.tmux.tavFrontWindowName
+  front = cfg.tmux.tavFrontWindowTarget
+
+  bname = cfg.tmux.tavFrontWindowName
+  back = cfg.tmux.tavFrontWindowTarget
+
+  back = f'{sname}:$'
 
   width, height = getClientSize()
 
   cmdstr = f"""
-    # kill first for a clean creation
-    tmux kill-session -t "{tmpSessionName}" &>/dev/null
-
-    # create session
+  if ! tmux has-session -t ={sname}; then
     tmux new-session        \
-      -s "{tmpSessionName}" \
-      -n "{windowName}"     \
-      -x "{width}"          \
-      -y "{height}"         \
+      -s '{sname}'          \
+      -n '{fname}'          \
+      -x '{width}'          \
+      -y '{height}'         \
       -d                    \
       sh
 
-    tmux select-pane -t {tmpWindowTarget} -P bg="{cfg.colors.background}"
-
-    # if it fails, the window is not affected
-    # there may be some clue left
-    tmux send-keys -t {tmpWindowTarget} 'tav interface' c-m
-
-    # hide status bar, make it full screen like
-    tmux set -t "{tmpWindowTarget}" status off
+    tmux select-pane -t {front} -P bg="{cfg.colors.background}"
+    tmux send-keys -t {front} 'tav interface' c-m
+    tmux set -t "{front}" status off
 
     sleep 1
+    exit
+  fi
 
-    # start moving
-    # tmux switch-client -t {tmpWindowTarget}
-    tmux kill-session -t '{sessionName}'
-    tmux rename-session -t '{tmpSessionName}' '{sessionName}'
+  tmux respawn-window -k -t '{back}' sh
+  if [[ $? -ne 0 ]]; then
+    tmux new-window              \
+      -a                         \
+      -t '{sname}:{{end}}'       \
+      -n '{bname}'               \
+      -d                         \
+      sh
+  fi
+
+  tmux select-pane -t {back} -P bg="{cfg.colors.background}"
+  tmux send-keys -t {back} 'tav interface' c-m
+  tmux set -t "{back}" status off
+
+  sleep 1
+  tmux swap-window -d -s '{front}' -t '{back}'
+  tmux rename-window -t '{sname}:^' {fname}
+  tmux rename-window -t '{sname}:$' {bname}
   """
+
   shell.run(cmdstr)
 
+  # FIXME!!!: no use here
   showHeadLine('Tav (v3.1) by Mudox')
 
   hook.enable('after creating Tav session')
@@ -88,14 +102,10 @@ def showHeadLine(line):
   if tty is None:
     return
 
-  w, _ = getClientSize()
-  logger.debug(f'w: {w}')
-  w0 = screen.screenWidth(line)
-  logger.debug(f'w0: {w0}')
-  x = (w - w0) / 2
-  logger.debug(f'x: {x}')
+  ttyWidth, _ = getClientSize()
+  width = screen.screenWidth(line)
+  x = (ttyWidth - width) / 2
   x = int(x) + cfg.fzf.hOffset
-  logger.debug(f'x: {x}')
 
   cmdstr = f'''
   {{
@@ -118,7 +128,7 @@ def getTavWindowTTY():
     return None
 
   output = shell.getStdout(
-      f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"'
+      f'tmux list-panes -t {cfg.tmux.tavFrontWindowTarget} -F "#{{pane_tty}}"'
   )
 
   if output is None:
