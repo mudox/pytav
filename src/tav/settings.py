@@ -3,13 +3,12 @@
 
 import logging
 import subprocess as sp
-from os.path import getmtime
 from pathlib import Path
 from textwrap import indent
 
 from ruamel.yaml import YAML
 
-from .screen import color2sgr, sgr
+from .screen import color2sgr
 
 logger = logging.getLogger(__name__)
 
@@ -132,15 +131,13 @@ def _initConfig():
     s.user = yaml.load(paths.userConfig)
   except BaseException as error:
     logger.error(f'''
-      error reading user config file ({paths.userConfig}):
+      error loading user config file ({paths.userConfig}):
       {indent(str(error), '')}
-      fill with default config content
+      fallback to default config
     ''')
-    text = paths.defaultConfig.read_text()
-    paths.userConfig.write_text(text)
-    s.user = yaml.load(paths.userConfig)
+    s.user = yaml.load(paths.defaultConfig)
 
-  timestamp = getmtime(paths.userConfig)
+  timestamp = paths.userConfig.stat().st_mtime
   s.default = yaml.load(paths.defaultConfig)
 
 
