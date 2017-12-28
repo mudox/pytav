@@ -83,10 +83,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       self.send_header('Content-Length', 0)
       self.end_headers()
 
-      logger.info(f' [{datetime.now()}] {event}')
+      logger.debug(f'o:{event}')
       core.onTmuxEvent(event)
-
-      showHeadLine(event)
 
       return True
 
