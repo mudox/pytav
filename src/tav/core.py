@@ -5,38 +5,18 @@ import json
 import logging
 from textwrap import indent
 
+from . import settings as cfg
 from . import tmux
 from .fzf import FZFFormatter
-from . import settings as cfg
 
 logger = logging.getLogger(__name__)
 
 
 # INFO: argument `event` is currently unused
 def onTmuxEvent(event):
-  # make sure the tav window is still there
-  makeTavSession(force=False)
-
-  # update interface data, if changed, refresh the UI
   dirty = update()
   if dirty:
-    logger.debug('o:refresh tav window')
-    tmux.refreshTavWindow()
-  else:
-    logger.debug('o: skip tav window refreshing')
-
-
-def makeTavSession(force):
-  if force:
-    logger.info('forcedly recreate Tav session')
     tmux.tavSession.create()
-  else:
-    ready, msg = tmux.tavSession.isReady()
-    if not ready:
-      logger.warning(f'tav session not ready ({msg}), recreate it')
-      tmux.tavSession.create()
-    else:
-      logger.info('tav session is ready, skip creation')
 
 
 def update():
