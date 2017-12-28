@@ -9,8 +9,12 @@ case $action in
     curl "${address}/attach/"
     ;;
   start )
-    echo 'start tav server'
-    tav server
+    if curl "${address}/hello/tav/" &>/dev/null; then
+      echo 'server already started'
+    else
+      echo 'start tav server'
+      tav server
+    fi
     ;;
   stop )
     echo 'stop tav server'
@@ -18,8 +22,8 @@ case $action in
     ;;
   restart )
     echo 'restart tav server'
-    curl "${address}/stop/"
-    tav server
+    tavs stop
+    tavs start
     ;;
   event )
     event=${2:-'null'}
