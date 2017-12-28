@@ -118,9 +118,10 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       self.send_header('Content-Length', 0)
       self.end_headers()
 
-      core.update()
-      core.makeTavSession(force=False)
-      tmux.switchTo(cfg.tmux.tavWindowTarget)
+      tmux.switchTo(f'{cfg.tmux.tavSessionName}:^')
+
+      return True
+
   def _greet(self):
     if self.path != '/hello/tav':
       return False
