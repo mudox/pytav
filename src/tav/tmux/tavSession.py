@@ -128,7 +128,7 @@ def getTavWindowTTY():
     return None
 
   output = shell.getStdout(
-      f'tmux list-panes -t {cfg.tmux.tavFrontWindowTarget} -F "#{{pane_tty}}"'
+      f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"'
   )
 
   if output is None:

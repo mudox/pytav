@@ -147,13 +147,13 @@ def _initTmux():
   s = _Section()
   tmux = s
 
-  s.tavSessionName = 'Tav'
+  s.tavSessionName = '__Tav__'
+  s.tavTmpSessionName = '__Tav__Tmp__'
 
-  s.tavFrontWindowName = 'Front'
-  s.tavFrontWindowTarget = f'{s.tavSessionName}:{s.tavFrontWindowName}'
+  s.tavWindowName = 'Finder'
 
-  s.tavBackWindowName = 'Back'
-  s.tavBackWindowTarget = f'{s.tavSessionName}:{s.tavBackWindowName}'
+  s.tavWindowTarget = f'{s.tavSessionName}:{s.tavWindowName}'
+  s.tavTmpWindowTarget = f'{s.tavTmpSessionName}:{s.tavWindowName}'
 
   s.serverPID = _serverPID
 

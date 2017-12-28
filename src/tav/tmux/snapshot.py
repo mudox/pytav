@@ -3,8 +3,8 @@
 from functools import reduce
 from itertools import groupby
 
-from .. import tmux
 from .. import settings as cfg
+from .. import tmux
 
 
 class Snapshot:
@@ -52,8 +52,8 @@ class Snapshot:
     # filter out tav session
     infoTuples = list(
         filter(
-            lambda x: x[1] != cfg.tmux.tavSessionName,
-            infoTuples))
+            lambda x: x[1] != cfg.tmux.tavSessionName and x[1] !=
+            cfg.tmux.tavTmpSessionName, infoTuples))
 
     # group by sessions ID
     groups = groupby(infoTuples, lambda x: x[:2])
