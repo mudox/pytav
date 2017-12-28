@@ -120,7 +120,7 @@ def show(oneshot):
   elif tag.startswith('$') or tag.startswith('@'):
     p = tmux.switchTo(tag)
     if p.returncode != -0:
-      tmux.showMessageCentered('Switching failed, update data ...')
+      showMessageCentered('Switching failed, update data ...')
       core.update()
     return
 
@@ -140,7 +140,7 @@ def show(oneshot):
       color = cfg.colors.message
       text = f'Creating session [{tag}] ...'
       text = screen.sgr(text, color)
-      tmux.showMessageCentered(text)
+      showMessageCentered(text)
 
       #
       # create session
@@ -161,7 +161,7 @@ def show(oneshot):
         color = cfg.colors.error
         text = f'Creating session [{tag}] FAILED!'
         text = screen.sgr(text, color)
-        tmux.showMessageCentered(text)
+        showMessageCentered(text)
         core.update()
         sleep(1)
         return
@@ -172,7 +172,7 @@ def show(oneshot):
 
     finally:
       tmux.hook.enable(f'after creating dead session {tag}')
-      tmux.showCursor(True)
+      showCursor(True)
 
 
 def showMessageCentered(text):
