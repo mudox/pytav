@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 import logging
 import shlex
 import shutil
@@ -16,36 +15,16 @@ logger = logging.getLogger(__name__)
 
 
 def show(oneshot):
-  '''
-  compose fzf command line, show it centered in current terimnal secreen.
-  '''
-
-  try:
-    with cfg.paths.interfaceFile.open() as file:
-      info = json.load(file)
-  except (FileNotFoundError, json.JSONDecodeError) as error:
-    logger.warning('''
-        error reading interface data from {cfg.paths.interfaceFile}:
-        {indent(str(error), '  ')}
-        update it first
-        ''')
-    core.update()
-    with cfg.paths.interfaceFile.open() as file:
-      info = json.load(file)
-
-  #
-  # window background
-  #
-
-  if not oneshot:
-    shell.run(f'tmux select-pane -P bg={cfg.colors.background}')
+  core.updateModel()
+  uiMdoel = core.model
 
   #
   # center fzf ui
   #
 
+  # DO NOT use `tmux.tavSession.getClientSize`, cause it may run as `oneshot`
   tWidth, _ = shutil.get_terminal_size()
-  width = info['fzf']['width']
+  width = uiMdoel['fzf']['width']
 
   hMargin = int((tWidth - width) / 2) + cfg.fzf.hOffset
 
@@ -69,7 +48,7 @@ def show(oneshot):
     # center interface in the terminal screen
     --margin={cfg.fzf.topMargin},{hMargin},{cfg.fzf.bottomMargin},{hMargin}
 
-    --header='{info["fzf"]["header"]}'
+    --header='{uiMdoel["fzf"]["header"]}'
     --inline-info
 
     # fully transparent background
@@ -93,7 +72,7 @@ def show(oneshot):
   # show fzf interface, get user selection
   #
 
-  lines = info['fzf']['lines']
+  lines = uiMdoel['fzf']['lines']
 
   p = sp.run(
       cmd,

@@ -31,7 +31,10 @@ def start(port):
 
   with daemon.DaemonContext():
 
-    jaclog.configure(appName='tav', fileName='server.log', printSessionLine=False)
+    jaclog.configure(
+        appName='tav',
+        fileName='server.log',
+        printSessionLine=False)
     logger = logging.getLogger(__name__)
 
     try:
@@ -118,12 +121,12 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       self.send_header('Content-Length', 0)
       self.end_headers()
 
-      tmux.switchTo(f'{cfg.tmux.tavSessionName}:^')
+      tmux.switchTo(cfg.tmux.tavWindowTarget)
 
       return True
 
   def _greet(self):
-    if self.path != '/hello/tav':
+    if self.path != '/hello/tav/':
       return False
 
     else:

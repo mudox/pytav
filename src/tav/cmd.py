@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 class Command:
 
   def actionOneshot(self, args):
-    core.update()
     ui.show(oneshot=True)
 
   def actionServer(self, args):
