@@ -38,13 +38,6 @@ class Command:
     core.update()
     ui.show(oneshot=True)
 
-  def actionAttach(self, args):
-    print('[1/2] capture tmux server state ...')
-    core.update()
-    print('[2/2] recreate session ...')
-    core.makeTavSession(force=False)
-    tmux.switchTo(cfg.tmux.tavWindowTarget)
-
   def actionServer(self, args):
     with suppress(KeyboardInterrupt):
       startServer(port=32323)
@@ -94,13 +87,6 @@ class Command:
         title='actions',
         description='without any action is equivalent to `oneshot`'
     )
-
-    # action `attach`
-    act_attach = subparsers.add_parser(
-        'attach', aliases=['a', 'at'],
-        help='update backing data, and switch to Tav finder window'
-    )
-    act_attach.set_defaults(func=self.actionAttach)
 
     #
     # action `hook`
