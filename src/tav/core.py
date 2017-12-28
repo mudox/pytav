@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import json
 import logging
-from textwrap import indent
 
 from . import settings as cfg
 from . import tmux
@@ -11,51 +9,31 @@ from .fzf import FZFFormatter
 
 logger = logging.getLogger(__name__)
 
+model = None
+
 
 # INFO: argument `event` is currently unused
 def onTmuxEvent(event):
-  dirty = update()
-  if dirty:
+  model = updateModel()
+  if model is not None:
     tmux.tavSession.create()
 
 
-def update():
+def updateModel():
   '''
   steps:
-  - reload config if user config file is modified since last load
-  - take a new snapshot
-  - tansform (format) the snapshot into interface model
-  - compare with old model, dump and return True is is different, else return
-    False
+  - reload config.
+  - regenerate the model data
+  - compare with old model, return True if is dirty, else False
+  - save model in `core.model`
   '''
 
-  #
-  # user config
-  #
-
-  global cfg
-
-  try:
-    mtime = cfg.paths.userConfig.stat().st_mtime
-    if mtime != cfg.timestamp:
-      logger.info(f'config file ({cfg.paths.userConfig}) is changed, reload')
-      cfg.reload()
-  except BaseException as error:
-    logger.warning(f'''
-        error getting mtime of user config from {cfg.paths.userConfig}:
-        {indent(str(error), '  ')}
-        reload the config
-    ''')
-    cfg.reload()
-
-  #
-  # snapshot
-  #
+  cfg.reload()
 
   snapshot = tmux.Snapshot()
   formatter = FZFFormatter(snapshot)
 
-  info = {
+  newModel = {
       'tmux': {
           'serverPID': snapshot.serverPID,
           'windowCount': snapshot.windowCount,
@@ -70,23 +48,12 @@ def update():
       }
   }
 
-  try:
-    with cfg.paths.interfaceFile.open() as file:
-      oldInfo = json.load(file)
-  except (FileNotFoundError, json.JSONDecodeError) as error:
-    logger.warning(f'''
-        error reading interface data from {cfg.paths.interfaceFile}:
-        {indent(str(error), '  ')}
-    ''')
-    with cfg.paths.interfaceFile.open('w') as file:
-      json.dump(info, file)
-    return True
+  global model
 
-  if info != oldInfo:
-    logger.info('o:interface model data is dirty')
-    with cfg.paths.interfaceFile.open('w') as file:
-      json.dump(info, file)
+  if newModel != model:
+    logger.info('o:model is dirty')
+    model = newModel
     return True
   else:
-    logger.info('o:interface model data is not changed')
+    logger.info('o:model is unchanged')
     return False
