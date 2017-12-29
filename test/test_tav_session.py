@@ -3,6 +3,6 @@
 from tav.tmux import tavSession
 
 def test():
-  tavSession.create()
+  tavSession.refresh()
   assert tavSession.isReady()
   assert tavSession.getTavWindowTTY() is not None

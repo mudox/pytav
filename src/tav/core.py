@@ -6,6 +6,7 @@ import logging
 from . import settings as cfg
 from . import tmux
 from .fzf import FZFFormatter
+from .tmux import tavSession
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +15,9 @@ model = None
 
 # INFO: argument `event` is currently unused
 def onTmuxEvent(event):
-  model = updateModel()
-  if model is not None:
-    tmux.tavSession.create()
+  dirty = updateModel()
+  if dirty:
+    tmux.tavSession.refresh()
 
 
 def updateModel():

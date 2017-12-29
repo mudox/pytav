@@ -31,7 +31,7 @@ def isReady():
   return True, None
 
 
-def create():
+def refresh():
 
   if hook.isEnabled():
     hook.disable('before creating Tav session')
