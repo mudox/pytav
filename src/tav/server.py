@@ -24,7 +24,7 @@ def getFreePort():
     return sock.getsockname()[1]
 
 
-def start(port):
+def start():
   global logger
 
   logger.debug('spawn daemon')
@@ -36,22 +36,28 @@ def start(port):
     logger = logging.getLogger(__name__)
 
     try:
+      port = 32323
       server = HTTPServer(('', port), HTTPRequestHandler)
-      logger.info(f'listening at localhost:{port}')
 
     except OSError as e:
       if e.errno == 48:
         alternatePort = getFreePort()
-        logger.warning(
-            f'Port {port} is occupied, try using port {alternatePort}')
-        logger.flush()
         server = HTTPServer(('', alternatePort), HTTPRequestHandler)
-        logger.info(
-            f'Start server listening at localhost:{alternatePort} ...\n\n')
+        return
       else:
         raise
+    except BaseException as error:
+      logger.error(f'unhandled exception: {error}')
+      raise
 
-    server.serve_forever()
+    logger.info(f'listening at localhost:{port}')
+    cfg.paths.port.write_text(str(port))
+
+    try:
+      server.serve_forever()
+    except BaseException as error:
+      logger.error(f'unhandled exception: {error}')
+      raise
 
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
@@ -76,7 +82,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 
   def log_message(self, format, *args):
     msg = format % tuple(args)
-    logger.debug(f'🎃  {msg}'})
+    logger.debug(f'🎃  {msg}')
 
   def _invalidPath(self):
     self.send_error(403, 'invalid path')

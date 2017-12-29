@@ -117,6 +117,9 @@ def _initPaths():
   # sessions
   s.sessionsDir = s.dataDir / 'sessions'
 
+  # port file
+  s.port = s.dataDir / 'port'
+
 
 def _initConfig():
   global config
