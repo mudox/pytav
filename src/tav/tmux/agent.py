@@ -62,3 +62,18 @@ def getClientSize():
     w, h = shutil.get_terminal_size()
 
   return w, h
+
+
+def getCurrentSession():
+  out = shell.getStdout("""
+    tmux list-clients -F '#{{client_session}}'
+  """)
+
+  if out is None:
+    return None
+
+  lines = out.strip().splitlines()
+  if len(lines) == 0:
+    return None
+  else:
+    return lines[0]
