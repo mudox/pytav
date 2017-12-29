@@ -11,4 +11,3 @@ flake8 .
 pip3 install --no-deps -U .
 pytest -v .
 tavs restart
-tavs event after-install

@@ -21,7 +21,7 @@ case $1 in
   quickattach )       # fast asynchronous attach
     tmux switch-client -t __Tav__
     ;;
-  attach )           # attach to tav window synchronized by tav daemon
+  attach )            # attach to tav window synchronized by tav daemon
     curl "${address}/attach/"
     ;;
   start )
