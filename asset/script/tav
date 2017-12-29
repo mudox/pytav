@@ -1,17 +1,17 @@
 #!/usr/bin/env sh
 
-# FIXME!!!: magic port number
-address='http:/localhost:32323'
+port=$(<~/.local/share/tav/port)
+srv="http:/localhost:${port}"
 case $1 in
   hook )
     case $2 in
       -e )
 	echo "enabling tmux state monitoring"
-	curl "${address}/hook/enable/${3:-not-given/}"
+	curl "${srv}/hook/enable/${3:-not-given/}"
 	;;
       -d )
 	echo "disable tmux state monitoring"
-	curl "${address}/hook/disable/${3:-not-given/}"
+	curl "${srv}/hook/disable/${3:-not-given/}"
 	;;
       * )
 	echo "invalid option ($*) for subcommand hook, must be (-e | -d)"
@@ -22,10 +22,10 @@ case $1 in
     tmux switch-client -t __Tav__
     ;;
   attach )            # attach to tav window synchronized by tav daemon
-    curl "${address}/attach/"
+    curl "${srv}/attach/"
     ;;
   start )
-    if curl "${address}/hello/tav/" &>/dev/null; then
+    if curl "${srv}/hello/tav/" &>/dev/null; then
       echo 'server already started'
       exit 1
     else
@@ -35,7 +35,7 @@ case $1 in
     ;;
   stop )
     echo 'stop tav server'
-    curl "${address}/stop/"
+    curl "${srv}/stop/"
     ;;
   restart )
     echo 'restart tav server'
@@ -45,7 +45,7 @@ case $1 in
   event )
     event=${2:-'null'}
     echo "send ${event} to server"
-    curl "${address}/event/${event}/"
+    curl "${srv}/event/${event}/"
     ;;
   * )
     echo "unreconized argument: $*"

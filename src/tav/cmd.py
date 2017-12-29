@@ -29,7 +29,7 @@ class Command:
     with suppress(KeyboardInterrupt):
       core.updateModel()
       tavSession.refresh(forceRecreate=True)
-      startServer(port=32323)
+      startServer()
 
   def actionInterface(self, args):
     while True:
