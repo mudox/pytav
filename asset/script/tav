@@ -47,6 +47,10 @@ case $1 in
     echo "send ${event} to server"
     curl "${srv}/event/${event}/"
     ;;
+  update | refresh )
+    echo 'update tav inferface'
+    curl "${srv}/event/refresh/"
+    ;;
   * )
     echo "unreconized argument: $*"
     ;;
