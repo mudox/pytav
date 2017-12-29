@@ -1,12 +1,27 @@
 #!/usr/bin/env sh
 
-action=$1
-
 # FIXME!!!: magic port number
 address='http:/localhost:32323'
-case $action in
-  attach )
-    #tmux switch-client -t __Tav__
+case $1 in
+  hook )
+    case $2 in
+      -e )
+	echo "enabling tmux state monitoring"
+	curl "${address}/hook/enable/${3:-not-given/}"
+	;;
+      -d )
+	echo "disable tmux state monitoring"
+	curl "${address}/hook/disable/${3:-not-given/}"
+	;;
+      * )
+	echo "invalid option ($*) for subcommand hook, must be (-e | -d)"
+	;;
+    esac
+    ;;
+  quickattach )       # fast asynchronous attach
+    tmux switch-client -t __Tav__
+    ;;
+  attach )           # attach to tav window synchronized by tav daemon
     curl "${address}/attach/"
     ;;
   start )
@@ -29,9 +44,9 @@ case $action in
   event )
     event=${2:-'null'}
     echo "send ${event} to server"
-    curl "${address}/event/${event}"
+    curl "${address}/event/${event}/"
     ;;
   * )
-    echo 'unreconized argument'
+    echo "unreconized argument: $*"
     ;;
 esac
