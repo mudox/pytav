@@ -7,7 +7,8 @@ from textwrap import indent
 from . import hook
 from .. import settings as cfg
 from .. import screen, shell
-from .agent import getClientSize, getCurrentSession
+# from .agent import getClientSize, getCurrentSession
+from .agent import getClientSize
 
 logger = logging.getLogger(__name__)
 
@@ -32,16 +33,16 @@ def isReady():
 
 def refresh(forceRecreate):
   ready, explain = isReady()
-  logger.debug(f'isReady: {ready} | {explain}')
 
   if (not forceRecreate) and ready:
-    a = getCurrentSession()
-    b = cfg.tmux.tavWindowName()
-    logger.debug(f'a: {a}, b: {b}')
-    if a != b:
-      logger.info('o:perform quick refresh')
-      fastRefresh()
-      return
+    fastRefresh()
+    return
+    # if getCurrentSession() != cfg.tmux.tavSessionName:
+    # logger.info('o:perform quick refresh')
+    # fastRefresh()
+    # return
+    # else:
+    # logger.info('o:in tav session')
 
   logger.info('o:perform session refresh')
   if hook.isEnabled():

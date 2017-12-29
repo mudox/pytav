@@ -17,7 +17,7 @@ def onTmuxEvent(event):
 
   dirty = updateModel()
   if dirty:
-    tmux.tavSession.refresh(recreate=False)
+    tmux.tavSession.refresh(forceRecreate=False)
 
 
 def updateModel():

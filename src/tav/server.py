@@ -61,7 +61,6 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
   error_content_type = 'text/plain'
 
   def do_GET(self):
-    logger.info(f'o:GET {self.path}')
 
     for route in [
         self._greet,
@@ -76,8 +75,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     self._invalidPath()
 
   def log_message(self, format, *args):
-    if args[1] != '200':
-      logger.error(format % tuple(args) + '\n')
+    msg = format % tuple(args)
+    logger.debug(f'🎃  {msg}'})
 
   def _invalidPath(self):
     self.send_error(403, 'invalid path')
