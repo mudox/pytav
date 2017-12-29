@@ -32,11 +32,19 @@ def isReady():
 
 
 def refresh():
+  ready, explain = isReady()
+  if getCurrentSession() != cfg.tmux.tavSessionName and ready:
+    logger.info('o:perform quick refresh')
+    fastRefresh()
+    return
 
+  logger.info('o:perform full refresh')
   if hook.isEnabled():
     hook.disable('before creating Tav session')
   else:
     logger.warning('hook is already disabled')
+
+  showHeadLine('··· Rereshing, Pane disabled ···')
 
   sname = cfg.tmux.tavSessionName
 

@@ -5,6 +5,7 @@ import subprocess as sp
 from textwrap import indent
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)
 
 
 def check(cmdstr):

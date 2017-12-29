@@ -6,6 +6,7 @@ from . import settings as cfg
 from . import screen
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)
 
 _fzfLeftMargin = 2
 _sessionSymbolWidth = 4
@@ -80,10 +81,11 @@ class FZFFormatter:
     self.fzfHeader = self._fzfHeaderLines()
     self.fzfFeed = self._fzfLines()
 
+    # FIXME!: output misaligned
     logger.debug(f'''
-        final layout level:  [{self.layoutLevel}]
-        final screen height: {len(self.fzfFeed.splitlines()) + 5 + 4}
-        estimated height:    {self._height(self.layoutLevel)}\
+        final layout level:  {self.layoutLevel}
+        final screen height: {len(self.fzfFeed.strip().splitlines()) + 5 + 4}
+        estimated height:    {self._height(self.layoutLevel)}
     ''')
 
   def _height(self, level):

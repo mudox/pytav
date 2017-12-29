@@ -6,6 +6,7 @@ action=$1
 address='http:/localhost:32323'
 case $action in
   attach )
+    #tmux switch-client -t __Tav__
     curl "${address}/attach/"
     ;;
   start )

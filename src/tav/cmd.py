@@ -9,7 +9,7 @@ from . import core, tmux, ui
 from .diagnose import diagnose
 from .server import start as startServer
 
-__version__ = '2.3'
+__version__ = '3.1'
 
 logger = logging.getLogger(__name__)
 

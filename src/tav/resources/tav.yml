@@ -60,12 +60,14 @@ symbol:
         Tav-Project  : 🦊
         Xcode-Log    : 💡
         Frameworks   : 🍄
+        JacKit       : 🍋
+        JacLog       : 📙
 
 # The structure is similar to above
 # WARNING: do not change the keys.
 color:
 
-  use: hugo
+  use: cool
 
   schemes:
 
