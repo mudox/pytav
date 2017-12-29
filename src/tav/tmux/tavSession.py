@@ -104,12 +104,14 @@ def showHeadLine(line):
 
   cmdstr = f'''
   {{
+    tput civis
     tput sc
     tput cup 1 1
     tput el
     tput cup 1 {x}
     echo "{line}"
     tput rc
+    tput cnorm
   }} >> {tty}
   '''
 
