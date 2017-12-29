@@ -71,7 +71,7 @@ def getClientSize():
 
 def getCurrentSession():
   out = shell.getStdout("""
-    tmux list-clients -F '#{{client_session}}'
+    tmux list-clients -F '#{client_session}'
   """)
 
   if out is None:
