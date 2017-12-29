@@ -13,7 +13,7 @@ import daemon
 from jaclog import jaclog
 
 from . import settings as cfg
-from . import core, tmux
+from . import core, tmux, watcher
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,9 @@ def getFreePort():
 
 def start():
   global logger
+
+  # logger.debug('start monitoring')
+  # watcher.startMonitoring()
 
   logger.debug('spawn daemon')
 
@@ -58,6 +61,8 @@ def start():
     except BaseException as error:
       logger.error(f'unhandled exception: {error}')
       raise
+    finally:
+      watcher.join()
 
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
