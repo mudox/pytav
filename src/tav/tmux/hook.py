@@ -17,7 +17,7 @@ _events = [
 ]
 
 _expect = [
-    f'{eventName} -> run-shell "tavs event {eventName}"'
+    f'{eventName} -> run-shell "tav event {eventName}"'
     for eventName in _events
 ]
 
@@ -27,7 +27,7 @@ def enable(reason):
 
   cmds = [
       f'''
-      tmux set-hook -g {eventName} "run-shell 'tavs event {eventName}'"
+      tmux set-hook -g {eventName} "run-shell 'tav event {eventName}'"
       ''' for eventName in _events
   ]
   cmds = '\n'.join(cmds)
