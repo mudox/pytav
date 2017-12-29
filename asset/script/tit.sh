@@ -10,4 +10,4 @@ yapf --recursive --parallel --in-place --verbose .
 flake8 .
 pip3 install --no-deps -U .
 pytest -v .
-tavs restart
+tav restart

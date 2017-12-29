@@ -128,6 +128,7 @@ def _initConfig():
   yaml = YAML()
   try:
     s.user = yaml.load(paths.userConfig)
+    s.useDefautlConfig = False
   except BaseException as error:
     logger.error(f'''
       error loading user config file ({paths.userConfig}):
@@ -135,6 +136,7 @@ def _initConfig():
       fallback to default config
     ''')
     s.user = yaml.load(paths.defaultConfig)
+    s.useDefautlConfig = True
 
   timestamp = paths.userConfig.stat().st_mtime
   s.default = yaml.load(paths.defaultConfig)

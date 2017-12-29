@@ -26,8 +26,8 @@ setup(
         '': ['resources/*'],
     },
     scripts=[
-        'assets/scripts/tavs',
+        'asset/script/tav',
     ],
     entry_points={
-        "console_scripts": ['tav = tav.cmd:run']
+        "console_scripts": ['tav-core = tav.cmd:run']
     })

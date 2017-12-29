@@ -81,9 +81,9 @@ class FZFFormatter:
     self.fzfFeed = self._fzfLines()
 
     # FIXME!: output misaligned
-    logger.debug(f'''
-        final layout level:  {self.layoutLevel}
-        final screen height: {len(self.fzfFeed.strip().splitlines()) + 5 + 4}
+    logger.debug(f'''m:
+        layout level:  {self.layoutLevel}
+        screen height: {len(self.fzfFeed.strip().splitlines()) + 5 + 4}
         estimated height:    {self._height(self.layoutLevel)}
     ''')
 

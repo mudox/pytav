@@ -27,9 +27,10 @@ case $1 in
   start )
     if curl "${address}/hello/tav/" &>/dev/null; then
       echo 'server already started'
+      exit 1
     else
       echo 'start tav server'
-      tav server
+      tav-core server
     fi
     ;;
   stop )
@@ -38,8 +39,8 @@ case $1 in
     ;;
   restart )
     echo 'restart tav server'
-    tavs stop
-    tavs start
+    tav stop
+    tav start
     ;;
   event )
     event=${2:-'null'}

@@ -35,7 +35,7 @@ def refresh(recreate):
 
   currentSession = getCurrentSession()
   tavSession = cfg.tmux.tavSessionName
-  logger.debug(f'''
+  logger.debug(f'''m:
       current session: {currentSession}
       tav session: {tavSession}
   ''')
@@ -73,7 +73,7 @@ def refresh(recreate):
       -d                    \
       sh
     tmux select-pane -t {win} -P bg="{cfg.colors.background}"
-    tmux send-keys -t {win} 'tav interface' c-m
+    tmux send-keys -t {win} 'tav-core interface' c-m
     tmux set -t "{win}" status off
     exit
   else
@@ -93,7 +93,7 @@ def refresh(recreate):
   fi
 
   tmux select-pane -t {tmpwin} -P bg="{cfg.colors.background}"
-  tmux send-keys -t {tmpwin} 'tav interface' c-m
+  tmux send-keys -t {tmpwin} 'tav-core interface' c-m
   tmux set -t "{tmpwin}" status off
 
   sleep 0.4
@@ -103,7 +103,10 @@ def refresh(recreate):
 
   shell.run(cmdstr)
 
-  showHeadLine(f'─── Tav ───')
+  if cfg.config.useDefautlConfig:
+    showHeadLine(f'USING DEFAULT CONFIG')
+  else:
+    showHeadLine(f'─── Tav ───')
 
   hook.enable('after creating Tav session')
 
