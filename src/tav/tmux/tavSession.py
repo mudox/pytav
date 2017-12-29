@@ -8,7 +8,7 @@ from textwrap import indent
 from . import hook
 from .. import settings as cfg
 from .. import screen, shell
-from .agent import getClientSize
+from .agent import getClientSize, getCurrentSession
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +61,8 @@ def refresh():
     tmux send-keys -t {win} 'tav interface' c-m
     tmux set -t "{win}" status off
     exit
+  else
+    tmux select-pane -t {win} -d
   fi
 
   if ! tmux has-session -t ={tmpsname}; then
@@ -81,17 +83,16 @@ def refresh():
 
   sleep 1
   tmux swap-window -d -s '{win}' -t '{tmpwin}'
+  tmux select-pane -t {tmpwin} -e
   """
 
   shell.run(cmdstr)
 
-  # FIXME!!!: no use here
-  showHeadLine('Tav (v3.1) by Mudox')
+  showHeadLine(f'─── Tav ───')
 
   hook.enable('after creating Tav session')
 
 
-# ISSUE!!: no use
 def showHeadLine(line):
   tty = getTavWindowTTY()
   if tty is None:
