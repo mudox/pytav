@@ -30,20 +30,18 @@ def isReady():
   return True, None
 
 
-def refresh(recreate):
+def refresh(forceRecreate):
   ready, explain = isReady()
+  logger.debug(f'isReady: {ready} | {explain}')
 
-  currentSession = getCurrentSession()
-  tavSession = cfg.tmux.tavSessionName
-  logger.debug(f'''m:
-      current session: {currentSession}
-      tav session: {tavSession}
-  ''')
-
-  if (not recreate) and (currentSession != tavSession) and ready:
-    logger.info('o:perform quick refresh')
-    fastRefresh()
-    return
+  if (not forceRecreate) and ready:
+    a = getCurrentSession()
+    b = cfg.tmux.tavWindowName()
+    logger.debug(f'a: {a}, b: {b}')
+    if a != b:
+      logger.info('o:perform quick refresh')
+      fastRefresh()
+      return
 
   logger.info('o:perform session refresh')
   if hook.isEnabled():
@@ -96,7 +94,7 @@ def refresh(recreate):
   tmux send-keys -t {tmpwin} 'tav-core interface' c-m
   tmux set -t "{tmpwin}" status off
 
-  sleep 0.4
+  sleep 0.8
   tmux swap-window -d -s '{win}' -t '{tmpwin}'
   tmux select-pane -t {tmpwin} -e
   """
@@ -162,6 +160,6 @@ def getTavWindowTTY():
 
 def fastRefresh():
   shell.run(f'''
-    tmux select-pane -t '={cfg.tmux.tavWindowTarget}:^' -P bg='{cfg.colors.background}'
+    tmux select-pane -t '={cfg.tmux.tavWindowTarget}' -P bg='{cfg.colors.background}'
     tmux send-keys -t ={cfg.tmux.tavWindowTarget} C-u C-t C-m
   ''')
