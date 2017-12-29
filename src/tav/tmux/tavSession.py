@@ -13,11 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 def isReady():
-  out = shell.getStdout(
-      f'''
+  out = shell.getStdout(f'''
       tmux list-panes -t ={cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
-  '''
-  )
+  ''')
 
   if out is None:
     return False, 'empty output'
@@ -32,14 +30,22 @@ def isReady():
   return True, None
 
 
-def refresh():
+def refresh(recreate):
   ready, explain = isReady()
-  if getCurrentSession() != cfg.tmux.tavSessionName and ready:
+
+  currentSession = getCurrentSession()
+  tavSession = cfg.tmux.tavSessionName
+  logger.debug(f'''
+      current session: {currentSession}
+      tav session: {tavSession}
+  ''')
+
+  if (not recreate) and (currentSession != tavSession) and ready:
     logger.info('o:perform quick refresh')
     fastRefresh()
     return
 
-  logger.info('o:perform full refresh')
+  logger.info('o:perform session refresh')
   if hook.isEnabled():
     hook.disable('before creating Tav session')
   else:
@@ -135,8 +141,7 @@ def getTavWindowTTY():
     return None
 
   output = shell.getStdout(
-      f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"'
-  )
+      f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"')
 
   if output is None:
     logger.error('o:failed')
@@ -145,8 +150,7 @@ def getTavWindowTTY():
   lines = output.strip().splitlines()
   if len(lines) != 1:
     logger.warning(
-        f'expecting 1 line, got {len(lines)}:\n{indent(lines, "  ")}'
-    )
+        f'expecting 1 line, got {len(lines)}:\n{indent(lines, "  ")}')
     if len(lines) == 0:
       return None
 
@@ -154,9 +158,7 @@ def getTavWindowTTY():
 
 
 def fastRefresh():
-  shell.run(
-      f'''
+  shell.run(f'''
     tmux select-pane -t '={cfg.tmux.tavWindowTarget}:^' -P bg='{cfg.colors.background}'
     tmux send-keys -t ={cfg.tmux.tavWindowTarget} C-u C-t C-m
-  '''
-  )
+  ''')

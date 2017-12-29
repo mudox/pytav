@@ -6,6 +6,7 @@ import logging
 from contextlib import suppress
 
 from . import ui
+from .tmux import tavSession
 from .diagnose import diagnose
 from .server import start as startServer
 
@@ -25,6 +26,7 @@ class Command:
 
   def actionServer(self, args):
     with suppress(KeyboardInterrupt):
+      tavSession.refresh(recreate=True)
       startServer(port=32323)
 
   def actionInterface(self, args):
@@ -39,14 +41,12 @@ class Command:
 
     self.parser = argparse.ArgumentParser(
         prog='tav',
-        description='An tmux `choose-tree` replacement powered by fzf action.'
-    )
+        description='An tmux `choose-tree` replacement powered by fzf action.')
     # defaults to update and choose once
     self.parser.set_defaults(func=self.actionOneshot)
 
     self.parser.add_argument(
-        '--version', action='version', version=__version__
-    )
+        '--version', action='version', version=__version__)
 
     #
     # actions
@@ -54,16 +54,14 @@ class Command:
 
     subparsers = self.parser.add_subparsers(
         title='actions',
-        description='without any action is equivalent to `oneshot`'
-    )
+        description='without any action is equivalent to `oneshot`')
 
     #
     # action `oneshot`
     #
 
     act_oneshot = subparsers.add_parser(
-        'oneshot', help='the default action, show fzf inteface once'
-    )
+        'oneshot', help='the default action, show fzf inteface once')
     act_oneshot.set_defaults(func=self.actionOneshot)
 
     #
@@ -71,8 +69,7 @@ class Command:
     #
 
     act_oneshot = subparsers.add_parser(
-        'diagnose', aliases=['d', 'dia'], help='dump diagnose infomation'
-    )
+        'diagnose', aliases=['d', 'dia'], help='dump diagnose infomation')
     act_oneshot.set_defaults(func=diagnose)
 
     #
@@ -80,8 +77,7 @@ class Command:
     #
 
     act_server = subparsers.add_parser(
-        'server', help='start Tav server daemon'
-    )
+        'server', help='start Tav server daemon')
     act_server.set_defaults(func=self.actionServer)
 
     #
@@ -89,8 +85,7 @@ class Command:
     #
 
     act_runloop = subparsers.add_parser(
-        'interface', help='show the fzf inteface'
-    )
+        'interface', help='show the fzf inteface')
     act_runloop.set_defaults(func=self.actionInterface)
 
   def run(self):
