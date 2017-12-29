@@ -17,13 +17,13 @@ def dumpInfo():
 
   # yapf: disable
   format = [
-      '#{session_id}',    # 0
-      '#{session_name}',  # 1
-      '#{window_id}',     # 2
-      '#{window_name}',   # 3
-      '#{window_index}',  # 4
-      '#{window_width}',  # 5
-      '#{window_height}', # 6
+      '#{session_id}',     # 0
+      '#{session_name}',   # 1
+      '#{window_id}',      # 2
+      '#{window_name}',    # 3
+      '#{window_index}',   # 4
+      '#{window_width}',   # 5
+      '#{window_height}',  # 6
   ]
   # yapf: enable
 
@@ -53,8 +53,7 @@ def switchTo(target):
 
 def getClientSize():
   lines = shell.getStdout(
-      f'tmux list-sessions -F "#{{session_width}}x#{{session_height}}"'
-  )
+      f'tmux list-sessions -F "#{{session_width}}x#{{session_height}}"')
 
   if lines is None:
     return shutil.get_terminal_size()
@@ -71,11 +70,9 @@ def getClientSize():
 
 
 def getCurrentSession():
-  out = shell.getStdout(
-      """
+  out = shell.getStdout("""
     tmux list-clients -F '#{{client_session}}'
-  """
-  )
+  """)
 
   if out is None:
     return None

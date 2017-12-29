@@ -5,10 +5,8 @@ import re
 
 from setuptools import find_packages, setup
 
-version = re.search(
-    r"^__version__\s*=\s*'(.*)'",
-    open('src/tav/cmd.py').read(), re.M
-).group(1)
+version = re.search(r"^__version__\s*=\s*'(.*)'",
+                    open('src/tav/cmd.py').read(), re.M).group(1)
 
 setup(
     name='tav',
@@ -32,5 +30,4 @@ setup(
     ],
     entry_points={
         "console_scripts": ['tav = tav.cmd:run']
-    }
-)
+    })

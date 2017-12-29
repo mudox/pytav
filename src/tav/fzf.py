@@ -46,9 +46,8 @@ class FZFFormatter:
         self.snapshot.sessionNameMaxWidth,
     )
 
-    self._part2Width = max(
-        self.snapshot.sessionNameMaxWidth, len(_loadSessionPrompt)
-    )
+    self._part2Width = max(self.snapshot.sessionNameMaxWidth,
+                           len(_loadSessionPrompt))
 
     withoutGap =              \
         _fzfLeftMargin +      \
@@ -82,13 +81,11 @@ class FZFFormatter:
     self.fzfFeed = self._fzfLines()
 
     # FIXME!: output misaligned
-    logger.debug(
-        f'''
+    logger.debug(f'''
         final layout level:  {self.layoutLevel}
         final screen height: {len(self.fzfFeed.strip().splitlines()) + 5 + 4}
         estimated height:    {self._height(self.layoutLevel)}
-    '''
-    )
+    ''')
 
   def _height(self, level):
     """

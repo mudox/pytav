@@ -53,9 +53,7 @@ class Snapshot:
     infoTuples = list(
         filter(
             lambda x: x[1] != cfg.tmux.tavSessionName and x[1] != cfg.tmux.tavTmpSessionName,
-            infoTuples
-        )
-    )
+            infoTuples))
 
     # group by sessions ID
     groups = groupby(infoTuples, lambda x: x[:2])
@@ -99,8 +97,7 @@ class Snapshot:
     self.deadSessions = []
     for name in dead_snames:
       session = tmux.Session(
-          id='<dead>', name=name, loaded=False, windows=None
-      )
+          id='<dead>', name=name, loaded=False, windows=None)
       self.deadSessions.append(session)
 
     self.allSessions += self.deadSessions

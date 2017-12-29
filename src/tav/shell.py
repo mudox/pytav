@@ -47,12 +47,10 @@ def run(cmdstr, stdout=sp.DEVNULL, trace=True):
 
   text = p.stderr.decode().strip()
   if p.returncode != 0:
-    logger.error(
-        f'''
+    logger.error(f'''
         failed with error code: {p.returncode}
         {indent(text, '  ')}
-    '''
-    )
+    ''')
   else:
     logger.debug(f'succeed to execute:\n{text}')
 

@@ -32,8 +32,7 @@ def start(port):
   with daemon.DaemonContext():
 
     jaclog.configure(
-        appName='tav', fileName='server.log', printSessionLine=False
-    )
+        appName='tav', fileName='server.log', printSessionLine=False)
     logger = logging.getLogger(__name__)
 
     try:
@@ -44,13 +43,11 @@ def start(port):
       if e.errno == 48:
         alternatePort = getFreePort()
         logger.warning(
-            f'Port {port} is occupied, try using port {alternatePort}'
-        )
+            f'Port {port} is occupied, try using port {alternatePort}')
         logger.flush()
         server = HTTPServer(('', alternatePort), HTTPRequestHandler)
         logger.info(
-            f'Start server listening at localhost:{alternatePort} ...\n\n'
-        )
+            f'Start server listening at localhost:{alternatePort} ...\n\n')
       else:
         raise
 
