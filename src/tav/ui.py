@@ -100,7 +100,7 @@ def show(oneshot):
     p = tmux.switchTo(tag)
     if p.returncode != -0:
       showMessageCentered('Switching failed, update data ...')
-      core.update()
+      core.updateModel()
     return
 
   # other auxiliary lines, e.g. dead sessions group line
@@ -141,11 +141,11 @@ def show(oneshot):
         text = f'Creating session [{tag}] FAILED!'
         text = screen.sgr(text, color)
         showMessageCentered(text)
-        core.update()
+        core.updateModel()
         sleep(1)
         return
       else:
-        core.update()
+        core.updateModel()
         sleep(1)
         tmux.switchTo(tag)
 
