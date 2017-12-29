@@ -13,6 +13,8 @@ from .screen import screenWidth
 
 logger = logging.getLogger(__name__)
 
+_lastHMargin = None
+
 
 def show(oneshot):
   core.updateModel()
@@ -74,12 +76,16 @@ def show(oneshot):
   # show fzf interface, get user selection
   #
 
-  lines = uiMdoel['fzf']['lines']
+  global _lastHMargin
+  if hMargin != _lastHMargin:
+    shell.system('clear')
+    _lastHMargin = hMargin
 
+  lines = uiMdoel['fzf']['lines']
   p = sp.run(cmd, input=lines.encode(), stdout=sp.PIPE)
 
   if p.returncode != 0:
-    logger.error('fzf command failed')
+    logger.error('failed to show fzf interface')
     return
 
   selectedLine = p.stdout.decode().strip()
