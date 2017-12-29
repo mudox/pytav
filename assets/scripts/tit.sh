@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-set -euo pipefail
-
 PS4="
 🚩  "
+
 set -euxo pipefail
 
-root="${HOME}/Develop/Python/tav"
-pip3 install --no-deps -U "${root}"
-pytest -v "${root}"
-tmux send-keys -t 'Tav-Project:Server.2' c-c c-c ' tavs restart' c-m
-sleep 1
+cd "${HOME}/Develop/Python/tav"
+
+yapf --recursive --parallel --in-place --verbose .
+flake8 .
+pip3 install --no-deps -U .
+pytest -v .
+tavs restart
 tavs event after-install
