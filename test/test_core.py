@@ -3,7 +3,6 @@
 import random
 from os import system
 
-from tav import settings as cfg
 from tav import core
 from tav.tmux import hook
 
@@ -16,6 +15,7 @@ def test_update():
   cmdstr = f'''
     tmux new-session -s {name} -n window1 -d sh
   '''
+
   system(cmdstr)
 
   assert core.updateModel() is True
@@ -24,6 +24,7 @@ def test_update():
   cmdstr = f'''
     tmux kill-session -t {name}
   '''
+
   system(cmdstr)
 
   assert core.updateModel() is True

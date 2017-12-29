@@ -2,6 +2,7 @@
 
 from tav.tmux import tavSession
 
+
 def test():
   tavSession.refresh()
   assert tavSession.isReady()
