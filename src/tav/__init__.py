@@ -1,5 +1,3 @@
-import logging
-
 from jaclog import jaclog
 
 from sys import argv

@@ -32,7 +32,8 @@ def show(oneshot):
   # compose fzf command line
   #
 
-  cmd = shlex.split(f'''
+  cmd = shlex.split(
+      f'''
     fzf
     --exact
 
@@ -53,7 +54,9 @@ def show(oneshot):
 
     # fully transparent background
     --color=bg:-1,bg+:-1
-  ''', comments=True)
+  ''',
+      comments=True
+  )
 
   if not oneshot:
     # avoid screen flickering
@@ -74,11 +77,7 @@ def show(oneshot):
 
   lines = uiMdoel['fzf']['lines']
 
-  p = sp.run(
-      cmd,
-      input=lines.encode(),
-      stdout=sp.PIPE
-  )
+  p = sp.run(cmd, input=lines.encode(), stdout=sp.PIPE)
 
   if p.returncode != 0:
     logger.error('fzf command failed')
@@ -129,11 +128,7 @@ def show(oneshot):
       tmux.hook.disable(f'before creating dead session {tag}')
 
       path = cfg.paths.sessionsDir / tag
-      p = sp.run(
-          str(path),
-          stdout=sp.DEVNULL,
-          stderr=sp.PIPE
-      )
+      p = sp.run(str(path), stdout=sp.DEVNULL, stderr=sp.PIPE)
 
       if p.returncode != 0:
         logger.error(f'fail to create session [{tag}]: {p.stderr.decode()}')

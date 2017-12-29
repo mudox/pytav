@@ -21,6 +21,7 @@ def _hideIntoBg(text):
 
 
 class FZFFormatter:
+
   """ Transfer information from `tmux.Snapshot` object into fzf source lines.
 
   Attributes:
@@ -46,8 +47,7 @@ class FZFFormatter:
     )
 
     self._part2Width = max(
-        self.snapshot.sessionNameMaxWidth,
-        len(_loadSessionPrompt)
+        self.snapshot.sessionNameMaxWidth, len(_loadSessionPrompt)
     )
 
     withoutGap =              \
@@ -82,11 +82,13 @@ class FZFFormatter:
     self.fzfFeed = self._fzfLines()
 
     # FIXME!: output misaligned
-    logger.debug(f'''
+    logger.debug(
+        f'''
         final layout level:  {self.layoutLevel}
         final screen height: {len(self.fzfFeed.strip().splitlines()) + 5 + 4}
         estimated height:    {self._height(self.layoutLevel)}
-    ''')
+    '''
+    )
 
   def _height(self, level):
     """
@@ -150,8 +152,7 @@ class FZFFormatter:
 
   def _fzfHeaderLines(self):
     lines = '{} sessions ({} alive, {} dead), {} windows'.format(
-        self.snapshot.liveSessionCount +
-        self.snapshot.deadSessionCount,
+        self.snapshot.liveSessionCount + self.snapshot.deadSessionCount,
         self.snapshot.liveSessionCount,
         self.snapshot.deadSessionCount,
         self.snapshot.windowCount,
@@ -245,10 +246,7 @@ class FZFFormatter:
     hiddenPrefix = f'{session.name:{self._part1Width}}'
 
     # session symbol if any
-    symbol = cfg.symbols.sessions.get(
-        session.name,
-        cfg.symbols.sessionDefault
-    )
+    symbol = cfg.symbols.sessions.get(session.name, cfg.symbols.sessionDefault)
     if symbol is None:
       symbol = _hideIntoBg('·')
     else:
@@ -265,7 +263,6 @@ class FZFFormatter:
     gap = ('*' if self._testMode else '\x20') * self._gapWidth
 
     color2 = cfg.colors.deadSessionLineRight
-    # part2 = screen.sgr('', color2)
     part2 = screen.sgr('load ', color2)
     part2 = screen.right(part2, self._part2Width + _windowSymbolWidth)
 
@@ -274,10 +271,7 @@ class FZFFormatter:
   def _liveSessionLine(self, session):
     hiddenPrefix = f'{session.id:{self._part1Width}}'
 
-    symbol = cfg.symbols.sessions.get(
-        session.name,
-        cfg.symbols.sessionDefault
-    )
+    symbol = cfg.symbols.sessions.get(session.name, cfg.symbols.sessionDefault)
     if symbol is None:
       symbol = _hideIntoBg('·')
     else:

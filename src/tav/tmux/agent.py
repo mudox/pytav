@@ -5,7 +5,6 @@ import logging
 import shutil
 from os import environ
 
-from .. import settings as cfg
 from .. import shell
 
 logger = logging.getLogger(__name__)
@@ -16,16 +15,18 @@ def dumpInfo():
   return tuples about tmux snapshot
   '''
 
+  # yapf: disable
   format = [
-      '#{session_id}',       # 0
-      '#{session_name}',     # 1
-
-      '#{window_id}',        # 2
-      '#{window_name}',      # 3
-      '#{window_index}',     # 4
-      '#{window_width}',     # 5
-      '#{window_height}',    # 6
+      '#{session_id}',    # 0
+      '#{session_name}',  # 1
+      '#{window_id}',     # 2
+      '#{window_name}',   # 3
+      '#{window_index}',  # 4
+      '#{window_width}',  # 5
+      '#{window_height}', # 6
   ]
+  # yapf: enable
+
   format = ':'.join(format)
 
   cmdstr = f'''
@@ -53,9 +54,14 @@ def switchTo(target):
 def getClientSize():
   lines = shell.getStdout(
       f'tmux list-sessions -F "#{{session_width}}x#{{session_height}}"'
-  ).strip().splitlines()
+  )
 
-  if lines is not None:
+  if lines is None:
+    return shutil.get_terminal_size()
+
+  lines = lines.strip().splitlines()
+
+  if len(lines) > 0:
     w, h = lines[0].split('x')
     w, h = int(w), int(h)
   else:
@@ -65,9 +71,11 @@ def getClientSize():
 
 
 def getCurrentSession():
-  out = shell.getStdout("""
+  out = shell.getStdout(
+      """
     tmux list-clients -F '#{{client_session}}'
-  """)
+  """
+  )
 
   if out is None:
     return None

@@ -52,8 +52,10 @@ class Snapshot:
     # filter out tav session
     infoTuples = list(
         filter(
-            lambda x: x[1] != cfg.tmux.tavSessionName and x[1] !=
-            cfg.tmux.tavTmpSessionName, infoTuples))
+            lambda x: x[1] != cfg.tmux.tavSessionName and x[1] != cfg.tmux.tavTmpSessionName,
+            infoTuples
+        )
+    )
 
     # group by sessions ID
     groups = groupby(infoTuples, lambda x: x[:2])
@@ -64,10 +66,8 @@ class Snapshot:
 
       self.liveSessions.append(session)
 
-    self.sessionNameMaxWidth = reduce(
-        max, [len(t[1]) for t in infoTuples])
-    self.windowNameMaxWidth = reduce(
-        max, [len(t[3]) for t in infoTuples])
+    self.sessionNameMaxWidth = reduce(max, [len(t[1]) for t in infoTuples])
+    self.windowNameMaxWidth = reduce(max, [len(t[3]) for t in infoTuples])
 
     self.liveSessionCount = len(self.liveSessions)
     windowCounts = [len(s.windows) for s in self.liveSessions]
@@ -81,8 +81,7 @@ class Snapshot:
     live_snames = [s.name for s in self.liveSessions]
 
     snames = [
-        x.stem
-        for x in cfg.paths.sessionsDir.glob('*')
+        x.stem for x in cfg.paths.sessionsDir.glob('*')
         if not x.stem.startswith('.')
     ]
 
@@ -100,10 +99,8 @@ class Snapshot:
     self.deadSessions = []
     for name in dead_snames:
       session = tmux.Session(
-          id='<dead>',
-          name=name,
-          loaded=False,
-          windows=None)
+          id='<dead>', name=name, loaded=False, windows=None
+      )
       self.deadSessions.append(session)
 
     self.allSessions += self.deadSessions

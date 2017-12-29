@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 import logging
 from textwrap import indent
 
@@ -14,9 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 def isReady():
-  out = shell.getStdout(f'''
+  out = shell.getStdout(
+      f'''
       tmux list-panes -t ={cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
-  ''')
+  '''
+  )
 
   if out is None:
     return False, 'empty output'
@@ -89,7 +90,7 @@ def refresh():
   tmux send-keys -t {tmpwin} 'tav interface' c-m
   tmux set -t "{tmpwin}" status off
 
-  sleep 1
+  sleep 0.4
   tmux swap-window -d -s '{win}' -t '{tmpwin}'
   tmux select-pane -t {tmpwin} -e
   """
@@ -143,7 +144,9 @@ def getTavWindowTTY():
 
   lines = output.strip().splitlines()
   if len(lines) != 1:
-    logger.warning(f'expecting 1 line, got {len(lines)}:\n{indent(lines, "  ")}')
+    logger.warning(
+        f'expecting 1 line, got {len(lines)}:\n{indent(lines, "  ")}'
+    )
     if len(lines) == 0:
       return None
 
@@ -151,7 +154,9 @@ def getTavWindowTTY():
 
 
 def fastRefresh():
-  shell.run(f'''
+  shell.run(
+      f'''
     tmux select-pane -t '={cfg.tmux.tavWindowTarget}:^' -P bg='{cfg.colors.background}'
     tmux send-keys -t ={cfg.tmux.tavWindowTarget} C-u C-t C-m
-  ''')
+  '''
+  )

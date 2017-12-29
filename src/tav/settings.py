@@ -29,7 +29,6 @@ fzf = None
 symbols = None
 colors = None
 
-
 cmdstr = '''
   tmux list-sessions -F '#{pid}'
 '''
@@ -130,11 +129,13 @@ def _initConfig():
   try:
     s.user = yaml.load(paths.userConfig)
   except BaseException as error:
-    logger.error(f'''
+    logger.error(
+        f'''
       error loading user config file ({paths.userConfig}):
       {indent(str(error), '')}
       fallback to default config
-    ''')
+    '''
+    )
     s.user = yaml.load(paths.defaultConfig)
 
   timestamp = paths.userConfig.stat().st_mtime
@@ -209,7 +210,8 @@ def _initSymbols():
     s.sessions = v
   else:
     logger.warning(
-        f'invalid [symbols.sessions] settings ({v}), fallback to empty dict')
+        f'invalid [symbols.sessions] settings ({v}), fallback to empty dict'
+    )
     s.sessions = {}
 
   invalidNames = []
@@ -219,7 +221,8 @@ def _initSymbols():
       s.sessions[name] = v[0]
     else:
       logger.warning(
-          f'ignore invalid sessoin symbol setting ({v}) for session name `{name}`')
+          f'ignore invalid sessoin symbol setting ({v}) for session name `{name}`'
+      )
       invalidNames.append(name)
 
   for name in invalidNames:
@@ -232,7 +235,8 @@ def _initSymbols():
     s.unloaded = v[0]
   else:
     logger.warning(
-        f'invalid [symbols.unloaded] setting ({v}), fallback to default')
+        f'invalid [symbols.unloaded] setting ({v}), fallback to default'
+    )
     s.unloaded = d
 
   # sessionDefault
@@ -242,7 +246,8 @@ def _initSymbols():
     s.sessionDefault = v[0]
   else:
     logger.warning(
-        f'invalid [symbols.sessionDefault] setting ({v}), fallback to default')
+        f'invalid [symbols.sessionDefault] setting ({v}), fallback to default'
+    )
     s.sessionDefault = d
 
   # windowDefault
@@ -252,7 +257,8 @@ def _initSymbols():
     s.windowDefault = v[0]
   else:
     logger.warning(
-        f'invalid [symbols.windowDefault] setting ({v}), fallback to default')
+        f'invalid [symbols.windowDefault] setting ({v}), fallback to default'
+    )
     s.windowDefault = d
 
 
@@ -269,7 +275,8 @@ def _initColors():
 
   if not isinstance(scheme, dict):
     logger.info(
-        f'invalid [colors] type ({type(scheme)}), fall back to default scheme')
+        f'invalid [colors] type ({type(scheme)}), fall back to default scheme'
+    )
     scheme = defaultScheme
 
   for name in defaultScheme:

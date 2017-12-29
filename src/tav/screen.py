@@ -2,7 +2,7 @@
 
 import re
 
-_r = '\033[0m'   # reset style
+_r = '\033[0m'  # reset style
 _h = '\033[30m'  # hide foreground into background
 
 sgrPattern = re.compile('\x1b\[[^m]+m')

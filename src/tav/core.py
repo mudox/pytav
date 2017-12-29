@@ -6,15 +6,15 @@ import logging
 from . import settings as cfg
 from . import tmux
 from .fzf import FZFFormatter
-from .tmux import tavSession
 
 logger = logging.getLogger(__name__)
 
 model = None
 
 
-# INFO: argument `event` is currently unused
 def onTmuxEvent(event):
+  logger.info(f'o:{event}')
+
   dirty = updateModel()
   if dirty:
     tmux.tavSession.refresh()
@@ -25,8 +25,8 @@ def updateModel():
   steps:
   - reload config.
   - regenerate the model data
-  - compare with old model, return True if is dirty, else False
   - save model in `core.model`
+  - compare with old model, return True if is dirty, else False
   '''
 
   cfg.reload()

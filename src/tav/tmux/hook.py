@@ -23,7 +23,7 @@ _expect = [
 
 
 def enable(reason):
-  logger.info(reason)
+  logger.info(f'o:{reason}')
 
   cmds = [
       f'''
@@ -35,7 +35,7 @@ def enable(reason):
 
 
 def disable(reason):
-  logger.info(reason)
+  logger.info(f'o:{reason}')
 
   cmds = [f'tmux set-hook -gu {event}' for event in _events]
   cmds = '\n'.join(cmds)
