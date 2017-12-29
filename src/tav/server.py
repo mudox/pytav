@@ -64,6 +64,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     logger.info(f'o:GET {self.path}')
 
     for route in [
+        self._greet,
         self._attach,
         self._hook,
         self._event,
