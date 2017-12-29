@@ -5,11 +5,10 @@ import argparse
 import logging
 from contextlib import suppress
 
-from . import ui
-from .tmux import tavSession
+from . import core, ui
 from .diagnose import diagnose
-from . import core
 from .server import start as startServer
+from .tmux import tavSession
 
 __version__ = '3.1'
 
