@@ -40,8 +40,8 @@ def show(oneshot):
     # hide prefixing tag's
     --with-nth=2..
 
-    # retain the relationship between matched sessions and windows
-    --tiebreak=index
+    # preserve ordering
+    --no-sort
 
     --ansi          # color mode
     --height=100%   # fullscreen mode
@@ -55,8 +55,7 @@ def show(oneshot):
     # fully transparent background
     --color=bg:-1,bg+:-1
   ''',
-      comments=True
-  )
+      comments=True)
 
   if not oneshot:
     # avoid screen flickering
