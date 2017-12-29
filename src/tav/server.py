@@ -32,9 +32,8 @@ def start(port):
   with daemon.DaemonContext():
 
     jaclog.configure(
-        appName='tav',
-        fileName='server.log',
-        printSessionLine=False)
+        appName='tav', fileName='server.log', printSessionLine=False
+    )
     logger = logging.getLogger(__name__)
 
     try:
@@ -44,10 +43,14 @@ def start(port):
     except OSError as e:
       if e.errno == 48:
         alternatePort = getFreePort()
-        logger.warning(f'Port {port} is occupied, try using port {alternatePort}')
+        logger.warning(
+            f'Port {port} is occupied, try using port {alternatePort}'
+        )
         logger.flush()
         server = HTTPServer(('', alternatePort), HTTPRequestHandler)
-        logger.info(f'Start server listening at localhost:{alternatePort} ...\n\n')
+        logger.info(
+            f'Start server listening at localhost:{alternatePort} ...\n\n'
+        )
       else:
         raise
 
@@ -61,10 +64,11 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
   error_content_type = 'text/plain'
 
   def do_GET(self):
-    logger.debug(f'o:GET {self.path}')
+    logger.info(f'o:GET {self.path}')
 
     for route in [
         self._attach,
+        self._hook,
         self._event,
         self._stop,
     ]:
@@ -80,23 +84,24 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
   def _invalidPath(self):
     self.send_error(403, 'invalid path')
 
+  def _sendBare200(self):
+    self.send_response(200)
+    self.send_header('Content-Length', 0)
+    self.end_headers()
+
   #
   # nodes
   #
 
   def _event(self):
-    m = re.match(r'^/event/([^/]+)$', self.path)
+    m = re.match(r'^/event/([^/]+)/$', self.path)
     if m is None:
       return False
 
     else:
+      self._sendBare200()
+
       event = m.group(1)
-
-      self.send_response(200)
-      self.send_header('Content-Length', 0)
-      self.end_headers()
-
-      logger.debug(f'o:{event}')
       core.onTmuxEvent(event)
 
       return True
@@ -106,10 +111,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       return False
 
     else:
-      self.send_response(200)
-      self.send_header('Content-Length', 0)
-      self.end_headers()
-
+      self._sendBare200()
+      logger.info('server exit')
       exit()
 
   def _attach(self):
@@ -117,12 +120,9 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       return False
 
     else:
-      self.send_response(200)
-      self.send_header('Content-Length', 0)
-      self.end_headers()
+      self._sendBare200()
 
       tmux.switchTo(cfg.tmux.tavWindowTarget)
-
       return True
 
   def _greet(self):
@@ -130,8 +130,24 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
       return False
 
     else:
-      self.send_response(200)
-      self.send_header('Content-Length', 0)
-      self.end_headers()
+      self._sendBare200()
+      return True
+
+  def _hook(self):
+    m = re.match(r'^/hook/([^/]+)/([^/]+)/$', self.path)
+    if m is None:
+      return False
+
+    else:
+      self._sendBare200()
+
+      action = m.group(1)
+      reason = m.group(2)
+      if action == 'enable':
+        tmux.hook.enable(reason)
+      elif action == 'disable':
+        tmux.hook.disable(reason)
+      else:
+        logger.warning(f'invalid path {self.path}')
 
       return True
