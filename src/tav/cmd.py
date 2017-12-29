@@ -8,6 +8,7 @@ from contextlib import suppress
 from . import ui
 from .tmux import tavSession
 from .diagnose import diagnose
+from . import core
 from .server import start as startServer
 
 __version__ = '3.1'
@@ -26,7 +27,8 @@ class Command:
 
   def actionServer(self, args):
     with suppress(KeyboardInterrupt):
-      tavSession.refresh(recreate=True)
+      core.updateModel()
+      tavSession.refresh(forceRecreate=True)
       startServer(port=32323)
 
   def actionInterface(self, args):
