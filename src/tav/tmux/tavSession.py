@@ -137,3 +137,10 @@ def getTavWindowTTY():
       return None
 
   return lines[0]
+
+
+def fastRefresh():
+  shell.run(f'''
+    tmux select-pane -t '={cfg.tmux.tavWindowTarget}:^' -P bg='{cfg.colors.background}'
+    tmux send-keys -t ={cfg.tmux.tavWindowTarget} C-u C-t C-m
+  ''')

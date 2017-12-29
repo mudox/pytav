@@ -37,13 +37,6 @@ def dumpInfo():
   return [line.split(':') for line in lines]
 
 
-def refreshTavWindow():
-  shell.run(f'''
-    tmux select-pane -t ={cfg.tmux.tavWindowTarget} -P bg='{cfg.colors.background}'
-    tmux send-keys -t ={cfg.tmux.tavWindowTarget} C-u C-t C-m
-  ''')
-
-
 def switchTo(target):
   # quote for sessions id e.g. '$5'
   # avoid shell parsing on it
