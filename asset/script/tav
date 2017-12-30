@@ -19,7 +19,7 @@ case $1 in
     esac
     ;;
   quickattach )       # fast asynchronous attach
-    tmux switch-client -t __Tav__
+    tmux switch-client -t ___Tav_Yang___
     ;;
   attach )            # attach to tav window synchronized by tav daemon
     curl "${srv}/attach/"

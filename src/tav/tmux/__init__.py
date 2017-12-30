@@ -1,5 +1,5 @@
 from . import hook, tavSession
-from .agent import dumpInfo, getClientSize, getCurrentSession, switchTo
+from .agent import dump, getClientSize, getCurrentSession, switchTo
 from .model import Session, Window
 from .snapshot import Snapshot
 
@@ -14,7 +14,7 @@ __all__ = [
     Snapshot,
 
     # .agent
-    dumpInfo,
+    dump,
     getClientSize,
     getCurrentSession,
     switchTo,
