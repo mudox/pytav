@@ -89,12 +89,35 @@ def isYangReady():
     return True, None
 
 
+def getYinReady(force):
+  if force:
+    logger.debug('o:force respawn yin')
+    respawnYin()
+  elif not isYinReady():
+    logger.debug('o:yin is not ready, create it')
+    respawnYin()
+  else:
+    logger.debug('o:skip')
 
 
-  tmpsname = cfg.tmux.tavTmpSessionName
-  tmpwin = cfg.tmux.tavTmpWindowTarget
+def getYangReady(force):
+  """
+  Return: True if the yang window is recreated, hence no need to refresh or
+  swap, its content is up to date, else return False.
+  """
+  if force:
+    logger.debug('o:force respawn yang')
+    respawnYang()
+    return True
+  elif not isYangReady():
+    logger.debug('o:yang is not ready, create it')
+    respawnYang()
+    return True
+  else:
+    logger.debug('o:skip')
+    return False
 
-  width, height = getClientSize()
+
 
   cmdstr = f"""
   if ! tmux has-session -t ={sname}; then
