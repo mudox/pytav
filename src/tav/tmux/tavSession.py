@@ -12,31 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 
-def refresh(forceRecreate):
-  ready, explain = isReady()
 
-  if (not forceRecreate) and ready:
-    fastRefresh()
-    return
-    # if getCurrentSession() != cfg.tmux.tavSessionName:
-    # logger.info('o:perform quick refresh')
-    # fastRefresh()
-    # return
-    # else:
-    # logger.info('o:in tav session')
-
-  logger.info('o:perform session refresh')
-  if hook.isEnabled():
-    hook.disable('before creating Tav session')
   else:
-    logger.warning('hook is already disabled')
 
-  showHeadLine('··· Rereshing, Pane disabled ···')
 
-  sname = cfg.tmux.tavSessionName
 
-  wname = cfg.tmux.tavWindowName
-  win = cfg.tmux.tavWindowTarget
 
   tmpsname = cfg.tmux.tavTmpSessionName
   tmpwin = cfg.tmux.tavTmpWindowTarget
