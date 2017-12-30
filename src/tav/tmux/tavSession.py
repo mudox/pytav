@@ -117,11 +117,6 @@ def showHeadLine(line):
   shell.run(cmdstr)
 
 
-def getTavWindowTTY():
-  ready, explain = isReady()
-  if not ready:
-    logger.warning(f'failed: {explain}')
-    return None
 
   output = shell.getStdout(
       f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"')
@@ -140,11 +135,6 @@ def getTavWindowTTY():
   return lines[0]
 
 
-def fastRefresh():
-  shell.run(f'''
-    tmux select-pane -t '={cfg.tmux.tavWindowTarget}' -P bg='{cfg.colors.background}'
-    tmux send-keys -t ={cfg.tmux.tavWindowTarget} C-u C-t C-m
-  ''')
 def enable(target):
   shell.run(f"""
     tmux select-pane -t '{target}' -e
