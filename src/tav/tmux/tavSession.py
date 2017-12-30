@@ -118,9 +118,15 @@ def getYangReady(force):
     return False
 
 
+def respawnYin():
+  sname = cfg.tmux.yin.sname
+  wname = cfg.tmux.yin.wname
+  yin = cfg.tmux.yin.target
+  width, height = agent.getClientSize()
 
   cmdstr = f"""
-  if ! tmux has-session -t ={sname}; then
+    tmux kill-session -t {sname}
+    set -e
     tmux new-session        \
       -s '{sname}'          \
       -n '{wname}'          \
@@ -128,43 +134,54 @@ def getYangReady(force):
       -y '{height}'         \
       -d                    \
       sh
-    tmux select-pane -t {win} -P bg="{cfg.colors.background}"
-    tmux send-keys -t {win} 'tav-core interface' c-m
-    tmux set -t "{win}" status off
-    exit
-  else
-    tmux select-pane -t {win} -d
-  fi
 
-  if ! tmux has-session -t ={tmpsname}; then
+    # set immediately after session recreation
+    tmux set -w -t '{yin}' pane-base-index 0
+
+    tmux select-pane -t {yin} -P bg="{cfg.colors.background}"
+    tmux send-keys -t {yin} 'tav-core runloop' c-m
+    tmux set -t "{yin}" status off
+    sleep 0.7
+  """
+
+  shell.run(cmdstr)
+  showHeadLine(yin, '─── Yin ───')
+  disable(yin)
+
+
+def respawnYang():
+  sname = cfg.tmux.yang.sname
+  wname = cfg.tmux.yang.wname
+  yang = cfg.tmux.yang.target
+  width, height = agent.getClientSize()
+
+  cmdstr = f"""
+    tmux kill-session -t {sname}
+    set -e
     tmux new-session        \
-      -s '{tmpsname}'       \
+      -s '{sname}'          \
       -n '{wname}'          \
       -x '{width}'          \
       -y '{height}'         \
       -d                    \
       sh
-  else
-    tmux respawn-window -k -t '{tmpwin}' sh
-  fi
 
-  tmux select-pane -t {tmpwin} -P bg="{cfg.colors.background}"
-  tmux send-keys -t {tmpwin} 'tav-core interface' c-m
-  tmux set -t "{tmpwin}" status off
+    # set immediately after session recreation
+    tmux set -w -t '{yang}' pane-base-index 0
 
-  sleep 0.8
-  tmux swap-window -d -s '{win}' -t '{tmpwin}'
-  tmux select-pane -t {tmpwin} -e
+    tmux select-pane -t {yang} -P bg="{cfg.colors.background}"
+    tmux send-keys -t {yang} 'tav-core runloop' c-m
+    tmux set -t "{yang}" status off
+    sleep 0.7
   """
 
   shell.run(cmdstr)
 
   if cfg.config.useDefautlConfig:
-    showHeadLine(f'USING DEFAULT CONFIG')
+    showHeadLine(yang, 'USING DEFAULT CONFIG')
   else:
-    showHeadLine(f'─── Tav ───')
+    showHeadLine(yang, '─── Yang ───')
 
-  hook.enable('after creating Tav session')
 
 
 def showHeadLine(line):
