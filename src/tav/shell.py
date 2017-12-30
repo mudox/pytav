@@ -5,7 +5,8 @@ import subprocess as sp
 from textwrap import indent
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+
+# logger.setLevel(logging.WARNING)
 
 
 def check(cmdstr):
@@ -19,7 +20,13 @@ def system(cmdstr):
 
 def getStdout(cmdstr):
   p = run(cmdstr, stdout=sp.PIPE)
-  return p.stdout.decode() if p.returncode == 0 else None
+  if p.returncode != 0:
+    logger.warning(f'o:output:\nNone')
+    return None
+  else:
+    text = p.stdout.decode()
+    logger.debug(f'o:output:\n{text}')
+    return text
 
 
 def run(cmdstr, stdout=sp.DEVNULL, trace=True):
@@ -47,7 +54,7 @@ def run(cmdstr, stdout=sp.DEVNULL, trace=True):
 
   text = p.stderr.decode().strip()
   if p.returncode != 0:
-    logger.error(f'''
+    logger.error(f'''m:
         failed with error code: {p.returncode}
         {indent(text, '  ')}
     ''')
