@@ -3,10 +3,10 @@
 A tmux `choose-tree`replacement powered by fzf.
 
 Symbol scheme: emoji. Color scheme: cool
-![screenshopt emoji](https://github.com/mudox/tav/blob/master/assets/images/emoji.png)
+![screenshopt emoji](https://github.com/mudox/tav/blob/master/asset/image/emoji.png)
 
 Symbol scheme: nerd. Color scheme: hugo
-![screenshopt nerd](https://github.com/mudox/tav/blob/master/assets/images/nerd.png)
+![screenshopt nerd](https://github.com/mudox/tav/blob/master/asset/image/nerd.png)
 
 ## Getting Started
 
