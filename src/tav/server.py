@@ -4,6 +4,7 @@
 import logging
 import re
 import socket
+import traceback
 from contextlib import closing
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from sys import exit
@@ -25,18 +26,14 @@ def getFreePort():
 
 
 def start():
-  global logger
+  watcher.startMonitoring()
 
-  # logger.debug('start monitoring')
-  # watcher.startMonitoring()
-
-  logger.debug('spawn daemon')
+  logger.debug('spawn daemon ...')
 
   with daemon.DaemonContext():
 
     jaclog.configure(
         appName='tav', fileName='server.log', printSessionLine=False)
-    logger = logging.getLogger(__name__)
 
     try:
       port = 32323
@@ -49,8 +46,8 @@ def start():
         return
       else:
         raise
-    except BaseException as error:
-      logger.error(f'unhandled exception: {error}')
+    except BaseException:
+      logger.error(traceback.format_exc())
       raise
 
     logger.info(f'listening at localhost:{port}')
@@ -58,11 +55,9 @@ def start():
 
     try:
       server.serve_forever()
-    except BaseException as error:
-      logger.error(f'unhandled exception: {error}')
+    except BaseException:
+      logger.error(traceback.format_exc())
       raise
-    finally:
-      watcher.join()
 
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
@@ -72,18 +67,23 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
   error_content_type = 'text/plain'
 
   def do_GET(self):
-
-    for route in [
+    routes = [
         self._greet,
         self._attach,
         self._hook,
         self._event,
         self._stop,
-    ]:
-      if route():
-        return
+    ]
 
-    self._invalidPath()
+    try:
+      for route in routes:
+        if route():
+          return
+      else:
+        self._invalidPath()
+    except BaseException:
+      logger.error(traceback.format_exc())
+      raise
 
   def log_message(self, format, *args):
     msg = format % tuple(args)
@@ -130,7 +130,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     else:
       self._sendBare200()
 
-      tmux.switchTo(cfg.tmux.tavWindowTarget)
+      tmux.switchTo(cfg.tmux.yang.target)
       return True
 
   def _greet(self):
