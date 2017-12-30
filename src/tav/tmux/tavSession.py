@@ -10,6 +10,31 @@ from .. import screen, shell
 logger = logging.getLogger(__name__)
 
 
+def showHeadLine(target, line):
+  tty = ttyOf(target)
+  if tty is None:
+    return
+
+  ttyWidth, _ = agent.getClientSize()
+  width = screen.screenWidth(line)
+  x = (ttyWidth - width) / 2
+  x = int(x) + cfg.fzf.hOffset
+
+  cmdstr = f'''
+  {{
+    tput civis
+    tput sc
+    tput cup 1 1
+    tput el
+    tput cup 1 {x}
+    echo "{line}"
+    tput rc
+    tput cnorm
+  }} >> {tty}
+  '''
+
+  shell.run(cmdstr)
+
 
 
 
