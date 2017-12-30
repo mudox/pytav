@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from contextlib import contextmanager
 
 from .. import shell
 
@@ -40,6 +41,17 @@ def disable(reason):
   cmds = [f'tmux set-hook -gu {event}' for event in _events]
   cmds = '\n'.join(cmds)
   shell.run(cmds)
+
+
+@contextmanager
+def reenable(reason):
+  try:
+    disable('before ' + reason)
+    yield
+  except BaseException as error:
+    logger.error(f'oops: {error}')
+  finally:
+    enable('after ' + reason)
 
 
 def isEnabled():
