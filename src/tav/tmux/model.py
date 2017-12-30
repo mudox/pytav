@@ -3,6 +3,10 @@
 from typing import NamedTuple
 
 
+class Server(NamedTuple):
+  sessions: list
+
+
 class Window(NamedTuple):
   id: str
   name: str
@@ -42,3 +46,7 @@ class Session(NamedTuple):
       return False
 
     return self.windows == rhs.windows
+
+
+class Pane(NamedTuple):
+  tty: str
