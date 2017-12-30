@@ -1,34 +1,15 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3# -*- coding: utf-8 -*-
 
 import logging
 from textwrap import indent
 
-from . import hook
+from . import agent, hook
 from .. import settings as cfg
 from .. import screen, shell
-# from .agent import getClientSize, getCurrentSession
-from .agent import getClientSize
 
 logger = logging.getLogger(__name__)
 
 
-def isReady():
-  out = shell.getStdout(f'''
-      tmux list-panes -t ={cfg.tmux.tavWindowTarget} -F '#{{pane_current_command}}'
-  ''')
-
-  if out is None:
-    return False, 'empty output'
-
-  out = out.strip().splitlines()
-  if len(out) != 1:
-    return False, 'have more than 1 panes'
-
-  if out[0] != 'Python':
-    return False, f'invalid current pane command: {out}'
-
-  return True, None
 
 
 def refresh(forceRecreate):
