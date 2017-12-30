@@ -52,7 +52,41 @@ def ttyOf(target):
 
   return lines[0]
 
+
+def isYinReady():
+  # IDEA!!: use tmux.snapshot to do this
+
+  out = shell.getStdout(f'''
+      tmux list-panes -t {cfg.tmux.yin.target} -F '#{{pane_current_command}}'
+  ''')
+
+  # yin session and window must exist
+  if out is None:
+    return False, 'empty output, see error logging from `shell.getStdout`'
+
+  # should have only one pane in the yin window
+  out = out.strip().splitlines()
+  if len(out) != 1:
+    return False, 'have more than 1 panes in {cfg.tmux.yin.tmux}'
+
+  # yin process must be running
+  # FIXME!!!: the check logic is not solid, use unix domain socket instead
+  if out[0] != 'Python':
+    return False, f'invalid current pane command: {out}, expect `Python`'
+
+  return True, None
+
+
+def isYangReady():
+  infoList = agent.dump()
+  slice = [f'={i.sname}:={i.wname}' for i in infoList]
+  count = slice.count(cfg.tmux.yang.target[:-2])
+  if count == 0:
+    return False, f'can not found yang session, or window'
+  elif count > 1:
+    return False, f'more than 1 pane in yang session'
   else:
+    return True, None
 
 
 
