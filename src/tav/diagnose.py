@@ -3,9 +3,17 @@
 from . import fzf, tmux
 
 
-def diagnose(args):
-  _snapshot()
-  _formatter()
+def dump(args, targets=None):
+  if len(targets) == 0:
+    _config()
+    _snapshot()
+    _formatter()
+  elif 'config' in targets:
+    _config()
+  elif 'snapshot' in targets:
+    _snapshot()
+  elif 'formatter' in targets:
+    _formatter()
 
 
 def _title(text):
@@ -13,7 +21,7 @@ def _title(text):
 
 
 def _snapshot():
-  _title('Test [snapshot] ...')
+  _title('\n[snapshot] ...')
   snap = tmux.Snapshot()
   for s in snap.allSessions:
     print(f' {s.name:24} {s.loaded and "live" or "dead"}')
@@ -25,7 +33,12 @@ def _snapshot():
 
 
 def _formatter():
-  _title('\nTest [formatter] ...')
+  _title('\n[formatter] ...')
   snap = tmux.Snapshot()
   formatter = fzf.FZFFormatter(snap, testMode=True)
   print(formatter.fzfFeed)
+
+
+def _config():
+  _title('\n[config] ...')
+  # TODO!: dump config content

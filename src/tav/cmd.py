@@ -78,6 +78,20 @@ class Command:
     act_oneshot = subparsers.add_parser(
         'diagnose', aliases=['d', 'dia'], help='dump diagnose infomation')
     act_oneshot.set_defaults(func=diagnose)
+    cmdDiagnose = subparsers.add_parser(
+        'diagnose',
+        aliases=['d', 'dia'],
+        help='dump diagnose infomation',
+    )
+    cmdDiagnose.set_defaults(func=self.actionDiagnose)
+
+    cmdDiagnose.add_argument(
+        'targets',
+        nargs='?',
+        default=[],
+        action='append',
+        help='the infomation that is to be dumped to the stdout',
+    )
 
     #
     # action `server`
