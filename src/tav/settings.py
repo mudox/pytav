@@ -148,18 +148,27 @@ def _initConfig():
 def _initTmux():
   global tmux
 
+  # settings.tmux
   s = _Section()
   tmux = s
 
-  s.tavSessionName = '__Tav__'
-  s.tavTmpSessionName = '__Tav__Tmp__'
-
-  s.tavWindowName = 'Finder'
-
-  s.tavWindowTarget = f'{s.tavSessionName}:{s.tavWindowName}'
-  s.tavTmpWindowTarget = f'{s.tavTmpSessionName}:{s.tavWindowName}'
-
   s.serverPID = _serverPID
+
+  # settings.tmux.yin
+  yin = _Section()
+  s.yin = yin
+
+  yin.sname = '___Tav_Yin___'
+  yin.wname = '___Side___'
+  yin.target = f'={yin.sname}:={yin.wname}.0'
+
+  # settings.tmux.yang
+  yang = _Section()
+  s.yang = yang
+
+  yang.sname = '___Tav_Yang___'
+  yang.wname = '___Side___'
+  yang.target = f'={yang.sname}:={yang.wname}.0'
 
 
 def _initFZF():
@@ -288,6 +297,10 @@ def _initColors():
       setattr(s, name, color)
     else:
       setattr(s, name, code)
+
+
+def dump():
+  pass
 
 
 reload()
