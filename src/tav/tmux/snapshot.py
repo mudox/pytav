@@ -41,31 +41,34 @@ class Snapshot:
     # scan live sessions
     #
 
-    infoTuples = tmux.dumpInfo()
-    self.ttyWidth = int(infoTuples[0][5])
-    self.ttyHeight = int(infoTuples[0][6])
+    infoList = tmux.dump()
+    self.ttyWidth = int(infoList[0].wwidth)
+    self.ttyHeight = int(infoList[0].wheight)
 
     # get tmux server id
 
     self.liveSessions = []
 
     # filter out tav session
-    infoTuples = list(
+    infoList = list(
         filter(
-            lambda x: x[1] != cfg.tmux.tavSessionName and x[1] != cfg.tmux.tavTmpSessionName,
-            infoTuples))
+            lambda x: x.sname not in (cfg.tmux.yin.sname, cfg.tmux.yang.sname),
+            infoList,
+        ))
 
     # group by sessions ID
-    groups = groupby(infoTuples, lambda x: x[:2])
-    for (sid, sname), value in groups:
+    groups = groupby(infoList, lambda x: (x.sid, x.sname))
+    for (sid, sname), infos in groups:
       session = tmux.Session(id=sid, name=sname, loaded=True, windows=[])
-      for _, _, wid, wname, windex, *_ in value:
-        session.windows.append(tmux.Window(wid, wname, windex))
+      for info in infos:
+        session.windows.append(tmux.Window(info.wid, info.wname, info.windex))
 
       self.liveSessions.append(session)
 
-    self.sessionNameMaxWidth = reduce(max, [len(t[1]) for t in infoTuples])
-    self.windowNameMaxWidth = reduce(max, [len(t[3]) for t in infoTuples])
+    self.sessionNameMaxWidth = reduce(max,
+                                      [len(info.sname) for info in infoList])
+    self.windowNameMaxWidth = reduce(max,
+                                     [len(info.wname) for info in infoList])
 
     self.liveSessionCount = len(self.liveSessions)
     windowCounts = [len(s.windows) for s in self.liveSessions]

@@ -11,7 +11,7 @@ from .. import shell
 logger = logging.getLogger(__name__)
 
 
-class dumpInfo(NamedTuple):
+class DumpInfo(NamedTuple):
   # session
   sid: str
   sname: str
@@ -29,7 +29,7 @@ class dumpInfo(NamedTuple):
 
 def dump():
   '''
-  Return generator for dumpInfo (named tuple) sequence.
+  Return generator for DumpInfo (named tuple) sequence.
   '''
 
   # yapf: disable
@@ -70,7 +70,7 @@ def dump():
         wheight, \
         ptty = t
 
-    info = dumpInfo(
+    info = DumpInfo(
         # session
         sid=sid,
         sname=sname,
