@@ -48,8 +48,6 @@ def reenable(reason):
   try:
     disable('before ' + reason)
     yield
-  except BaseException as error:
-    logger.error(f'oops: {error}')
   finally:
     enable('after ' + reason)
 
