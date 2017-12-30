@@ -5,8 +5,7 @@ import argparse
 import logging
 from contextlib import suppress
 
-from . import core, ui
-from .diagnose import diagnose
+from . import core, diagnose, ui, watcher
 from .server import start as startServer
 from .tmux import tavSession
 
@@ -35,6 +34,9 @@ class Command:
 
     while True:
       ui.show(oneshot=False)
+
+  def actionDiagnose(self, args):
+    diagnose.dump(args.targets)
 
     while True:
       ui.show(oneshot=False)
@@ -67,17 +69,16 @@ class Command:
     # action `oneshot`
     #
 
-    act_oneshot = subparsers.add_parser(
-        'oneshot', help='the default action, show fzf inteface once')
-    act_oneshot.set_defaults(func=self.actionOneshot)
+    cmdOneshot = subparsers.add_parser(
+        'oneshot',
+        help='the default action, show fzf inteface once',
+    )
+    cmdOneshot.set_defaults(func=self.actionOneshot)
 
     #
     # action: `diagnose`
     #
 
-    act_oneshot = subparsers.add_parser(
-        'diagnose', aliases=['d', 'dia'], help='dump diagnose infomation')
-    act_oneshot.set_defaults(func=diagnose)
     cmdDiagnose = subparsers.add_parser(
         'diagnose',
         aliases=['d', 'dia'],
@@ -97,9 +98,11 @@ class Command:
     # action `server`
     #
 
-    act_server = subparsers.add_parser(
-        'server', help='start Tav server daemon')
-    act_server.set_defaults(func=self.actionServer)
+    cmdServer = subparsers.add_parser(
+        'server',
+        help='start Tav server daemon',
+    )
+    cmdServer.set_defaults(func=self.actionServer)
 
     #
     # action `runloop`
