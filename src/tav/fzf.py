@@ -165,10 +165,6 @@ class FZFFormatter:
     #
 
     for idx, session in enumerate(self.snapshot.liveSessions):
-      # filter out tav interface session
-      if session.name == cfg.tmux.tavSessionName:
-        continue
-
       if self.layoutLevel >= 2 and idx > 0:
         lines.append('')
 
