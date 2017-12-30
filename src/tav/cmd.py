@@ -30,7 +30,12 @@ class Command:
       tavSession.swapYinYang(force=True)
       startServer()
 
-  def actionInterface(self, args):
+  def actionRunloop(self, args):
+    watcher.startMonitoring()
+
+    while True:
+      ui.show(oneshot=False)
+
     while True:
       ui.show(oneshot=False)
 
@@ -55,7 +60,8 @@ class Command:
 
     subparsers = self.parser.add_subparsers(
         title='actions',
-        description='without any action is equivalent to `oneshot`')
+        description='without any action is equivalent to `oneshot`',
+    )
 
     #
     # action `oneshot`
@@ -82,12 +88,14 @@ class Command:
     act_server.set_defaults(func=self.actionServer)
 
     #
-    # action `interface`
+    # action `runloop`
     #
 
-    act_runloop = subparsers.add_parser(
-        'interface', help='show the fzf inteface')
-    act_runloop.set_defaults(func=self.actionInterface)
+    cmdRunloop = subparsers.add_parser(
+        'runloop',
+        help='show interface in runloop mode',
+    )
+    cmdRunloop.set_defaults(func=self.actionRunloop)
 
   def run(self):
 
