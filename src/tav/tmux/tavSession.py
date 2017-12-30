@@ -164,3 +164,13 @@ def fastRefresh():
     tmux select-pane -t '={cfg.tmux.tavWindowTarget}' -P bg='{cfg.colors.background}'
     tmux send-keys -t ={cfg.tmux.tavWindowTarget} C-u C-t C-m
   ''')
+def enable(target):
+  shell.run(f"""
+    tmux select-pane -t '{target}' -e
+  """)
+
+
+def disable(target):
+  shell.run(f"""
+    tmux select-pane -t '{target}' -d
+  """)
