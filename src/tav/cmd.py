@@ -26,8 +26,8 @@ class Command:
 
   def actionServer(self, args):
     with suppress(KeyboardInterrupt):
-      core.updateModel()
-      tavSession.refresh(forceRecreate=True)
+      core.updateModel()  # update server-side model
+      tavSession.swapYinYang(force=True)
       startServer()
 
   def actionInterface(self, args):

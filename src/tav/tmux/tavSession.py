@@ -200,23 +200,30 @@ def refreshYin():
     showHeadLine(yin, '─── Yang ───')
 
 
+def swapYinYang(force):
+  yin = cfg.tmux.yin.target
+  yang = cfg.tmux.yang.target
 
+  with hook.reenable('swap yin yang'):
 
-  output = shell.getStdout(
-      f'tmux list-panes -t {cfg.tmux.tavWindowTarget} -F "#{{pane_tty}}"')
+    getYinReady(force)
+    yangRecreated = getYangReady(force)
 
-  if output is None:
-    logger.error('o:failed')
-    return None
+    if yangRecreated:
+      return
 
-  lines = output.strip().splitlines()
-  if len(lines) != 1:
-    logger.warning(
-        f'expecting 1 line, got {len(lines)}:\n{indent(lines, "  ")}')
-    if len(lines) == 0:
-      return None
+    showHeadLine(yang, 'REFRSHING, DISABLED')
+    disable(yang)
 
-  return lines[0]
+    # refresh yin
+    refreshYin()
+
+    # perform swap
+    shell.run(f"""
+      tmux swap-window -d -s '{yang}' -t '{yin}'
+      tmux select-pane -t '{yang}' -e
+      tmux select-pane -t '{yin}' -d
+    """)
 
 
 def enable(target):
