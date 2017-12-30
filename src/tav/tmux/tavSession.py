@@ -183,31 +183,22 @@ def respawnYang():
     showHeadLine(yang, '─── Yang ───')
 
 
+def refreshYin():
+  yin = cfg.tmux.yin.target
 
-def showHeadLine(line):
-  tty = getTavWindowTTY()
-  if tty is None:
-    return
+  enable(yin)
 
-  ttyWidth, _ = getClientSize()
-  width = screen.screenWidth(line)
-  x = (ttyWidth - width) / 2
-  x = int(x) + cfg.fzf.hOffset
+  shell.run(f'''
+    tmux select-pane -t '{yin}' -P bg='{cfg.colors.background}'
+    tmux send-keys -t '{yin}' C-u C-t C-m
+    sleep 0.4
+  ''')
 
-  cmdstr = f'''
-  {{
-    tput civis
-    tput sc
-    tput cup 1 1
-    tput el
-    tput cup 1 {x}
-    echo "{line}"
-    tput rc
-    tput cnorm
-  }} >> {tty}
-  '''
+  if cfg.config.useDefautlConfig:
+    showHeadLine(yin, 'USING DEFAULT CONFIG')
+  else:
+    showHeadLine(yin, '─── Yang ───')
 
-  shell.run(cmdstr)
 
 
 
