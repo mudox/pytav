@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from pathlib import Path
 
-# from watchdog.events import RegexMatchingEventHandler
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-# from . import settings as cfg
+from . import settings as cfg
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +13,20 @@ logger = logging.getLogger(__name__)
 class EventHandler(FileSystemEventHandler):
 
   def on_any_event(self, event):
-    logger.info(f'''m:
-        type: {event.event_type}
-        path: {event.src_path}
-    ''')
+    path = event.src_path
+    if path.endswith('tav/tav.yml'):
+      pass
+    elif path.is_directory:
+      pass
 
 
 def startMonitoring():
   handler = EventHandler()
   observer = Observer()
-  observer.schedule(
-      handler, Path('~/.config/tav/').expanduser(), recursive=True)
+  observer.schedule(handler, str(cfg.paths.userConfigDir), recursive=True)
+  observer.start()
+
+  handler = EventHandler()
+  observer = Observer()
+  observer.schedule(handler, str(cfg.paths.sessionsDir), recursive=True)
   observer.start()
