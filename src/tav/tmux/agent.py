@@ -4,26 +4,47 @@
 import logging
 import shutil
 from os import environ
+from typing import NamedTuple
 
 from .. import shell
 
 logger = logging.getLogger(__name__)
 
 
-def dumpInfo():
+class dumpInfo(NamedTuple):
+  # session
+  sid: str
+  sname: str
+
+  # window
+  wid: str
+  wname: str
+  windex: int
+  wwidth: int
+  wheight: int
+
+  # pane
+  ptty: str
+
+
+def dump():
   '''
-  return tuples about tmux snapshot
+  Return generator for dumpInfo (named tuple) sequence.
   '''
 
   # yapf: disable
   format = [
-      '#{session_id}',     # 0
-      '#{session_name}',   # 1
-      '#{window_id}',      # 2
-      '#{window_name}',    # 3
-      '#{window_index}',   # 4
-      '#{window_width}',   # 5
-      '#{window_height}',  # 6
+      # session
+      '#{session_id}',
+      '#{session_name}',
+      # windwo
+      '#{window_id}',
+      '#{window_name}',
+      '#{window_index}',
+      '#{window_width}',
+      '#{window_height}',
+      # pane
+      '#{pane_tty}',
   ]
   # yapf: enable
 
@@ -35,7 +56,37 @@ def dumpInfo():
 
   out = shell.getStdout(cmdstr)
   lines = out.strip().splitlines()
-  return [line.split(':') for line in lines]
+
+  infoList = []
+  for line in lines:
+    t = line.split(':')
+
+    sid,         \
+        sname,   \
+        wid,     \
+        wname,   \
+        windex,  \
+        wwidth,  \
+        wheight, \
+        ptty = t
+
+    info = dumpInfo(
+        # session
+        sid=sid,
+        sname=sname,
+        # window
+        wid=wid,
+        wname=wname,
+        windex=windex,
+        wwidth=wwidth,
+        wheight=wheight,
+        # pane
+        ptty=ptty,
+    )
+
+    infoList.append(info)
+
+  return infoList
 
 
 def switchTo(target):
