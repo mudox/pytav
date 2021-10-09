@@ -1,12 +1,15 @@
+# Migration Note
+This project is migrated to [tav](https://github.com/mudox/tav) from python to rust
+
 # Tav (Tmux Navigator)
 
 A tmux `choose-tree`replacement powered by fzf.
 
 Symbol scheme: emoji. Color scheme: cool
-![screenshopt emoji](https://github.com/mudox/tav/blob/master/asset/image/emoji.png)
+![screenshopt emoji](/asset/image/emoji.png)
 
 Symbol scheme: nerd. Color scheme: hugo
-![screenshopt nerd](https://github.com/mudox/tav/blob/master/asset/image/nerd.png)
+![screenshopt nerd](asset/image/nerd.png)
 
 ## Getting Started
 
